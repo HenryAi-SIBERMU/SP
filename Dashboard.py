@@ -26,7 +26,7 @@ st.markdown('<div class="page-subtitle">Potensi Instalasi Dual-Use Infrastructur
 
 st.markdown("""
 <div class="note-box">
-🚧 <strong>Dashboard dalam Pengembangan</strong><br>
+<strong>Dashboard dalam Pengembangan</strong><br>
 Halaman ini menampilkan overview riset yang sedang berjalan. Data masih dalam proses pengumpulan.
 Untuk detail progress riset, lihat halaman <strong>Dokumentasi Riset</strong>.
 </div>
