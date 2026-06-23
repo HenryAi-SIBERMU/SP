@@ -1,5 +1,5 @@
 """
-CELIOS8: Manfaat Sosial
+Manfaat Sosial
 """
 import streamlit as st
 import os

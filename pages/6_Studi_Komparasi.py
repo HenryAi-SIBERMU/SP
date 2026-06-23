@@ -1,5 +1,5 @@
 """
-CELIOS8: Studi Komparasi
+Studi Komparasi
 """
 import streamlit as st
 import os

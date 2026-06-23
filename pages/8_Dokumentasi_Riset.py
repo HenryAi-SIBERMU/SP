@@ -1,5 +1,5 @@
 """
-CELIOS8: Dokumentasi Riset
+Dokumentasi Riset
 Menampilkan dokumen-dokumen riset dalam format markdown
 """
 import streamlit as st

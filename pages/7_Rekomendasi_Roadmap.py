@@ -1,5 +1,5 @@
 """
-CELIOS8: Rekomendasi & Roadmap
+Rekomendasi & Roadmap
 """
 import streamlit as st
 import os

@@ -1,5 +1,5 @@
 """
-CELIOS8: Teduhi Ruang Kota Kami
+Teduhi Ruang Kota Kami
 Solar Dashboard — Potensi PLTS Atap Dual-Use Infrastructure di Jabodetabek
 """
 import streamlit as st

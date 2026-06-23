@@ -1,5 +1,5 @@
 """
-CELIOS8: Overview Dashboard
+Overview Dashboard
 """
 import streamlit as st
 import os

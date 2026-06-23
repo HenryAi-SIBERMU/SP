@@ -1,5 +1,5 @@
 """
-CELIOS8: Analisis Kapasitas
+Analisis Kapasitas
 """
 import streamlit as st
 import os

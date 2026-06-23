@@ -1,5 +1,5 @@
 """
-CELIOS8: Analisis Ekonomi
+Analisis Ekonomi
 """
 import streamlit as st
 import os

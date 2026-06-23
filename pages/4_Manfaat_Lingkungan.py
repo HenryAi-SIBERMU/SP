@@ -1,5 +1,5 @@
 """
-CELIOS8: Manfaat Lingkungan
+Manfaat Lingkungan
 """
 import streamlit as st
 import os

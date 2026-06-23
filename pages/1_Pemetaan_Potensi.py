@@ -1,5 +1,5 @@
 """
-CELIOS8: Pemetaan Potensi
+Pemetaan Potensi
 """
 import streamlit as st
 import os
