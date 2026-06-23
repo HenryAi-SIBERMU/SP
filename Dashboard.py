@@ -104,13 +104,13 @@ st.markdown("""
 <div class="info-box">
 <strong>Fase Saat Ini: Planning & Data Collection</strong><br><br>
 
-✅ <strong>Selesai:</strong><br>
+<strong>Selesai:</strong><br>
 Framework riset & metodologi, Data acquisition plan (43 sumber data), Struktur dashboard & dokumentasi<br><br>
 
-⏳ <strong>Sedang Berjalan:</strong><br>
+<strong>Sedang Berjalan:</strong><br>
 Contact stakeholder (TransJakarta, KAI, MRT), Setup PVGIS API, Download data OpenStreetMap Jabodetabek<br><br>
 
-📋 <strong>Next:</strong><br>
+<strong>Next:</strong><br>
 Inventarisasi area dengan GIS, Perhitungan kapasitas & produksi, Financial modeling & scenario analysis
 </div>
 """, unsafe_allow_html=True)
