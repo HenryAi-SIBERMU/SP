@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files (large files)
+data/raw/**/*.tif
+data/raw/**/*.shp
+data/raw/**/*.geotiff
+data/processed/**/*.tif
+*.zip
+*.tar.gz
+
+# Temporary files
+*.log
+*.tmp
+scratch/
+debug/
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+
+# Output files (optional - uncomment if you don't want to track outputs)
+# output/reports/draft/*
+# output/maps/*
+# output/charts/*
+
+# API keys and sensitive data
+**/secrets.json
+**/api_keys.txt
+
+# OS
+.DS_Store
+desktop.ini
+
+# Reference folder - exclude Celios2
+ref/
