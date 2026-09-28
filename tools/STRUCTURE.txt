@@ -1,0 +1,47 @@
+tools/
+├── README.md                      # Main documentation
+│
+├── osm/                           # ✅ OpenStreetMap Data Scraper
+│   ├── scraper.py                 # Main scraper script
+│   └── README.md                  # OSM-specific docs
+│
+├── pvgis/                         # ✅ PVGIS Solar Data API
+│   ├── scraper.py                 # API client script
+│   └── README.md                  # PVGIS-specific docs
+│
+└── regulations/                   # ✅ Regulations & Reports Downloader
+    ├── downloader.py              # Download script
+    └── README.md                  # Regulations-specific docs
+
+
+FUTURE TOOLS (to be added):
+├── jakarta_data/                  # 🔜 Jakarta Open Data (CKAN API)
+├── google_places/                 # 🔜 Google Places API
+├── bps_api/                       # 🔜 BPS Statistics API
+├── nasa_power/                    # 🔜 NASA POWER API
+└── ...
+
+
+NAMING CONVENTIONS:
+- Each folder = one data source
+- Main script: scraper.py / downloader.py / api_client.py
+- Documentation: README.md (optional but recommended)
+- Config: config.json (if needed)
+
+
+OUTPUT STRUCTURE:
+data/
+├── raw/
+│   ├── osm/                       # OSM scraper output
+│   │   ├── buildings_jabodetabek.gpkg
+│   │   ├── parking_jabodetabek.gpkg
+│   │   └── ...
+│   ├── solar/                     # PVGIS scraper output
+│   │   ├── pvgis_summary_jabodetabek.csv
+│   │   └── pvgis_monthly_jabodetabek.csv
+│   └── ...
+└── external/
+    └── regulations/               # Regulations downloader output
+        ├── regulations/
+        ├── irena/
+        └── iea_pvps/

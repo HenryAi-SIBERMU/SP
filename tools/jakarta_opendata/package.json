@@ -1,0 +1,12 @@
+{
+  "name": "jakarta-opendata-scraper",
+  "version": "1.0.0",
+  "description": "Puppeteer scraper for data.jakarta.go.id",
+  "main": "scraper_puppeteer.js",
+  "scripts": {
+    "scrape": "node scraper_puppeteer.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

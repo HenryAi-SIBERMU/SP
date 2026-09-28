@@ -1,0 +1,82 @@
+{
+  "residential": [
+    {
+      "power_va": 450,
+      "tariff_rp_kwh": 415,
+      "category": "R-1/TR",
+      "subsidy": true
+    },
+    {
+      "power_va": 900,
+      "tariff_rp_kwh": 605,
+      "category": "R-1/TR",
+      "subsidy": true
+    },
+    {
+      "power_va": 1300,
+      "tariff_rp_kwh": 1352,
+      "category": "R-1/TR",
+      "subsidy": false
+    },
+    {
+      "power_va": 2200,
+      "tariff_rp_kwh": 1444.7,
+      "category": "R-1/TR",
+      "subsidy": false
+    },
+    {
+      "power_va": 3500,
+      "tariff_rp_kwh": 1444.7,
+      "category": "R-2/TR",
+      "subsidy": false
+    },
+    {
+      "power_va": 6600,
+      "tariff_rp_kwh": 1444.7,
+      "category": "R-3/TR",
+      "subsidy": false
+    }
+  ],
+  "commercial": [
+    {
+      "power_va": "6-200 kVA",
+      "tariff_rp_kwh": 1467.28,
+      "category": "B-2/TR",
+      "description": "Business"
+    },
+    {
+      "power_va": ">200 kVA",
+      "tariff_rp_kwh": 1114.74,
+      "category": "B-3/TM",
+      "description": "Business Large"
+    }
+  ],
+  "industrial": [
+    {
+      "power_va": "200-30000 kVA",
+      "tariff_rp_kwh": 1074.39,
+      "category": "I-3/TM",
+      "description": "Industry Medium"
+    },
+    {
+      "power_va": ">30000 kVA",
+      "tariff_rp_kwh": 996.74,
+      "category": "I-4/TT",
+      "description": "Industry Large"
+    }
+  ],
+  "public": [
+    {
+      "power_va": "6-200 kVA",
+      "tariff_rp_kwh": 1467.28,
+      "category": "P-1/TR",
+      "description": "Public Service"
+    },
+    {
+      "power_va": ">200 kVA",
+      "tariff_rp_kwh": 1044.33,
+      "category": "P-2/TM",
+      "description": "Public Large"
+    }
+  ]
+}

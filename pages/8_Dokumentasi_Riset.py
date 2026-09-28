@@ -123,10 +123,10 @@ with col1:
 with col2:
     st.markdown("""
     <div class="doc-nav-card">
-        <div class="doc-nav-title">Framework Awal - Feedback & Analisis</div>
+        <div class="doc-nav-title">Framework Riset Celios8</div>
         <div class="doc-nav-desc">
-            Analisis mendalam terhadap framework riset, metodologi, 
-            dan feedback komprehensif untuk pengembangan riset.
+            Dokumen framework utama untuk Fase 1 riset Solar Panel 
+            (Dual-Use Infrastructure) yang mencakup pertanyaan riset dan matriks analisis.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -138,7 +138,7 @@ doc_choice = st.radio(
     "Pilih Dokumen untuk Ditampilkan:",
     [
         "Data Acquisition Plan",
-        "Framework Awal - Feedback & Analisis"
+        "Framework Riset Celios8"
     ],
     horizontal=True
 )
@@ -176,9 +176,9 @@ if "Data Acquisition Plan" in doc_choice:
     doc_path = os.path.join(BASE_DIR, "docs", "DATA-ACQUISITION-PLAN.md")
     doc_name = "DATA-ACQUISITION-PLAN.md"
     
-elif "Framework Awal" in doc_choice:
-    doc_path = os.path.join(BASE_DIR, "docs", "project-plan", "Framework Awal - Feedback & Analisis.md")
-    doc_name = "Framework Awal - Feedback & Analisis.md"
+elif "Framework Riset" in doc_choice:
+    doc_path = os.path.join(BASE_DIR, "docs", "framework-fase1-solar-panel.md")
+    doc_name = "framework-fase1-solar-panel.md"
 
 # Read and display the document
 if os.path.exists(doc_path):

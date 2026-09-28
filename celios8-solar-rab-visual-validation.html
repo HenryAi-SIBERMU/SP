@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAB_Google_Solar_API_Celios8_Jakarta_VisualValidation</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menerapkan font Inter sebagai font utama */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Style untuk garis pemisah tabel yang lebih halus */
+        tbody tr:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        }
+
+        /* A4 Size Styling */
+        @page {
+            size: A4;
+            margin: 20mm 0 20mm 0;
+        }
+
+        body {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #f3f4f6; /* bg-gray-100 */
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                box-shadow: none;
+                background: white;
+                width: 100%;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bg-gray-100, .bg-white, .bg-blue-50, .bg-yellow-50, .bg-gray-50, .bg-slate-50, .bg-slate-800, .bg-gray-800 {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .w-full {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-0 sm:p-8 print:p-0">
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6 no-print max-w-[210mm] mx-auto bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+        <div class="text-xs text-gray-600 flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Nama file default saat disimpan:</span>
+            <code class="font-mono font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">RAB_Google_Solar_API_Celios8_Jakarta_VisualValidation.pdf</code>
+        </div>
+        <button onclick="simpanKePDF()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Cetak / Simpan ke PDF
+        </button>
+    </div>
+
+    <!-- Kontainer utama menyerupai dokumen/kertas -->
+    <div class="w-full bg-white shadow-2xl rounded-lg overflow-hidden print:shadow-none print:rounded-none"
+        style="min-height: 277mm; margin: 0 auto; max-width: 210mm;">
+
+        <!-- === BAGIAN HEADER === -->
+        <header class="p-8 sm:p-12">
+            <div class="flex justify-between items-start">
+                <div>
+                    <!-- Judul Kategori -->
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-semibold text-blue-600 uppercase tracking-wide">RENCANA ANGGARAN BIAYA</span>
+                        <span class="text-xs font-mono text-gray-500 border border-gray-200 bg-gray-50 px-2 py-1 rounded">RAB-SOL-VV2024</span>
+                    </div>
+
+                    <!-- Judul Utama -->
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2 max-w-lg">
+                        Teduhi Ruang Kota Kami - Implementasi Google Solar API Jakarta
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Informasi Proyek dan Tanggal -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div>
+                    <strong class="block text-gray-500 mb-1">Proyek</strong>
+                    <span class="text-gray-800 font-semibold">Teduhi Ruang Kota Kami</span><br>
+                    <span class="text-gray-600">Riset Potensi Solar Jakarta</span>
+                </div>
+                <div>
+                    <strong class="block text-gray-500 mb-1">Wilayah</strong>
+                    <span class="text-gray-800 font-semibold">DKI Jakarta Only</span>
+                </div>
+                <div>
+                    <strong class="block text-gray-500 mb-1">Tanggal Dokumen</strong>
+                    <span class="text-gray-800">2 September 2026</span>
+                </div>
+            </div>
+
+            <!-- Garis Pemisah -->
+            <hr class="mt-8 border-gray-200">
+        </header>
+
+        <!-- === BAGIAN KONTEN === -->
+        <main>
+            <!-- 1. Warning Banner -->
+            <section class="px-8 sm:px-12 pb-6">
+                <div class="bg-yellow-50 p-4 rounded-md">
+                    <p class="text-yellow-800 text-sm leading-relaxed">
+                        <strong>PEMBAYARAN GCP:</strong> Google Cloud Platform memerlukan <strong>kartu kredit/debit Celios</strong> untuk aktivasi billing account. Verifikasi kartu kredit wajib dilakukan. Pembayaran menggunakan sistem pay-as-you-go (auto-charge bulanan).
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. Tabel Breakdown Per Kategori -->
+            <section class="px-8 sm:px-12 py-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    1. Breakdown Biaya Per Kategori Infrastruktur
+                </h2>
+
+                <div class="overflow-hidden bg-white rounded-lg border border-gray-200">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center w-12 text-[11px]">No</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Kategori Infrastruktur</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center text-[11px]">Qty</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">BI<br><span class="text-[10px] font-normal">($0.005)</span></th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">DL 3 Layers<br><span class="text-[10px] font-normal">($0.075)</span></th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Subtotal USD</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Subtotal IDR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">1</td>
+                                <td class="px-4 py-2.5 text-gray-800">Halte TransJakarta</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">284</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$1.42</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$21.30</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$22.72</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 358,976</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">2</td>
+                                <td class="px-4 py-2.5 text-gray-800">Stasiun KRL</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">80</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.40</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$6.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$6.40</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 101,120</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">3</td>
+                                <td class="px-4 py-2.5 text-gray-800">Stasiun MRT/LRT</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">31</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.16</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$2.33</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$2.49</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 39,342</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">4</td>
+                                <td class="px-4 py-2.5 text-gray-800">JPO (Jembatan Penyeberangan)</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">300</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$1.50</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$22.50</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$24.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 379,200</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">5</td>
+                                <td class="px-4 py-2.5 text-gray-800">Parking Lot Terbuka</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">500</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$2.50</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$37.50</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$40.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 632,000</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">6</td>
+                                <td class="px-4 py-2.5 text-gray-800">MSCP Gedung Parkir</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">200</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$1.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$15.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$16.00</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 252,800</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">7</td>
+                                <td class="px-4 py-2.5 text-gray-800">Koridor Pedestrian</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">20</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.10</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$1.50</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$1.60</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 25,280</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="5" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal Infrastruktur</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900">$113.21</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">Rp 1,788,718</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td colspan="5" class="px-4 py-2.5 text-right text-gray-700">Buffer 20% (requery/error)</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800">$22.64</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 357,744</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td colspan="5" class="px-4 py-2.5 text-right text-gray-700">PPN 11%</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800">$14.94</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 236,111</td>
+                            </tr>
+                            <tr class="bg-slate-800 text-white font-bold border-t-2 border-slate-900">
+                                <td colspan="5" class="px-4 py-3 text-right text-sm">GRAND TOTAL</td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap text-sm">$150.79</td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap text-sm">Rp 2,382,573</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Tabel Breakdown Detail -->
+            <section class="px-8 sm:px-12 py-6 bg-gray-50">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    2. Breakdown Biaya Detail (Per SKU)
+                </h2>
+
+                <div class="overflow-hidden bg-white rounded-lg border border-gray-200">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Item</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center text-[11px]">Qty</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Rate</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Subtotal USD</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Subtotal IDR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="5" class="px-4 py-3 font-bold text-gray-900">1. Building Insights (SKU: Essentials)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-gray-800">Building Insights API</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">1,415</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.005</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$7.08</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 111,864</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 bg-blue-50">
+                                <td colspan="5" class="px-4 py-2.5 text-xs text-blue-900">
+                                    <strong>Building Insights mencakup 40+ fields dalam satu request ($0.005):</strong><br>
+                                    Level 1: name, center, boundingBox, imageryDate, imageryQuality, administrative info<br>
+                                    Level 2: Solar Potential (maxArrayPanelsCount, maxArrayAreaMeters2, maxSunshineHoursPerYear, carbonOffsetFactor, panel specs)<br>
+                                    Level 3: Roof Stats (wholeRoofStats, roofSegmentStats dengan pitch/azimuth per segment)<br>
+                                    Level 3: Panel Configs (multiple scenarios) & individual panel positions<br>
+                                    Level 2: Detected Arrays (existing installations)<br>
+                                    <strong>Total: 40+ fields dalam 1 request</strong>
+                                </td>
+                            </tr>
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="5" class="px-4 py-3 font-bold text-gray-900">2. Data Layers (SKU: Enterprise)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-gray-800">2a. RGB Imagery (Aerial Photo)</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">1,415</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.025</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$35.38</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 559,004</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-gray-800">2b. Mask (Roof Segmentation)</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">1,415</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.025</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$35.38</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 559,004</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-gray-800">2c. DSM (Digital Surface Model)</td>
+                                <td class="px-4 py-2.5 text-center text-gray-700">1,415</td>
+                                <td class="px-4 py-2.5 text-right text-gray-700">$0.025</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 font-semibold">$35.38</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 559,004</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal Infrastruktur</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900">$113.21</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">Rp 1,788,876</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td colspan="3" class="px-4 py-2.5 text-right text-gray-700">Buffer 20%</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800">$22.64</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 357,775</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td colspan="3" class="px-4 py-2.5 text-right font-semibold text-gray-700">TOTAL</td>
+                                <td class="px-4 py-2.5 text-right font-semibold text-gray-900">$135.85</td>
+                                <td class="px-4 py-2.5 text-right font-semibold text-gray-900 whitespace-nowrap">Rp 2,146,651</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td colspan="3" class="px-4 py-2.5 text-right text-gray-700">PPN 11%</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800">$14.94</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Rp 236,132</td>
+                            </tr>
+                            <tr class="bg-slate-800 text-white font-bold border-t-2 border-slate-900">
+                                <td colspan="3" class="px-4 py-3 text-right text-sm">GRAND TOTAL</td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap text-sm">$150.79</td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap text-sm">Rp 2,382,783</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 bg-yellow-50 p-4 rounded-md">
+                    <p class="text-yellow-800 text-xs leading-relaxed">
+                        <strong>CATATAN PENTING:</strong>
+                        Building Insights = 1 request dapat 40+ fields (semua Level 1-4 structure). 
+                        Detected Arrays included via parameter <code>additionalInsights=DETECTED_ARRAYS</code>. 
+                        3 Data Layers = RGB + Mask + DSM (cukup untuk validasi visual, tanpa flux heatmap). 
+                        Total requests: 1,415 BI + 4,245 DL = <strong>5,660 API calls</strong>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 4. Keterangan & Next Actions -->
+            <section class="px-8 sm:px-12 py-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">
+                    3. Keterangan Detail
+                </h2>
+                
+                <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Building Insights ($0.005/request)</h3>
+                        <p class="mb-1"><strong>Endpoint:</strong> <code class="bg-gray-100 px-2 py-1 rounded text-[11px]">GET /v1/buildingInsights:findClosest</code></p>
+                        <p class="mb-1"><strong>40+ Fields yang Didapat (Level 1-4):</strong></p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>Level 1:</strong> name, center, boundingBox, imageryDate, imageryQuality, postalCode, administrativeArea, statisticalArea, regionCode</li>
+                            <li><strong>Level 2 (Solar Potential):</strong> maxArrayPanelsCount, maxArrayAreaMeters2, maxSunshineHoursPerYear, carbonOffsetFactorKgPerMwh, panelCapacityWatts (400W), panelHeightMeters (1.879m), panelWidthMeters (1.045m), panelLifetimeYears (20)</li>
+                            <li><strong>Level 3 (Roof Stats):</strong> wholeRoofStats, buildingStats, roofSegmentStats (pitchDegrees, azimuthDegrees, stats per segment, center, boundingBox, planeHeightAtCenterMeters)</li>
+                            <li><strong>Level 3 (Panel Configs):</strong> solarPanelConfigs (multiple scenarios), solarPanels (center, orientation, yearlyEnergyDcKwh, segmentIndex)</li>
+                            <li><strong>Level 2 (Detected Arrays):</strong> detectionStatus, latestCaptureDate (included via parameter <code>additionalInsights=DETECTED_ARRAYS</code>)</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Data Layers ($0.025/layer)</h3>
+                        <p class="mb-1"><strong>Endpoint:</strong> <code class="bg-gray-100 px-2 py-1 rounded text-[11px]">GET /v1/dataLayers:get</code></p>
+                        <p class="mb-1"><strong>3 Layers yang Diambil (GeoTIFF format):</strong></p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>RGB Imagery:</strong> Foto satelit aerial - validasi visual kondisi atap real</li>
+                            <li><strong>Mask:</strong> Binary mask atap vs non-atap - konfirmasi boundary detection akurat</li>
+                            <li><strong>DSM:</strong> Peta ketinggian 3D - cek elevasi & identifikasi obstruksi</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Output Data</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Total Data Fields: 40+ fields × 1,415 lokasi = 56,600+ data points</li>
+                            <li>Visual Validation Rasters: 3 layers × 1,415 lokasi = 4,245 raster files</li>
+                            <li><strong>Grand Total Output: ~60,000+ data artifacts</strong></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">Asumsi & Notes</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Kurs: $1 = Rp 15,800 (2 September 2026)</li>
+                            <li>Buffer 20%: Cadangan untuk requery jika ada error, timeout, atau kualitas rendah</li>
+                            <li>PPN 11%: Pajak untuk transaksi internasional (jika dikenakan)</li>
+                            <li>Target Lokasi: 1,415 dari framework - belum semua tervalidasi (actual: 1,089 = 77%)</li>
+                            <li>Resolusi Default: 0.25m pixel size (high-res), radius 50m per lokasi</li>
+                            <li>Quality Level: HIGH (imagery quality filter)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-100 px-8 sm:px-12 py-4 text-xs text-gray-600 border-t border-gray-300">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p><strong>Verifikasi:</strong> Dokumentasi resmi Google Solar API</p>
+                    <p><strong>Sumber:</strong> developers.google.com/maps/documentation/solar/</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const NAMA_FILE_PDF = "RAB_Google_Solar_API_Celios8_Jakarta_VisualValidation";
+
+        function simpanKePDF() {
+            document.title = NAMA_FILE_PDF;
+            window.print();
+        }
+
+        window.addEventListener("beforeprint", () => {
+            document.title = NAMA_FILE_PDF;
+        });
+    </script>
+</body>
+</html>

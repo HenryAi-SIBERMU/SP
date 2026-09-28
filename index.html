@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permintaan Evaluasi Scope Of Work (SOW) & Penawaran Rekonstruksi Kontrak</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menerapkan font Inter sebagai font utama */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Style untuk garis pemisah tabel yang lebih halus */
+        tbody tr:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+            /* gray-200 */
+        }
+
+        /* A4 Size Styling */
+        @page {
+            size: A4;
+            margin: 20mm 0 20mm 0;
+        }
+
+        body {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #f3f4f6;
+            /* bg-gray-100 */
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                box-shadow: none;
+                background: white;
+                width: 100%;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bg-gray-100,
+            .bg-white,
+            .bg-blue-50,
+            .bg-yellow-50,
+            .bg-gray-50,
+            .bg-slate-50,
+            .bg-slate-800,
+            .bg-gray-800 {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .grid-cols-1 {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .w-full {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-0 sm:p-8 print:p-0">
+
+    <div class="text-right mb-6 no-print max-w-[210mm] mx-auto">
+        <button onclick="window.print()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors inline-flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Cetak / Simpan ke PDF
+        </button>
+    </div>
+
+    <!-- Kontainer utama menyerupai dokumen/kertas -->
+    <div class="w-full bg-white shadow-2xl rounded-lg overflow-hidden print:shadow-none print:rounded-none"
+        style="min-height: 277mm; margin: 0 auto; max-width: 210mm;">
+
+        <!-- === BAGIAN HEADER === -->
+        <header class="p-8 sm:p-12">
+            <div class="flex justify-between items-start">
+                <div>
+                    <!-- Judul Kategori -->
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-semibold text-red-600 uppercase tracking-wide">PERMINTAAN
+                            REKONSTRUKSI</span>
+                        <span
+                            class="text-xs font-mono text-gray-500 border border-gray-200 bg-gray-50 px-2 py-1 rounded">REV-SOW-001</span>
+                    </div>
+
+                    <!-- Judul Utama -->
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2 max-w-lg">
+                        Permintaan Evaluasi Scope Of Work (SOW) & Penawaran Rekonstruksi Kontrak
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Informasi Klien, Pengirim, dan Tanggal -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div>
+                    <strong class="block text-gray-500 mb-1">Kepada Yth,</strong>
+                    <span class="text-gray-800 font-semibold">Manajemen Celios</span><br>
+                    <span class="text-gray-600">Proyek Danantara</span>
+                </div>
+                <div>
+                    <strong class="block text-gray-500 mb-1">Dari,</strong>
+                    <span class="text-gray-800 font-semibold">Fullstack Developer and Data Scientist</span>
+                </div>
+                <div>
+                    <strong class="block text-gray-500 mb-1">Tanggal Dokumen</strong>
+                    <span class="text-gray-800">24 Juli 2026</span>
+                </div>
+            </div>
+
+            <!-- Garis Pemisah -->
+            <hr class="mt-8 border-gray-200">
+        </header>
+
+        <!-- === BAGIAN KONTEN === -->
+        <main>
+            <!-- 1. Catatan Evaluasi -->
+            <section class="px-8 sm:px-12 pb-6">
+                <div class="bg-yellow-50 p-4 rounded-md">
+                    <p class="text-yellow-800 text-sm leading-relaxed">
+                        Berdasarkan analisis mendalam terhadap Scope of Work (SOW) yang diminta, sistem ini mensyaratkan
+                        pembangunan Arsitektur Software Enterprise (SaaS), bukan sekadar riset data konvensional. Tabel
+                        di bawah menjabarkan pemetaan infrastruktur dan estimasi biaya operasional server (OPEX) yang
+                        akan timbul setiap bulannya.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. Rincian OPEX -->
+            <section class="px-8 sm:px-12 py-6 bg-gray-50">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    1. Pemetaan SOW & Estimasi Biaya Infrastruktur (OPEX) - OPSI C Arsitektur Penuh / Fullstack Dynamic Webapp & Data Engineering</h2>
+
+                <div class="overflow-hidden bg-white rounded-lg border border-gray-200">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center w-12 text-[11px]">No</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Kebutuhan Sistem</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Deskripsi
+                                    Infrastruktur</th>
+                                <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Estimasi (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- SOW 1 -->
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 1: Pembuatan Perangkat
+                                    Lunak (Dashboard Monitor Otomatis)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">1</td>
+                                <td class="px-4 py-2.5 text-gray-800">Framework Dashboard & Hosting</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Frontend Web Modern & Cloud Hosting</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 320.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">2</td>
+                                <td class="px-4 py-2.5 text-gray-800">Manajemen Subdomain</td>
+                                <td class="px-4 py-2.5 text-gray-500">Pengaturan Subdomain (dashboard.danantaramonitor.org)
+                                </td>
+                                <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">3</td>
+                                <td class="px-4 py-2.5 text-gray-800">WAF & Keamanan Jaringan</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Anti-DDoS & Web Application Firewall</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 400.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">4</td>
+                                <td class="px-4 py-2.5 text-gray-800">Autentikasi User</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Login Keamanan Tinggi (2FA)</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 80.000 / bln</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">5</td>
+                                <td class="px-4 py-2.5 text-gray-800">Secret Management</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Enkripsi Kunci API & Rahasia Server</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 16.000 / bln</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">6</td>
+                                <td class="px-4 py-2.5 text-gray-800">API Gateway</td>
+                                <td class="px-4 py-2.5 text-gray-500">Pelayan Penghubung Keamanan Frontend-Backend</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 80.000 / bln</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">7</td>
+                                <td class="px-4 py-2.5 text-gray-800">Infrastruktur Backend Worker</td>
+                                <td class="px-4 py-2.5 text-gray-500">Virtual Private Server (VPS) Cloud 24/7</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 800.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">8</td>
+                                <td class="px-4 py-2.5 text-gray-800">Task Queue & Message Broker</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Antrean Tugas Scraping Paralel</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 160.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">9</td>
+                                <td class="px-4 py-2.5 text-gray-800">Monitoring & Error Tracking</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Pelacak Error Otomatis</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 464.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">10</td>
+                                <td class="px-4 py-2.5 text-gray-800">Version Control & CI/CD</td>
+                                <td class="px-4 py-2.5 text-gray-500">Infrastruktur Deployment & Kolaborasi Kode</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 128.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">11</td>
+                                <td class="px-4 py-2.5 text-gray-800">Bot Notifikasi</td>
+                                <td class="px-4 py-2.5 text-gray-500">Integrasi Bot Komunikasi Internal Realtime</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 256.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">DB</td>
+                                <td class="px-4 py-2.5 text-gray-800">Database Utama SOW 1</td>
+                                <td class="px-4 py-2.5 text-gray-500">Database Sinkronisasi Status Server & UI</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 480.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal
+                                    Infrastruktur SOW 1</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 3.184.000
+                                    / bln</td>
+                            </tr>
+
+                            <!-- SOW 2 -->
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 2: Pengumpulan Data</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">12</td>
+                                <td class="px-4 py-2.5 text-gray-800">Scraper Enterprise</td>
+                                <td class="px-4 py-2.5 text-gray-500">Lisensi Web Scraper Engine (Top Tier)</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 800.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">13</td>
+                                <td class="px-4 py-2.5 text-gray-800">API Berita Nasional</td>
+                                <td class="px-4 py-2.5 text-gray-500">Lisensi API Monitor 15 Portal Berita</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 6.400.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">14</td>
+                                <td class="px-4 py-2.5 text-gray-800">RSS Feed Aggregator</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Aggregator Berita Enterprise</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 320.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">15</td>
+                                <td class="px-4 py-2.5 text-gray-800">Penyimpanan Arsip Dokumen</td>
+                                <td class="px-4 py-2.5 text-gray-500">Cloud Object Storage khusus arsip PDF</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 160.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">DB</td>
+                                <td class="px-4 py-2.5 text-gray-800">Database Utama SOW 2</td>
+                                <td class="px-4 py-2.5 text-gray-500">Database Teks NoSQL Khusus Artikel</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 640.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal
+                                    Infrastruktur SOW 2</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 8.320.000
+                                    / bln</td>
+                            </tr>
+
+                            <!-- SOW 3 -->
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 3: Pengelolaan dan
+                                    Validasi Data</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">16</td>
+                                <td class="px-4 py-2.5 text-gray-800">API NLP Lanjutan</td>
+                                <td class="px-4 py-2.5 text-gray-500">Pemrosesan Bahasa Alami Enterprise</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 1.600.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">17</td>
+                                <td class="px-4 py-2.5 text-gray-800">Orchestration Framework</td>
+                                <td class="px-4 py-2.5 text-gray-500">Infrastruktur Orkestrasi Ekstraksi Data Otomatis
+                                </td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Termasuk di VPS</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">DB</td>
+                                <td class="px-4 py-2.5 text-gray-800">Database Utama SOW 3</td>
+                                <td class="px-4 py-2.5 text-gray-500">Vector Database (Melacak Relasi Entitas Bisnis)
+                                </td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 1.120.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal
+                                    Infrastruktur SOW 3</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 2.720.000
+                                    / bln</td>
+                            </tr>
+
+                            <!-- SOW 4 -->
+                            <tr class="bg-white border-b border-gray-200">
+                                <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 4: Visualisasi dan
+                                    Penyajian Data</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">18</td>
+                                <td class="px-4 py-2.5 text-gray-800">Library Visualisasi Interaktif</td>
+                                <td class="px-4 py-2.5 text-gray-500">Framework Grafik Kustom Data-Driven</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">Open Source (Gratis)
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">19</td>
+                                <td class="px-4 py-2.5 text-gray-800">API Peta Tematik</td>
+                                <td class="px-4 py-2.5 text-gray-500">Lisensi Pemetaan Premium & Geospatial</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 800.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">20</td>
+                                <td class="px-4 py-2.5 text-gray-800">Data Pipeline & ETL</td>
+                                <td class="px-4 py-2.5 text-gray-500">Sistem Otomatisasi Pemindahan Aliran Data</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 160.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="px-4 py-2.5 text-center text-gray-400">DB</td>
+                                <td class="px-4 py-2.5 text-gray-800">Database Utama SOW 4</td>
+                                <td class="px-4 py-2.5 text-gray-500">Analytical Database untuk Big Data Analytics</td>
+                                <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 320.000 / bln
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal
+                                    Infrastruktur SOW 4</td>
+                                <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 1.280.000
+                                    / bln</td>
+                            </tr>
+
+                            <!-- TOTAL -->
+                            <tr class="bg-slate-800 text-white font-bold border-t-2 border-slate-900">
+                                <td colspan="3" class="px-4 py-3 text-right text-sm">TOTAL ESTIMASI OPEX PER BULAN</td>
+                                <td class="px-4 py-3 text-right whitespace-nowrap text-sm">~Rp 15.504.000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Rekonstruksi -->
+            <section class="px-8 sm:px-12 py-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">
+                    2. Penawaran Opsi Rekonstruksi Kontrak
+                </h2>
+                <p class="text-xs text-gray-600 mb-5 leading-relaxed">
+                    Mengingat tingginya estimasi biaya operasional (OPEX) di atas, nilai kontrak saat ini tidak rasional
+                    untuk dilanjutkan apabila tidak ada restrukturisasi pendanaan. Berikut 3 opsi penyesuaian yang ditawarkan:
+                </p>
+
+                <!-- Opsi A -->
+                <div class="mb-4">
+                    <h3 class="font-bold text-blue-700 text-sm mb-1">OPSI A: Skema "Laporan Statis" (Penyesuaian Ruang
+                        Lingkup)</h3>
+                    <div class="text-xs text-gray-600 leading-relaxed pl-3 border-l-2 border-blue-200">
+                        <p class="mb-2"><strong>Penghapusan Dashboard & Server:</strong> Membatalkan pembuatan portal website
+                            realtime. Scraping dilakukan manual via perangkat lokal (Server Cloud ditiadakan).</p>
+
+                        <!-- Tabel OPEX Lite Opsi A -->
+                        <div class="mb-3">
+                            <p class="font-semibold text-gray-800 mb-1">Pemetaan SOW & Estimasi OPEX Minimum:</p>
+                            <div class="overflow-hidden bg-white rounded-lg border border-gray-200">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center w-12 text-[11px]">No</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Kebutuhan Sistem</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Deskripsi Infrastruktur</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Estimasi (Rp)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 1: Pembuatan Perangkat Lunak</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100 bg-red-50/20">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">1</td>
+                                            <td class="px-4 py-2.5 text-red-800 line-through">Web Dashboard & Server</td>
+                                            <td class="px-4 py-2.5 text-red-600">Dibatalkan (Tidak ada portal interaktif & realtime)</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 2: Pengumpulan Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">2</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Scraping Manual Lokal</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Dijalankan manual mingguan via perangkat lokal</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">3</td>
+                                            <td class="px-4 py-2.5 text-gray-800">API Berita Nasional</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Lisensi API Monitor 15 Portal Berita</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 150.000 / bln</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">4</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Scraper Enterprise</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Lisensi Web Scraper Engine (Top Tier)</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 1.500.000 / bln</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 3: Validasi dan Pemrosesan Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">5</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Ekstraksi Teks Standar</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Pembersihan Data Regex & Deduping</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 4: Visualisasi dan Penyajian Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">6</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Laporan Statis</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Output PDF & File Excel Bulanan</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-gray-50 border-b border-gray-200">
+                                            <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal Opsi A</td>
+                                            <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 1.650.000 / bln</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opsi B -->
+                <div class="mb-4">
+                    <h3 class="font-bold text-emerald-700 text-sm mb-1">OPSI B: Skema "Dashboard Dasar" (Alternatif
+                        Efisien)</h3>
+                    <div class="text-xs text-gray-600 leading-relaxed pl-3 border-l-2 border-emerald-200">
+                        <p class="mb-2"><strong>Penyesuaian Teknologi:</strong> Menggunakan komputasi awan dan Cloud
+                            Spreadsheet. Server utama ditiadakan.</p>
+
+                        <!-- Tabel OPEX Lite Opsi B -->
+                        <div class="mb-3">
+                            <p class="font-semibold text-gray-800 mb-1">Pemetaan SOW & Estimasi OPEX Minimum:</p>
+                            <div class="overflow-hidden bg-white rounded-lg border border-gray-200">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-gray-50">
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-center w-12 text-[11px]">No</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Kebutuhan Sistem</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-[11px]">Deskripsi Infrastruktur</th>
+                                            <th class="px-4 py-3 text-gray-500 uppercase font-semibold text-right text-[11px]">Estimasi (Rp)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 1: Pembuatan Perangkat Lunak</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">1</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Dashboard Statis</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Dashboard Statis</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">2</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Streamlit Pro & Snowflake</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Hosting Cloud Data Warehouse (Min. Usage)</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 650.000 / bln</td>
+                                        </tr>
+
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">3</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Manajemen Subdomain</td>
+                                <td class="px-4 py-2.5 text-gray-500">Pengaturan Subdomain (dashboard.danantaramonitor.org)
+                                </td>
+                                <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 2: Pengumpulan Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">4</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Scraping Semi-Otomatis</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Disinkronisasi berkala (misal 2x seminggu), bukan realtime</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">5</td>
+                                            <td class="px-4 py-2.5 text-gray-800">API Berita Nasional</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Lisensi API Monitor 15 Portal Berita</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 150.000 / bln</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">6</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Scraper Enterprise</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Lisensi Web Scraper Engine (Top Tier)</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-800 whitespace-nowrap">~Rp 1.500.000 / bln</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 3: Validasi dan Pemrosesan Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">7</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Ekstraksi Teks Standar</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Pembersihan Data Regex & Deduping</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-gray-200">
+                                            <td colspan="4" class="px-4 py-3 font-bold text-gray-900">SOW 4: Visualisasi dan Penyajian Data</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="px-4 py-2.5 text-center text-gray-400">8</td>
+                                            <td class="px-4 py-2.5 text-gray-800">Grafik Bawaan MVP</td>
+                                            <td class="px-4 py-2.5 text-gray-500">Mengandalkan Native Visuals bawaan sistem</td>
+                                            <td class="px-4 py-2.5 text-right text-gray-500 whitespace-nowrap">Rp 0</td>
+                                        </tr>
+                                        <tr class="bg-gray-50 border-b border-gray-200">
+                                            <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700">Subtotal Opsi B</td>
+                                            <td class="px-4 py-3 text-right font-bold text-gray-900 whitespace-nowrap">~Rp 2.300.000 / bln</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <p class="font-semibold text-gray-800 mt-2">Syarat Finansial:</p>
+                        <ul class="list-disc pl-4 space-y-1 mt-1 text-gray-600">
+                            <li><strong>Penyesuaian Honor:</strong> Rp 5.000.000 per bulan bersih (disamakan dengan standar <i>rate</i> riset ECC).</li>
+                            <li><strong>Skema Pembayaran:</strong> Pencairan dilakukan setiap bulan.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Opsi C -->
+                                <div class="mb-4">
+                    <h3 class="font-bold text-red-700 text-sm mb-1">OPSI C: Skema "Arsitektur Penuh" (Sesuai SOW Awal)
+                    </h3>
+                    <div class="text-xs text-gray-600 leading-relaxed pl-3 border-l-2 border-red-200">
+                        <p class="mb-2">
+                            <strong>Pisah Billing Infrastruktur:</strong> Manajemen mendaftarkan Kartu Kredit Korporat
+                            untuk menanggung biaya OPEX (~Rp 15,5 Juta/bln) secara terpisah langsung ke vendor.
+                        </p>
+                        <p class="font-semibold text-gray-800 mt-2">Syarat Finansial:</p>
+                        <ul class="list-disc pl-4 space-y-1 mt-1 text-gray-600">
+                            <li><strong>Penyesuaian Honor:</strong> Rp 8.000.000 per bulan bersih.</li>
+                            <li><strong>Skema Pembayaran:</strong> Pencairan dilakukan setiap bulan.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+</body>
+
+</html>
