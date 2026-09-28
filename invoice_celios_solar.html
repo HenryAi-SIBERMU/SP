@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice_Pengadaan_Google_Solar_API_Celios8_2026-09-28</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @page {
+            size: A4;
+            margin: 15mm 0 15mm 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-shadow-none {
+                box-shadow: none !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-0 sm:p-8 text-gray-800 print:p-0">
+
+    <!-- Tombol Cetak / PDF Bar (Hanya tampil di layar) -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6 no-print max-w-4xl mx-auto bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+        <div class="text-xs text-gray-600 flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>Nama file saat disimpan:</span>
+            <code class="font-mono font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Invoice_Google_Solar_API_Celios8.pdf</code>
+        </div>
+        <button onclick="window.print()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            Cetak / Simpan ke PDF
+        </button>
+    </div>
+
+    <!-- Kontainer Utama Invoice -->
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden print-shadow-none print:rounded-none">
+
+        <!-- === BAGIAN HEADER === -->
+        <header class="p-8 sm:p-12 border-b border-gray-200 bg-white">
+            <div class="flex justify-between items-start">
+                <div>
+                    <!-- Badge Judul -->
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 uppercase px-2.5 py-1 rounded tracking-wider">INVOICE PENGAJUAN DANA</span>
+                        <span class="text-xs font-mono text-gray-500 border border-gray-200 bg-gray-50 px-2 py-1 rounded">INV/CELIOS8/SOLAR/2026/001</span>
+                    </div>
+
+                    <!-- Judul Tagihan -->
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-2 leading-tight">
+                        Pengadaan Alokasi Kuota Google Solar API (Jabodetabek)
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1">Riset Potensi Energi Surya: "Teduhi Ruang Kota Kami" — 13 Kategori Infrastruktur (2.260 Titik)</p>
+                </div>
+
+                <div class="text-right">
+                    <span class="inline-block px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold rounded-full">
+                        STATUS: MENUNGGU PEMBAYARAN
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- === BAGIAN KONTEN UTAMA === -->
+        <main>
+
+            <!-- 1. Informasi Tagihan -->
+            <section class="p-8 sm:p-12 pb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                    <!-- Informasi Penagih -->
+                    <div class="space-y-1.5 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="font-bold text-gray-700 text-xs uppercase tracking-wide mb-2">Diterbitkan Oleh (Pengelola Teknis):</h3>
+                        <p class="font-bold text-gray-900 text-base">Tim Riset & Data Spasial Celios 8</p>
+                        <p class="text-gray-600">Proyek Analisis Potensi PLTS Atap Jabodetabek</p>
+                        <p class="text-gray-600">Email: henry@celios.co.id / admin@celios.co.id</p>
+                        <p class="text-gray-600">PIC Teknis: Henry Ardian Irianta</p>
+                    </div>
+
+                    <!-- Informasi Pembayar / Klien -->
+                    <div class="space-y-1.5 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="font-bold text-gray-700 text-xs uppercase tracking-wide mb-2">Ditujukan Kepada:</h3>
+                        <p class="font-bold text-gray-900 text-base">CELIOS (Center of Economic and Law Studies)</p>
+                        <p class="text-gray-600">Divisi Keuangan & Operasional Riset</p>
+                        <p class="text-gray-600">Jakarta Selatan, DKI Jakarta</p>
+                        <p class="text-gray-600">Program: Riset Transisi Energi & EBT Perkotaan</p>
+                    </div>
+                </div>
+
+                <!-- Bar Tanggal -->
+                <div class="mt-6 p-4 bg-blue-50/70 border border-blue-100 rounded-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <span class="text-gray-500 block mb-0.5">Tanggal Diterbitkan:</span>
+                            <strong class="text-gray-900 text-sm">28 September 2026</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 block mb-0.5">Batas Waktu Pembayaran (Jatuh Tempo):</span>
+                            <strong class="text-red-600 text-sm">05 Oktober 2026</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 block mb-0.5">Metode Billing GCP:</span>
+                            <strong class="text-blue-900 text-sm">Pay-As-You-Go Pre-Funded</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Rincian Tagihan Layanan API -->
+            <section class="px-8 sm:px-12 py-4">
+                <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center justify-between">
+                    <span>2. Rincian Alokasi Biaya API Google Cloud</span>
+                    <span class="text-xs font-normal text-gray-500">Ref: RAB-SOL-JBD13K</span>
+                </h2>
+
+                <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-200 text-gray-700">
+                                <th class="p-3 text-center w-10 font-semibold">No</th>
+                                <th class="p-3 font-semibold">Deskripsi Layanan & Spesifikasi</th>
+                                <th class="p-3 text-center font-semibold">Kuantitas</th>
+                                <th class="p-3 text-right font-semibold">Tarif Satuan</th>
+                                <th class="p-3 text-right font-semibold">Subtotal (USD)</th>
+                                <th class="p-3 text-right font-semibold">Total (IDR)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <!-- Item 1 -->
+                            <tr class="hover:bg-gray-50/80">
+                                <td class="p-3 text-center text-gray-500 font-medium">1</td>
+                                <td class="p-3">
+                                    <div class="font-bold text-gray-900">Google Solar API — Building Insights</div>
+                                    <p class="text-gray-500 mt-0.5 leading-relaxed">
+                                        Pengambilan 40+ atribut solar roof (luas atap, kapasitas kWp, insolasi tahunan, pitch/azimuth segmen) untuk 13 kategori infrastruktur publik Jabodetabek.
+                                    </p>
+                                </td>
+                                <td class="p-3 text-center text-gray-700 font-medium">2.260 titik</td>
+                                <td class="p-3 text-right text-gray-700 font-mono">$0.005</td>
+                                <td class="p-3 text-right text-gray-900 font-mono font-medium">$11.30</td>
+                                <td class="p-3 text-right text-gray-900 font-medium whitespace-nowrap">Rp 178.540</td>
+                            </tr>
+
+                            <!-- Item 2 -->
+                            <tr class="hover:bg-gray-50/80">
+                                <td class="p-3 text-center text-gray-500 font-medium">2</td>
+                                <td class="p-3">
+                                    <div class="font-bold text-gray-900">Google Solar API — Data Layers (Raster GeoTIFF)</div>
+                                    <p class="text-gray-500 mt-0.5 leading-relaxed">
+                                        Ekstraksi 4 layer geospasial resolusi tinggi (DSM 3D elevasi, foto aerial RGB atap, Masking atap, & Peta Heatmap Fluks Radiasi Tahunan). Total: 9.040 raster files.
+                                    </p>
+                                </td>
+                                <td class="p-3 text-center text-gray-700 font-medium">9.040 layers</td>
+                                <td class="p-3 text-right text-gray-700 font-mono">$0.025</td>
+                                <td class="p-3 text-right text-gray-900 font-mono font-medium">$226.00</td>
+                                <td class="p-3 text-right text-gray-900 font-medium whitespace-nowrap">Rp 3.570.800</td>
+                            </tr>
+
+                            <!-- Item 3 -->
+                            <tr class="hover:bg-gray-50/80">
+                                <td class="p-3 text-center text-gray-500 font-medium">3</td>
+                                <td class="p-3">
+                                    <div class="font-bold text-gray-900">Safety Buffer 20% (Retry & Anomali Geocoding)</div>
+                                    <p class="text-gray-500 mt-0.5 leading-relaxed">
+                                        Cadangan kuota resmi jika terjadi kegagalan jaringan, timeout request, pemanggilan ulang (requery), atau titik dengan kualitas citra berawan/rendah.
+                                    </p>
+                                </td>
+                                <td class="p-3 text-center text-gray-700 font-medium">20%</td>
+                                <td class="p-3 text-right text-gray-700 font-mono">-</td>
+                                <td class="p-3 text-right text-gray-900 font-mono font-medium">$47.46</td>
+                                <td class="p-3 text-right text-gray-900 font-medium whitespace-nowrap">Rp 749.868</td>
+                            </tr>
+
+                            <!-- Item 4 -->
+                            <tr class="hover:bg-gray-50/80">
+                                <td class="p-3 text-center text-gray-500 font-medium">4</td>
+                                <td class="p-3">
+                                    <div class="font-bold text-gray-900">PPN Transaksi Digital Luar Negeri (PMSE 11%)</div>
+                                    <p class="text-gray-500 mt-0.5 leading-relaxed">
+                                        Pajak resmi transaksi digital Google Asia Pacific Pte Ltd sesuai regulasi perpajakan Indonesia.
+                                    </p>
+                                </td>
+                                <td class="p-3 text-center text-gray-700 font-medium">11%</td>
+                                <td class="p-3 text-right text-gray-700 font-mono">-</td>
+                                <td class="p-3 text-right text-gray-900 font-mono font-medium">$31.32</td>
+                                <td class="p-3 text-right text-gray-900 font-medium whitespace-nowrap">Rp 494.856</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-[11px] text-gray-500 mt-2">*Perhitungan kurs acuan resmi: $1 USD = Rp 15.800</p>
+            </section>
+
+            <!-- 3. Rekapitulasi Pembayaran & Rekening Transfer -->
+            <section class="px-8 sm:px-12 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    
+                    <!-- Informasi Rekening Transfer -->
+                    <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900">
+                        <div class="font-bold text-sm text-emerald-950 mb-2 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
+                                <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            Instruksi Penyaluran Dana Alokasi:
+                        </div>
+                        <p class="mb-3 text-emerald-800 leading-relaxed">
+                            Dana operasional API akan didepositkan langsung ke kartu operasional terverifikasi di Google Cloud Billing untuk aktivasi kuota Solar API:
+                        </p>
+                        <div class="space-y-1 bg-white p-3 rounded border border-emerald-200 font-mono text-xs">
+                            <p><span class="text-gray-500">Bank:</span> <strong>Bank Syariah Indonesia (BSI)</strong></p>
+                            <p><span class="text-gray-500">No. Rekening:</span> <strong class="text-sm text-blue-700">7134872246</strong></p>
+                            <p><span class="text-gray-500">Atas Nama:</span> <strong>Henry Ardian Irianta</strong></p>
+                        </div>
+                        <p class="mt-3 text-[11px] text-emerald-700">
+                            *Setelah dana disalurkan, receipt & invoice resmi dari Google Cloud Platform akan dilampirkan sebagai laporan pertanggungjawaban (LPJ).
+                        </p>
+                    </div>
+
+                    <!-- Ringkasan Total Tagihan -->
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between py-2 border-b border-gray-200">
+                            <span class="text-gray-600">Subtotal Pemakaian API (2.260 Titik)</span>
+                            <span class="font-medium text-gray-900">Rp 3.749.340 ($237.30)</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-200">
+                            <span class="text-gray-600">Buffer Keamanan Requery & Error (20%)</span>
+                            <span class="font-medium text-gray-900">Rp 749.868 ($47.46)</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-200">
+                            <span class="text-gray-600">PPN Transaksi Elektronik Luar Negeri (11%)</span>
+                            <span class="font-medium text-gray-900">Rp 494.856 ($31.32)</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-200 text-gray-500">
+                            <span>Penyesuaian Pembulatan Pagu Anggaran</span>
+                            <span>+ Rp 5.936</span>
+                        </div>
+                        <div class="flex justify-between items-center py-3 px-4 bg-slate-900 text-white rounded-lg mt-3">
+                            <div>
+                                <span class="text-xs uppercase tracking-wider text-slate-300 block">TOTAL TAGIHAN DIAJUKAN</span>
+                                <span class="text-xs text-slate-400 font-mono">Pagu Anggaran Disetujui</span>
+                            </div>
+                            <span class="text-xl font-bold text-emerald-400 font-mono">Rp 5.000.000</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Ketentuan & Legalitas -->
+            <section class="px-8 sm:px-12 py-6 border-t border-gray-100 bg-gray-50 text-xs text-gray-600 leading-relaxed">
+                <h3 class="font-bold text-gray-800 mb-2">Catatan & Ketentuan Teknis:</h3>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Transparansi Bukti:</strong> Seluruh panggilan API terlacak secara live pada dashboard Google Cloud Console dengan pembatasan kuota ketat (Hard Cap Alert) Rp 5.000.000.</li>
+                    <li><strong>Output Riset:</strong> Output data meliputi 90.400+ baris atribut analisis surya dan 9.040 raster GeoTIFF yang menjadi aset riset Celios.</li>
+                    <li><strong>Verifikasi Tarif Resmi:</strong> Tarif dapat divalidasi langsung melalui portal dokumentasi resmi Google: <a href="https://developers.google.com/maps/documentation/solar/pricing" target="_blank" class="text-blue-600 underline">developers.google.com/maps/documentation/solar/pricing</a>.</li>
+                </ul>
+            </section>
+
+        </main>
+
+        <!-- === FOOTER === -->
+        <footer class="p-8 sm:p-12 border-t border-gray-200 bg-white">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs text-gray-500">
+                <div>
+                    <p class="font-bold text-gray-900 text-sm">Tim Riset Energi & Spasial — Proyek Celios 8</p>
+                    <p>Center of Economic and Law Studies (CELIOS)</p>
+                </div>
+                <div class="text-right sm:text-right">
+                    <p class="font-semibold text-gray-700">Disiapkan oleh:</p>
+                    <p class="font-bold text-gray-900 text-sm mt-0.5">Henry Ardian Irianta</p>
+                    <p class="text-[11px] text-gray-400">Data Engineer & Spatial Analyst</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
