@@ -96,59 +96,124 @@ flowchart LR
 | **4** | **Rumah Sakit** | RSUD Tarakan Jakarta | `-6.17155, 106.81025` | `data/raw/osm/hospitals_jakarta.gpkg` | Rumah Sakit Umum Daerah rujukan vertikal dengan dak beton luas. |
 | **5** | **Gedung Parkir** | Parkir Gedung Lippo Mall Puri | `-6.19028, 106.73937` | `data/raw/osm/parking_jakarta.gpkg` | Multilevel parking deck komersial representatif di Jakarta Barat. |
 
-### Rincian SKU yang Ditarik untuk Setiap Titik:
-1. **Building Insights Endpoint ($0.005):** Mengambil ringkasan potensi surya, luas atap maksimal, jumlah panel, jam sinar matahari tahunan, dan faktor offset karbon.
-2. **Data Layers Endpoint ($0.100):** Mengunduh 4 layer citra satelit GeoTIFF resolusi 0.25 m/pixel:
-   * **DSM (Digital Surface Model):** Elevasi dan ketinggian struktur atap.
-   * **RGB:** Citra satelit atap asli (visual resolusi tinggi).
-   * **Mask:** Poligon segmentasi atap yang dapat dipasang panel surya.
-   * **Annual Flux:** Heatmap iradiasi surya tahunan ($kWh/m^2/tahun$) pada setiap pixel atap.
+### Rincian SKU yang Ditarik untuk Setiap Titik (Sesuai Kesepakatan RAB):
+Sesuai rancangan output RAB yang telah disepakati:
+1. **Building Insights Endpoint ($0.005/titik):**
+   * Mengambil metadata lengkap struktur atap, luas atap maksimal ($m^2$), jumlah panel maksimal, estimasi jam sinar matahari tahunan, segmen atap (*roof segments*), dan faktor offset karbon resmi.
+2. **Data Layers Endpoint ($0.100/titik):**
+   * Mengunduh 4 Base Layer Raster GeoTIFF (resolusi 0.25 m/pixel):
+     * **DSM (Digital Surface Model):** Peta ketinggian 3D untuk analisis bayangan, kemiringan, dan elevasi atap.
+     * **RGB Imagery:** Foto satelit aerial resolusi tinggi untuk visualisasi atap riil dan validasi manual.
+     * **Mask:** Binary mask atap vs non-atap untuk ekstraksi boundary/polygon atap otomatis.
+     * **Annual Flux:** Solar irradiance tahunan ($kWh/kW/tahun$) berupa heatmap potensi iradiasi surya per pixel.
+   * **SKU yang Ditiadakan (Efisiensi Biaya):**
+     * ❌ **Monthly Flux:** Ditiadakan/dihapus untuk efisiensi biaya (karena Annual Flux sudah mencukupi untuk pemodelan tahunan).
+     * ❌ **Hourly Shade:** Tidak diambil karena biaya di luar batas anggaran pilot.
 
-> **Total Biaya 5 Titik:** $5 \times (\$0.005 + \$0.100) = \$0.525$ (**~Rp 8.400**). Menghasilkan 5 file JSON cache dan 20 file raster GeoTIFF.
+> **Total Biaya 5 Titik Pilot:** $5 \times (\$0.005 + \$0.100) = \$0.525$ (**~Rp 8.400**).  
+> Menghasilkan 5 file JSON Building Insights dan 20 file raster GeoTIFF (4 layer × 5 lokasi).
 
 ---
 
-## 4. STRUKTUR FOLDER & BATASAN DATA (DATA BOUNDARY RULES)
+## 4. ARSITEKTUR PIPELINE ETL & STRUKTUR FOLDER TERORGANISASI
 
-Mematuhi aturan `strict_data_folder_boundary.md`, arsitektur folder diatur secara ketat dengan pemisahan antara data mentah, data olahan spasial, dan hasil kalkulasi:
+Sesuai arahan dan ketaatan pada aturan `strict_data_folder_boundary.md`, pipeline dirancang dengan pemisahan tegas antara tahap **Extract (Raw Data per SKU & Kategori)**, **Transform (ETL Processor)**, **Load (Processed Data)**, dan **Present (Dashboard Streamlit)**.
+
+```mermaid
+flowchart TD
+    subgraph Extract["1. EXTRACT (Penyimpanan RAW per SKU & Kategori)"]
+        API[Google Solar API] -->|Building Insights| RawBI["data/raw/solar/building_insights/{kategori}/{id}.json"]
+        API -->|Data Layers DSM| RawDSM["data/raw/solar/data_layers/dsm/{kategori}/{id}_dsm.tif"]
+        API -->|Data Layers RGB| RawRGB["data/raw/solar/data_layers/rgb/{kategori}/{id}_rgb.tif"]
+        API -->|Data Layers Mask| RawMask["data/raw/solar/data_layers/mask/{kategori}/{id}_mask.tif"]
+        API -->|Data Layers Flux| RawFlux["data/raw/solar/data_layers/annual_flux/{kategori}/{id}_flux.tif"]
+    end
+
+    subgraph Transform["2. TRANSFORM (ETL Processor)"]
+        RawBI --> ETL["tools/solarapi/process_pow_etl.py"]
+        RawDSM --> ETL
+        RawRGB --> ETL
+        RawMask --> ETL
+        RawFlux --> ETL
+        Audit["Audit Drift Spasial & Formula Energi"] --> ETL
+    end
+
+    subgraph Load["3. LOAD (Penyimpanan Data Terproses)"]
+        ETL --> GISOut["data/processed/gis/pow_solar_5_titik.geojson"]
+        ETL --> CalcCSV["data/processed/calculations/pow_solar_5_titik_summary.csv"]
+        ETL --> CalcParquet["data/processed/calculations/pow_solar_5_titik_summary.parquet"]
+    end
+
+    subgraph Present["4. PRESENT (Streamlit Dashboard)"]
+        GISOut --> Dashboard["pages/1_Pemetaan_Potensi.py"]
+        CalcCSV --> Dashboard
+    end
+```
+
+### 4.1. Struktur Hierarki Folder `data/raw/` per Kategori & SKU
+Penyimpanan file mentah hasil penarikan API ditata secara modular berdasarkan SKU dan kategori aset:
 
 ```
 c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
 ├── data/
-│   ├── raw/                               # [RAW ONLY - TIDAK BOLEH DIUBAH/DIMANIPULASI SECARA LANGSUNG]
-│   │   ├── mrt_lrt/                       # Master koordinat MRT & LRT
-│   │   ├── krl/                           # Master koordinat KRL Commuter
-│   │   ├── osm/                           # Master poligon fasilitas publik OSM
-│   │   ├── solar/
-│   │   │   └── pow_cache/                 # Cache mentah respons JSON Google Solar API
-│   │   │       ├── mrt_cipete_raya_insights.json
-│   │   │       ├── krl_manggarai_insights.json
-│   │   │       ├── lrt_dukuh_atas_insights.json
-│   │   │       ├── rs_tarakan_insights.json
-│   │   │       └── parking_lippo_puri_insights.json
-│   │   └── satellite/
-│   │       └── geotiff_pow_5_titik/       # 20 File Raster GeoTIFF Asli dari Google Solar API
-│   │           ├── mrt_cipete_raya_dsm.tif
-│   │           ├── mrt_cipete_raya_rgb.tif
-│   │           ├── mrt_cipete_raya_mask.tif
-│   │           ├── mrt_cipete_raya_flux.tif
-│   │           └── [16 file lainnya untuk 4 titik lainnya...]
+│   ├── raw/                                     # [RAW ONLY - FILE ASLI DARI API & SUMBER SPASIAL]
+│   │   ├── mrt_lrt/                             # File sumber koordinat master MRT & LRT
+│   │   ├── krl/                                 # File sumber koordinat master KRL Commuter
+│   │   ├── osm/                                 # File sumber poligon fasilitas publik OSM
+│   │   └── solar/                               # [DATA DARI GOOGLE SOLAR API]
+│   │       ├── building_insights/               # SKU: Building Insights (JSON)
+│   │       │   ├── mrt/                         # misal: mrt_cipete_raya_insights.json
+│   │       │   ├── krl/                         # misal: krl_manggarai_insights.json
+│   │       │   ├── lrt/                         # misal: lrt_dukuh_atas_insights.json
+│   │       │   ├── hospital/                    # misal: rs_tarakan_insights.json
+│   │       │   └── parking/                     # misal: parking_lippo_puri_insights.json
+│   │       │
+│   │       └── data_layers/                     # SKU: Data Layers (4 Base Layer GeoTIFF)
+│   │           ├── dsm/                         # Peta Ketinggian 3D & Elevasi Atap
+│   │           │   ├── mrt/
+│   │           │   ├── krl/
+│   │           │   ├── lrt/
+│   │           │   ├── hospital/
+│   │           │   └── parking/
+│   │           ├── rgb/                         # Citra Satelit Aerial Resolusi Tinggi
+│   │           │   ├── mrt/
+│   │           │   ├── krl/
+│   │           │   ├── lrt/
+│   │           │   ├── hospital/
+│   │           │   └── parking/
+│   │           ├── mask/                        # Binary Mask Atap vs Non-Atap
+│   │           │   ├── mrt/
+│   │           │   ├── krl/
+│   │           │   ├── lrt/
+│   │           │   ├── hospital/
+│   │           │   └── parking/
+│   │           └── annual_flux/                 # Heatmap Radiasi Surya Tahunan
+│   │               ├── mrt/
+│   │               ├── krl/
+│   │               ├── lrt/
+│   │               ├── hospital/
+│   │               └── parking/
 │   │
-│   └── processed/                         # [PROCESSED - HASIL TRANSFORMASI DAN JOIN]
-│       ├── gis/                           # Layer spasial siap konsumsi GIS / Dashboard
-│       │   ├── pow_solar_5_titik.geojson  # GeoJSON titik hasil olah 5 pilot POW
-│       │   └── pow_solar_110.geojson      # GeoJSON gabungan ekspansi Tahap 2
-│       └── calculations/                  # Data olahan tabel & metrik tekno-ekonomi
-│           ├── pow_solar_5_titik_summary.csv
+│   └── processed/                               # [PROCESSED ONLY - HASIL ETL SIAP KONSUMSI DASHBOARD]
+│       ├── gis/                                 # Layer spasial bersih untuk peta web
+│       │   ├── pow_solar_5_titik.geojson        # GeoJSON lengkap 5 titik pilot POW
+│       │   └── pow_solar_110.geojson            # GeoJSON ekspansi Tahap 2
+│       └── calculations/                        # Tabel metrik tekno-ekonomi terhitung
+│           ├── pow_solar_5_titik_summary.csv    # Ringkasan tabular analitik
 │           └── pow_solar_5_titik_summary.parquet
 │
 ├── pages/
-│   └── 1_Pemetaan_Potensi.py              # Visualisasi langsung di Streamlit Dashboard
+│   └── 1_Pemetaan_Potensi.py                    # HANYA MEMBACA data/processed/ (TIDAK menyentuh raw)
 └── tools/
     └── solarapi/
-        ├── .env                           # API Key GCP
-        └── fetch_pow_5_points.py          # Skrip runner penarikan data 5 titik pilot
+        ├── .env                                 # API Key GCP
+        ├── fetch_pow_5_points.py                # Skrip Extract: Penarikan API ke data/raw/
+        └── process_pow_etl.py                   # Skrip Transform: Pengolahan ke data/processed/
 ```
+
+### 4.2. Prinsip Pemisahan Dashboard (Zero Direct Raw Access)
+* **Kerapian & Kinerja:** Halaman Streamlit [`pages/1_Pemetaan_Potensi.py`](file:///C:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/pages/1_Pemetaan_Potensi.py) **TIDAK PERNAH membaca berkas mentah JSON/API langsung pada saat runtime**.
+* **Keamanan & Integritas:** Dashboard hanya mengonsumsi dataset yang telah melalui proses ETL validasi spasial, audit drift, dan kalkulasi energi di `data/processed/gis/` dan `data/processed/calculations/`. Hal ini memastikan visualisasi di dashboard 100% konsisten, cepat dibuka, dan bebas dari error parsing file mentah.
 
 ---
 
@@ -195,9 +260,8 @@ Deliverable POW Tahap 1 ini tidak berhenti pada file CSV/JSON di direktori lokal
 flowchart TD
     ProcessedGIS["data/processed/gis/pow_solar_5_titik.geojson"] --> Dashboard["pages/1_Pemetaan_Potensi.py"]
     ProcessedCalc["data/processed/calculations/pow_solar_5_titik_summary.csv"] --> Dashboard
-    GeoTIFF["data/raw/satellite/geotiff_pow_5_titik/*.tif"] --> Dashboard
     
-    subgraph UIComponents["Tampilan Dashboard Streamlit"]
+    subgraph UIComponents["Tampilan Dashboard Streamlit (100% dari data/processed/)"]
         KPI["1. KPI Summary Banner (Kapasitas kWp, Luas Atap, Reduksi CO2)"]
         Map["2. Interactive Map (Folium / PyDeck: Pin 5 Kategori + Popup)"]
         AuditTable["3. Tabel Audit Drift Spasial (Validasi Presisi Atap)"]
@@ -241,8 +305,11 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
    * Seluruh koordinat dibaca secara dinamis dengan parsing file `data/raw/` yang valid.
 4. **`strict_data_folder_boundary.md`**:
    * File `data/raw/` tidak boleh disentuh atau ditimpa oleh skrip pemrosesan.
-   * Hasil unduhan API disimpan ke `data/raw/solar/pow_cache/` dan `data/raw/satellite/geotiff_pow_5_titik/`.
+   * Hasil unduhan API disimpan mentah ke:
+     * `data/raw/solar/building_insights/{kategori}/`
+     * `data/raw/solar/data_layers/{sku}/{kategori}/` (untuk dsm, rgb, mask, annual_flux)
    * Hasil transformasi hanya disimpan di `data/processed/gis/` dan `data/processed/calculations/`.
+   * Dashboard HANYA membaca data dari `data/processed/`.
 5. **`statistical_auditor_role.md`**:
    * Rumus konversi panel ke kWp (asumsi $400\ Wp/panel$), kapasitas faktor radiasi matahari ($PR = 0.80$), dan faktor emisi ($808.999\ kg/MWh$) diverifikasi secara transparan dengan kaidah teknik elektro surya.
 
@@ -252,10 +319,10 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
 
 - [x] Laporan status billing GCP dan mitigasi finansial disetujui.
 - [x] Rencana kerja POW Tahap 1 (5 Titik Pilot Full SKU) didokumentasikan lengkap di `docs/PLAN-PROOF-OF-WORK-SOLAR-API-JABODETABEK.md`.
-- [ ] Buat skrip pembaca file mentah dan penarik API: `tools/solarapi/fetch_pow_5_points.py` (Kepatuhan `no_hardcoded_data.md`).
+- [ ] Buat skrip ekstraktor penarik API: `tools/solarapi/fetch_pow_5_points.py` (Menyimpan RAW ke subfolder SKU & kategori, kepatuhan `no_hardcoded_data.md`).
 - [ ] Eksekusi penarikan 5 titik Building Insights + 20 file raster GeoTIFF (Biaya ~$0.525 / ~Rp 8.400).
-- [ ] Validasi integritas spasial dan hitung spatial drift (Haversine formula).
-- [ ] Simpan keluaran ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
-- [ ] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` untuk visualisasi peta, metrik, dan citra satelit.
+- [ ] Buat skrip transformer: `tools/solarapi/process_pow_etl.py` (Audit drift spasial, kalkulasi metrik energi & emisi).
+- [ ] Simpan keluaran terproses ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
+- [ ] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta, metrik, tabel audit drift, dan citra satelit).
 - [ ] Lakukan pengujian lokal Streamlit (`streamlit run Dashboard.py`) dan pastikan visualisasi berjalan lancar.
 - [ ] Auto-commit seluruh kode dan artefak ke Git repository.
