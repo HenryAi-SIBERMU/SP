@@ -1,7 +1,12 @@
 import os
+import sys
 import requests
 import json
 from dotenv import load_dotenv
+
+# Reconfigure stdout for UTF-8 on Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Load konfigurasi dari file .env
 load_dotenv()
