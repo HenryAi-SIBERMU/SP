@@ -4,10 +4,12 @@ Pemetaan Potensi — CELIOS Solar Dashboard
 Halaman visualisasi hasil Proof of Work (POW) Tahap 1 Google Solar API
 untuk 5 titik pilot multi-kategori (MRT, KRL, LRT, Rumah Sakit, Gedung Parkir).
 
-Kepatuhan Aturan:
-- strict_data_folder_boundary.md: 100% membaca data dari data/processed/
-- no_hardcoded_data.md: Data ditarik dari pow_solar_5_titik_summary.csv & pow_solar_5_titik.geojson
-- anti_yesman_spatial_methodology_integrity.md: Panel audit spatial drift interaktif
+Menampilkan seluruh SKU Data Layers & Building Insights:
+1. Citra Satelit Aerial RGB Asli (0.25m/px)
+2. Layout Jumlah & Posisi Panel Surya di Atap (Show panels on roof)
+3. Annual Solar Flux Heatmap (Radiasi Surya Tahunan kWh/kW/year)
+4. Digital Surface Model (DSM - Elevasi & Ketinggian 3D)
+5. Roof Mask (Binary Mask Segmentasi Atap Layak PLTS)
 """
 
 import os
@@ -52,7 +54,7 @@ df_summary, gdf_points = load_processed_data()
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
-st.markdown('<div class="page-subtitle">Verifikasi Empiris Google Solar API (Proof of Work 5 Titik Multi-Kategori)</div>', unsafe_allow_html=True)
+st.markdown('<div class="page-subtitle">Verifikasi Empiris Google Solar API (Proof of Work 5 Titik Multi-Kategori — Full SKU Data Layers)</div>', unsafe_allow_html=True)
 
 if df_summary is None or df_summary.empty:
     st.error("Dataset hasil olahan `data/processed/calculations/pow_solar_5_titik_summary.csv` tidak ditemukan. Jalankan pipeline ETL terlebih dahulu.")
@@ -61,9 +63,9 @@ if df_summary is None or df_summary.empty:
 # ─── NOTE BOX & STATUS PILOT ──────────────────────────────────────────────────
 st.markdown("""
 <div class="note-box">
-<strong>Laporan Validasi Empiris Google Solar API (Tahap 1 Pilot)</strong><br>
-Data berikut merupakan hasil ekstraksi citra satelit Google resolusi tinggi (<strong>0.25 m/pixel — BASE Quality</strong>) untuk 5 kategori infrastruktur perkotaan. 
-Seluruh koordinat telah lolos uji audit <em>spatial drift</em> (&lt; 30 meter dari tengah kanopi atap riil) dan membuktikan kelayakan teknis estimasi luas atap tanpa pemborosan anggaran.
+<strong>Laporan Validasi Empiris Google Solar API (Tahap 1 Pilot — Full SKU Layers)</strong><br>
+Data berikut memuat hasil ekstraksi citra satelit Google resolusi tinggi (<strong>0.25 m/pixel — BASE Quality</strong>) untuk 5 kategori infrastruktur perkotaan. 
+Dilengkapi seluruh layer turunan SKU: <strong>Foto Satelit RGB</strong>, <strong>Layout Sebaran Panel Surya di Atap (Show Panels on Roof)</strong>, <strong>Annual Solar Flux Heatmap</strong>, <strong>Digital Surface Model (DSM 3D)</strong>, dan <strong>Roof Mask Segmentasi</strong>.
 </div>
 """, unsafe_allow_html=True)
 
@@ -121,7 +123,6 @@ st.markdown('<div class="section-header">Peta Interaktif Sebaran & Verifikasi Sp
 
 col_map, col_list = st.columns([1.6, 1.0])
 
-# Category color scheme
 CAT_COLORS = {
     "mrt": "#E53935",      # Merah MRT
     "krl": "#1E88E5",      # Biru KRL
@@ -131,56 +132,70 @@ CAT_COLORS = {
 }
 
 with col_map:
-    # Build Folium Map
     center_lat = df_summary["google_center_lat"].mean()
     center_lon = df_summary["google_center_lon"].mean()
     
+    # Folium map using clean Esri Satellite + OSM basemaps (NO Carto API KEY watermark)
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=11,
-        tiles="CartoDB dark_matter"
+        tiles=None
     )
+
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Esri World Imagery",
+        name="Citra Satelit (Esri World Imagery)",
+        overlay=False,
+        control=True
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles="OpenStreetMap",
+        name="Peta Jalan (OpenStreetMap)",
+        overlay=False,
+        control=True
+    ).add_to(m)
 
     for _, row in df_summary.iterrows():
         color = CAT_COLORS.get(row["category"], "#66BB6A")
         
         popup_html = f"""
-        <div style="font-family: 'Inter', sans-serif; min-width: 200px; color: #111;">
+        <div style="font-family: 'Inter', sans-serif; min-width: 220px; color: #111;">
             <b style="font-size: 13px; color: {color};">[{row['category_display']}] {row['asset_name']}</b><br>
             <hr style="margin: 4px 0;">
-            <b>Kapasitas:</b> {row['installed_capacity_kwp']:,.1f} kWp ({row['max_panels_count']} panel)<br>
+            <b>Kapasitas PLTS:</b> {row['installed_capacity_kwp']:,.1f} kWp ({row['max_panels_count']:,} panel)<br>
             <b>Luas Atap:</b> {row['max_roof_area_m2']:,.1f} m²<br>
-            <b>Produksi:</b> {row['annual_generation_mwh']:,.1f} MWh/thn<br>
+            <b>Produksi Listrik:</b> {row['annual_generation_mwh']:,.1f} MWh/thn<br>
             <b>Reduksi CO₂:</b> {row['ghg_reduction_tons_co2']:,.1f} Ton/thn<br>
             <b>Spatial Drift:</b> {row['spatial_drift_meters']} m ({row['drift_status']})<br>
             <b>Citra Google:</b> {row['imagery_date']}
         </div>
         """
 
-        # Point Marker
         folium.CircleMarker(
             location=[row["google_center_lat"], row["google_center_lon"]],
-            radius=8,
-            color=color,
+            radius=9,
+            color="#FFFFFF",
             weight=2,
             fill=True,
             fill_color=color,
-            fill_opacity=0.85,
-            popup=folium.Popup(popup_html, max_width=300),
-            tooltip=f"{row['asset_name']} ({row['installed_capacity_kwp']} kWp)"
+            fill_opacity=0.95,
+            popup=folium.Popup(popup_html, max_width=320),
+            tooltip=f"[{row['category_display']}] {row['asset_name']} ({row['installed_capacity_kwp']} kWp)"
         ).add_to(m)
 
-        # Buffer Circle (60m Google Solar radius)
         folium.Circle(
             location=[row["google_center_lat"], row["google_center_lon"]],
             radius=60,
             color=color,
-            weight=1,
+            weight=1.5,
             fill=True,
-            fill_opacity=0.15
+            fill_opacity=0.20
         ).add_to(m)
 
-    st_folium(m, width="100%", height=480)
+    folium.LayerControl(position="topright").add_to(m)
+    st_folium(m, width="100%", height=490)
 
 with col_list:
     st.markdown("#### Audit Integritas Spasial")
@@ -214,9 +229,9 @@ with col_list:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ─── DEEP-DIVE SHOWCASE PER BANGUNAN (RASTER PREVIEWS) ────────────────────────
-st.markdown('<div class="section-header">Inspeksi Citra Satelit Aerial & Heatmap Iradiasi Surya</div>', unsafe_allow_html=True)
-st.caption("Menampilkan citra satelit resolusi 0.25 m/pixel berdampingan dengan peta intensitas radiasi matahari per piksel atap:")
+# ─── DEEP-DIVE SHOWCASE: SEMUA SKU DATA LAYER & BUILDING INSIGHTS ─────────────
+st.markdown('<div class="section-header">Inspeksi Lengkap SKU Data Layers & Layout Panel Surya</div>', unsafe_allow_html=True)
+st.caption("Eksplorasi seluruh layer citra resolusi 0.25 m/pixel Google Maps Platform serta simulasi posisi panel surya di atap:")
 
 selected_asset_name = st.selectbox(
     "Pilih Infrastruktur untuk Inspeksi Detail:",
@@ -226,48 +241,178 @@ selected_asset_name = st.selectbox(
 
 asset_row = df_summary[df_summary["asset_name"] == selected_asset_name].iloc[0]
 
-# Display technical specs card
-col_info, col_rgb, col_flux = st.columns([1.2, 1.4, 1.4])
+# Google Solar UI Card Header
+st.markdown(f"""
+<div style="background: #101726; border: 1px solid #1E293B; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+            <span style="background: #1E293B; color: #64B5F6; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{asset_row['category_display']}</span>
+            <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
+            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code>{asset_row['google_building_id']}</code></p>
+        </div>
+        <div style="text-align: right; margin-top: 8px;">
+            <span style="font-size: 1.8rem; font-weight: 800; color: #00E5FF;">{asset_row['installed_capacity_kwp']:,.1f} kWp</span><br>
+            <span style="color: #94A3B8; font-size: 0.8rem;">{asset_row['max_panels_count']:,} Panel @ 400Wp</span>
+        </div>
+    </div>
+    <hr style="border-color: #1E293B; margin: 12px 0;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; text-align: center;">
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
+            <div style="color: #94A3B8; font-size: 0.7rem;">☀️ SUNSHINE</div>
+            <div style="color: #FBBF24; font-size: 1.1rem; font-weight: 700;">{asset_row['sunshine_hours_annual']:,.0f} jam/thn</div>
+        </div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
+            <div style="color: #94A3B8; font-size: 0.7rem;">📐 ROOF AREA</div>
+            <div style="color: #38BDF8; font-size: 1.1rem; font-weight: 700;">{asset_row['max_roof_area_m2']:,.0f} m²</div>
+        </div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
+            <div style="color: #94A3B8; font-size: 0.7rem;">⚡ MAX PANELS</div>
+            <div style="color: #00E676; font-size: 1.1rem; font-weight: 700;">{asset_row['max_panels_count']:,} unit</div>
+        </div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
+            <div style="color: #94A3B8; font-size: 0.7rem;">🔋 ANNUAL OUTPUT</div>
+            <div style="color: #A78BFA; font-size: 1.1rem; font-weight: 700;">{asset_row['annual_generation_mwh']:,.1f} MWh/thn</div>
+        </div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
+            <div style="color: #94A3B8; font-size: 0.7rem;">🌿 CO₂ SAVINGS</div>
+            <div style="color: #34D399; font-size: 1.1rem; font-weight: 700;">{asset_row['ghg_reduction_tons_co2']:,.1f} Ton/thn</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-with col_info:
-    st.markdown(f"### {asset_row['asset_name']}")
-    st.markdown(f"**Kategori:** `{asset_row['category_display']}` | **Wilayah:** `{asset_row['city_regency']}`")
-    st.markdown("---")
+# Tabs to explore all SKU layers
+tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
+    "⚡ Layout Panel di Atap",
+    "🛰️ Citra Satelit RGB",
+    "☀️ Annual Solar Flux",
+    "🏔️ DSM 3D Elevasi",
+    "📐 Roof Mask",
+    "🗂️ Komparasi 5 Layer Bersandingan"
+])
+
+with tab_panels:
+    col_p1, col_p2 = st.columns([1.6, 1.0])
+    with col_p1:
+        st.markdown("#### ⚡ Simulasi Distribusi Panel Surya di Atap (*Show Panels on Roof*)")
+        st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
+        panels_img_rel = asset_row.get("preview_panels_png")
+        if panels_img_rel and (PROJECT_ROOT / panels_img_rel).exists():
+            panels_img = Image.open(PROJECT_ROOT / panels_img_rel)
+            st.image(panels_img, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
+        else:
+            st.warning("Preview panel overlay belum tersedia.")
+    with col_p2:
+        st.markdown("#### Karakteristik Panel Atap")
+        st.markdown(f"""
+        * **Kapasitas Per Modul:** `400 Watt-peak (Wp)`
+        * **Dimensi Modul:** `1.88 m × 1.05 m (1.97 m²)`
+        * **Orientasi:** Dinamis (Landscape / Portrait menyesuaikan slope atap)
+        * **Total Modul Maksimal:** `{asset_row['max_panels_count']:,} panel`
+        * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
+        * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
+        """)
+        st.info("💡 **Catatan Metodologi:** Setiap kotak biru mewakili 1 modul panel surya fisik yang diposisikan oleh algoritma Google dengan menghindari bayangan cerobong/AC dan area berpenyinaran rendah.")
+
+with tab_rgb:
+    col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
+    with col_rgb1:
+        st.markdown("#### 🛰️ Citra Satelit Aerial Resolusi Tinggi (RGB)")
+        st.caption("Foto satelit ortorektifikasi resolusi 0.25 m/pixel Google Maps Platform:")
+        rgb_img_rel = asset_row.get("preview_rgb_png")
+        if rgb_img_rel and (PROJECT_ROOT / rgb_img_rel).exists():
+            rgb_img = Image.open(PROJECT_ROOT / rgb_img_rel)
+            st.image(rgb_img, caption=f"Foto Satelit Atap: {asset_row['asset_name']}", use_container_width=True)
+    with col_rgb2:
+        st.markdown("#### Metadata Citra Satelit")
+        st.markdown(f"""
+        * **Resolusi Spasial:** `0.25 meter per piksel (Kualitas BASE)`
+        * **Tanggal Pengambilan Citra:** `{asset_row['imagery_date']}`
+        * **Sistem Koordinat:** `EPSG:32748 (WGS 84 / UTM Zone 48S)`
+        * **Sumber Master File:**
+        """)
+        st.code(f"{asset_row['path_rgb_geotiff']}", language="bash")
+
+with tab_flux:
+    col_f1, col_f2 = st.columns([1.6, 1.0])
+    with col_f1:
+        st.markdown("#### ☀️ Annual Solar Flux Heatmap")
+        st.caption("Peta kontur iradiasi radiasi matahari tahunan (kWh/kW/year) per piksel atap:")
+        flux_img_rel = asset_row.get("preview_flux_png")
+        if flux_img_rel and (PROJECT_ROOT / flux_img_rel).exists():
+            flux_img = Image.open(PROJECT_ROOT / flux_img_rel)
+            st.image(flux_img, caption=f"Heatmap Iradiasi Surya: {asset_row['asset_name']}", use_container_width=True)
+    with col_f2:
+        st.markdown("#### Parameter Iradiasi")
+        st.markdown(f"""
+        * **Jam Penyinaran Efektif:** `{asset_row['sunshine_hours_annual']:,.1f} jam/tahun`
+        * **Skala Warna Heatmap:** Kuning-Putih menunjukkan potensi radiasi maksimum (> 1.400 kWh/kW/thn), sedangkan Biru-Ungu menunjukkan area berbayang rendah.
+        * **Sumber Master File:**
+        """)
+        st.code(f"{asset_row['path_flux_geotiff']}", language="bash")
+
+with tab_dsm:
+    col_d1, col_d2 = st.columns([1.6, 1.0])
+    with col_d1:
+        st.markdown("#### 🏔️ Digital Surface Model (DSM 3D Elevation)")
+        st.caption("Model elevasi dan ketinggian fisik permukaan struktur atap (meter di atas permukaan tanah):")
+        dsm_img_rel = asset_row.get("preview_dsm_png")
+        if dsm_img_rel and (PROJECT_ROOT / dsm_img_rel).exists():
+            dsm_img = Image.open(PROJECT_ROOT / dsm_img_rel)
+            st.image(dsm_img, caption=f"Model Ketinggian 3D Atap: {asset_row['asset_name']}", use_container_width=True)
+    with col_d2:
+        st.markdown("#### Analisis Elevasi & Bayangan")
+        st.markdown("""
+        * **Fungsi DSM:** Mengidentifikasi kemiringan atap (*slope*), azimuth orientasi hadap matahari, serta memprediksi bayangan gedung tinggi di sekelilingnya.
+        * **Satuan Nilai Piksel:** Elevasi dalam satuan meter (WGS84).
+        * **Sumber Master File:**
+        """)
+        st.code(f"{asset_row['path_dsm_geotiff']}", language="bash")
+
+with tab_mask:
+    col_m1, col_m2 = st.columns([1.6, 1.0])
+    with col_m1:
+        st.markdown("#### 📐 Roof Mask (Segmentasi Atap Layak Panel)")
+        st.caption("Binary mask yang memisahkan permukaan atap bangunan (hijau) vs area jalan/tanah (gelap):")
+        mask_img_rel = asset_row.get("preview_mask_png")
+        if mask_img_rel and (PROJECT_ROOT / mask_img_rel).exists():
+            mask_img = Image.open(PROJECT_ROOT / mask_img_rel)
+            st.image(mask_img, caption=f"Mask Boundary Atap: {asset_row['asset_name']}", use_container_width=True)
+    with col_m2:
+        st.markdown("#### Ekstraksi Batas Atap Otomatis")
+        st.markdown(f"""
+        * **Luas Atap Tersegmentasi:** `{asset_row['max_roof_area_m2']:,.1f} m²`
+        * **Kegunaan Mask:** Membatasi agar penempatan modul surya tidak keluar dari batas fisik dak atap bangunan.
+        * **Sumber Master File:**
+        """)
+        st.code(f"{asset_row['path_mask_geotiff']}", language="bash")
+
+with tab_gallery:
+    st.markdown("#### 🗂️ Galeri Komparasi Seluruh 5 Layer Bersandingan")
+    st.caption(f"Perbandingan visual lengkap seluruh SKU untuk **{asset_row['asset_name']}**:")
     
-    st.markdown(f"""
-    * **Kapasitas Potensial:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
-    * **Jumlah Panel Maksimal:** `{asset_row['max_panels_count']:,} unit (400Wp)`
-    * **Luas Atap Efektif:** `{asset_row['max_roof_area_m2']:,.1f} m²`
-    * **Jam Penyinaran/Thn:** `{asset_row['sunshine_hours_annual']:,.1f} jam`
-    * **Estimasi Listrik:** `{asset_row['annual_generation_mwh']:,.1f} MWh/thn`
-    * **Reduksi Emisi:** `{asset_row['ghg_reduction_tons_co2']:,.1f} Ton CO₂/thn`
-    * **Tanggal Citra:** `{asset_row['imagery_date']}`
-    * **Tingkat Kualitas:** `{asset_row['quality_tier']} (0.25m/px)`
-    """)
-
-    st.markdown("---")
-    st.caption(f"📁 **Master File GeoTIFF di Direktori RAW:**")
-    st.code(f"DSM:  {asset_row['path_dsm_geotiff']}\nRGB:  {asset_row['path_rgb_geotiff']}\nMask: {asset_row['path_mask_geotiff']}\nFlux: {asset_row['path_flux_geotiff']}", language="bash")
-
-with col_rgb:
-    st.markdown("#### 🛰️ Citra Satelit RGB Asli")
-    st.caption("Visualisasi resolusi tinggi 0.25 m/pixel Google Maps Platform:")
-    rgb_img_rel = asset_row.get("preview_rgb_png")
-    if rgb_img_rel and (PROJECT_ROOT / rgb_img_rel).exists():
-        rgb_img = Image.open(PROJECT_ROOT / rgb_img_rel)
-        st.image(rgb_img, caption=f"Foto Satelit Dak/Atap: {asset_row['asset_name']}", use_container_width=True)
-    else:
-        st.warning("Preview RGB belum tersedia.")
-
-with col_flux:
-    st.markdown("#### ☀️ Annual Solar Flux Heatmap")
-    st.caption("Peta iradiasi matahari tahunan (kWh/kW/year) per piksel atap:")
-    flux_img_rel = asset_row.get("preview_flux_png")
-    if flux_img_rel and (PROJECT_ROOT / flux_img_rel).exists():
-        flux_img = Image.open(PROJECT_ROOT / flux_img_rel)
-        st.image(flux_img, caption=f"Heatmap Iradiasi: {asset_row['asset_name']}", use_container_width=True)
-    else:
-        st.warning("Preview Solar Flux belum tersedia.")
+    g_col1, g_col2, g_col3, g_col4, g_col5 = st.columns(5)
+    
+    with g_col1:
+        st.markdown("**1. RGB Asli**")
+        if asset_row.get("preview_rgb_png") and (PROJECT_ROOT / asset_row["preview_rgb_png"]).exists():
+            st.image(PROJECT_ROOT / asset_row["preview_rgb_png"], use_container_width=True)
+    with g_col2:
+        st.markdown("**2. Layout Panel**")
+        if asset_row.get("preview_panels_png") and (PROJECT_ROOT / asset_row["preview_panels_png"]).exists():
+            st.image(PROJECT_ROOT / asset_row["preview_panels_png"], use_container_width=True)
+    with g_col3:
+        st.markdown("**3. Annual Flux**")
+        if asset_row.get("preview_flux_png") and (PROJECT_ROOT / asset_row["preview_flux_png"]).exists():
+            st.image(PROJECT_ROOT / asset_row["preview_flux_png"], use_container_width=True)
+    with g_col4:
+        st.markdown("**4. DSM 3D**")
+        if asset_row.get("preview_dsm_png") and (PROJECT_ROOT / asset_row["preview_dsm_png"]).exists():
+            st.image(PROJECT_ROOT / asset_row["preview_dsm_png"], use_container_width=True)
+    with g_col5:
+        st.markdown("**5. Roof Mask**")
+        if asset_row.get("preview_mask_png") and (PROJECT_ROOT / asset_row["preview_mask_png"]).exists():
+            st.image(PROJECT_ROOT / asset_row["preview_mask_png"], use_container_width=True)
 
 st.markdown("<br><hr>", unsafe_allow_html=True)
 st.caption("CELIOS Solar Dashboard — Clean Energy & Economic Transition Research Aglomerasi Jabodetabek (2026)")
