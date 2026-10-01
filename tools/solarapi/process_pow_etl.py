@@ -26,7 +26,7 @@ from shapely.geometry import Point
 from pathlib import Path
 import rasterio
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Polygon
 from pyproj import Transformer
 from PIL import Image
 
@@ -89,20 +89,24 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
         except Exception as e:
             print(f"      [WARN] Gagal generate RGB PNG: {e}")
 
-    # 2. Solar Panels Layout Overlay on Roof
+    # 2. Solar Panels Layout Overlay on Roof (Accurate Segment Azimuth Rotation & Non-Overlapping Spacing)
     if rgb_arr is not None and rgb_tif_path and rgb_tif_path.exists():
         try:
             sp = bi_data.get("solarPotential", {})
             panels = sp.get("solarPanels", [])
+            segs = sp.get("roofSegmentStats", [])
             pw_m = sp.get("panelWidthMeters", 1.045)
             ph_m = sp.get("panelHeightMeters", 1.879)
 
             with rasterio.open(rgb_tif_path) as src:
                 transformer = Transformer.from_crs("EPSG:4326", src.crs, always_xy=True)
-                pw_px = pw_m / 0.25
-                ph_px = ph_m / 0.25
+                
+                # 0.25m per pixel with 0.88 scale factor to preserve clean spacing between physical modules
+                scale_gap = 0.88
+                pw_px = (pw_m / 0.25) * scale_gap
+                ph_px = (ph_m / 0.25) * scale_gap
 
-                fig, ax = plt.subplots(figsize=(7, 7), dpi=150)
+                fig, ax = plt.subplots(figsize=(8, 8), dpi=180)
                 ax.imshow(rgb_arr)
 
                 for p in panels:
@@ -111,15 +115,35 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                     ux, uy = transformer.transform(lon, lat)
                     py, px = src.index(ux, uy)
 
-                    is_landscape = p.get("orientation") == "LANDSCAPE"
-                    w = ph_px if is_landscape else pw_px
-                    h = pw_px if is_landscape else ph_px
+                    seg_idx = p.get("segmentIndex", 0)
+                    seg = segs[seg_idx] if seg_idx < len(segs) else {}
+                    az_deg = seg.get("azimuthDegrees", 0.0)
 
-                    rect = Rectangle(
-                        (px - w / 2, py - h / 2), w, h,
-                        linewidth=0.7, edgecolor="#00E5FF", facecolor="#1565C0", alpha=0.85
+                    # Orient vector along roof ridge & slope matching Google Solar API methodology
+                    az_rad = math.radians(az_deg)
+                    u_ridge = np.array([math.cos(az_rad), math.sin(az_rad)])
+                    u_slope = np.array([-math.sin(az_rad), math.cos(az_rad)])
+
+                    is_landscape = p.get("orientation") == "LANDSCAPE"
+                    if is_landscape:
+                        l_vec = u_ridge * (ph_px / 2.0)
+                        w_vec = u_slope * (pw_px / 2.0)
+                    else:
+                        l_vec = u_slope * (ph_px / 2.0)
+                        w_vec = u_ridge * (pw_px / 2.0)
+
+                    c = np.array([px, py])
+                    p1 = c + l_vec + w_vec
+                    p2 = c + l_vec - w_vec
+                    p3 = c - l_vec - w_vec
+                    p4 = c - l_vec + w_vec
+
+                    poly = Polygon(
+                        [p1, p2, p3, p4], closed=True,
+                        facecolor="#2563EB", edgecolor="#93C5FD",
+                        linewidth=0.5, alpha=0.88
                     )
-                    ax.add_patch(rect)
+                    ax.add_patch(poly)
 
                 ax.set_title(f"Layout Panel Surya di Atap: {asset_name} ({len(panels):,} Panel)", fontsize=11, fontweight="bold", color="white")
                 ax.axis("off")
