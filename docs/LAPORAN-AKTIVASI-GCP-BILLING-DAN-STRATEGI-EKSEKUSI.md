@@ -16,8 +16,21 @@ Laporan ini menyajikan dokumentasi komprehensif mengenai kronologi teknis, audit
 * **Project Owner (Super User):** `dunia.fullstackdev@gmail.com` (Kendali penuh 100% atas source code, API keys, dan data).
 * **Billing Account Aktif:** `DH-Fastwork Billing 2` (ID: `013D15-96E467-78B119`)
 * **Status Penagihan Project:** `billingEnabled: true` (Resmi Terhubung).
+* **Struktur Peran Billing & IAM:**
+  * **Billing Account Administrator (`roles/billing.admin`):** `suciarkana03@gmail.com` (Freelancer — memegang hak administratif akun penagihan).
+  * **Billing Account Viewer (`roles/billing.viewer`):** `dunia.fullstackdev@gmail.com` (Mas Henry — memegang hak audit biaya, mutasi, dan laporan).
+* **Metadata Profil Pembayaran (Google Payments Profile):**
+  * **Payments Account ID:** `4899-9199-0847-3814`
+  * **Payments Account Nickname:** `Google Cloud 013D15-96E467-78B119`
+  * **Payments Profile ID:** `8252-7990-5659`
+  * **Account Type:** `Individual`
+  * **Nama Kontak Utama:** `WIDYA FIRMANSYA` (Verified on Jun 19, 2024)
+  * **Alamat Terdaftar:** `JL. ANGGREK GG. 2A LK. KRAJAN RT 003 RW 003 PATOKAN, SITUBONDO, Jawa Timur 68312` (Verified)
+  * **Informasi Pajak (Tax Info):** Personal — NIK: `3512070509930002` (Verified)
+  * **Payments Users (Email Notifikasi Tagihan):** `suciarkana03@gmail.com` (Receives all payments email)
 * **Mode Penagihan Google:** **`Automatic payments` (Pascabayar / Pay-as-you-go)**.
 * **Ambang Batas Penagihan (*Threshold*):** IDR 1.000.000 atau tanggal 1 setiap bulan.
+* **Instrumen Kartu Terdaftar:** `Visa .... 3920` (Kartu pribadi freelancer).
 * **Solar API (`solar.googleapis.com`):** **ENABLED**.
 * **API Key Aktif:** `Celios-Solar-API-Key` (UID: `9321cdc8-47c0-4bca-b9bd-13292adcc2bb`).
 * **Hasil Smoke Test Endpoint Live:** **`HTTP 200 OK`** (Terverifikasi sukses memanggil data gedung).
@@ -74,6 +87,27 @@ flowchart LR
 * Pada menu **Credits**, tercatat **`No credits to display`**.
 * **Penyebab:** Profil penagihan tertaut ke profil pembayaran terverifikasi milik Mas Henry (`WIDYA FIRMANSYA`, terverifikasi sejak 19 Juni 2024). Karena profil ini bukan pengguna baru, kuota promo Free Trial $300 tidak diterbitkan.
 * **Konsekuensi:** Akun beroperasi murni sebagai **Paid Account (Pay-as-you-go)**. Setiap panggilan API akan dikenakan biaya sesuai tarif resmi Google Solar API.
+
+### 3.3. Rincian Konfigurasi Profil Pembayaran & Administrator Penagihan
+Berdasarkan data resmi pada panel *Payment Settings* (`console.cloud.google.com/billing/013D15-96E467-78B119/profile`):
+
+| Komponen Konfigurasi | Nilai Parameter di Google Cloud | Keterangan & Implikasi |
+| :--- | :--- | :--- |
+| **Payments Account ID** | `4899-9199-0847-3814` | ID unik akun penagihan di Google Payments |
+| **Payments Account Nickname**| `Google Cloud 013D15-96E467-78B119` | Label asosiasi ke Cloud Billing Account |
+| **Payments Profile ID** | `8252-7990-5659` | Profil legal pembayaran terdaftar |
+| **Account Type** | `Individual` (Pribadi) | Bukan profil korporasi (*Business*) |
+| **Nama Kontak Legal** | `WIDYA FIRMANSYA` | Terverifikasi sejak 19 Juni 2024 (*Verified*) |
+| **Alamat Terdaftar** | `Jl. Anggrek Gg. 2A Lk. Krajan RT 003 RW 003 Patokan, Situbondo, Jatim 68312` | Terverifikasi alamat domisili resmi |
+| **Nomor Induk Kependudukan (NIK)** | `3512070509930002` | Status Pajak: *Personal Verified* |
+| **Bahasa Dokumen** | `Indonesian · Indonesia` | Faktur/invoice bulanan berbahasa Indonesia |
+| **Payments Users (Penerima Email)** | `suciarkana03@gmail.com` | Email freelancer diset sebagai penerima invoice & notifikasi tagihan |
+| **Metode Pembayaran Utama** | `Visa .... 3920` | Kartu milik freelancer yang menanggung penagihan pascabayar |
+| **Aturan Penagihan (*How You Pay*)** | **`Automatic payments`** | Ditagih setiap tanggal 1 atau saat akumulasi mencapai **Rp 1.000.000** |
+
+#### Pembagian Hak Akses (IAM Roles) pada Billing:
+* **`suciarkana03@gmail.com` (Freelancer):** Memegang peran **`Billing Account Administrator`** dan **`Payments user`**. Memiliki otoritas menerima notifikasi tagihan dari Google dan mengelola instrumen kartu kreditnya.
+* **`dunia.fullstackdev@gmail.com` (Mas Henry):** Memegang peran **`Billing Account Viewer`** pada billing account, serta **`Owner` (Pemilik Mutlak)** pada project `celios-konfilkmonitor3`. Memiliki otoritas 100% menjalankan API, menerbitkan API Key, mengakses data, dan memantau biaya secara transparan.
 
 ---
 
