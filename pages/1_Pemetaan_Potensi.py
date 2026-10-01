@@ -241,41 +241,41 @@ selected_asset_name = st.selectbox(
 
 asset_row = df_summary[df_summary["asset_name"] == selected_asset_name].iloc[0]
 
-# Google Solar UI Card Header
+# Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
 <div style="background: #101726; border: 1px solid #1E293B; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div>
-            <span style="background: #1E293B; color: #64B5F6; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{asset_row['category_display']}</span>
+            <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{asset_row['category_display']}</span>
             <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
-            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code>{asset_row['google_building_id']}</code></p>
+            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code></p>
         </div>
         <div style="text-align: right; margin-top: 8px;">
-            <span style="font-size: 1.8rem; font-weight: 800; color: #00E5FF;">{asset_row['installed_capacity_kwp']:,.1f} kWp</span><br>
+            <span style="font-size: 1.8rem; font-weight: 800; color: #66BB6A;">{asset_row['installed_capacity_kwp']:,.1f} kWp</span><br>
             <span style="color: #94A3B8; font-size: 0.8rem;">{asset_row['max_panels_count']:,} Panel @ 400Wp</span>
         </div>
     </div>
     <hr style="border-color: #1E293B; margin: 12px 0;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; text-align: center;">
-        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">SUNSHINE</div>
-            <div style="color: #FBBF24; font-size: 1.1rem; font-weight: 700;">{asset_row['sunshine_hours_annual']:,.0f} jam/thn</div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">SUNSHINE</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['sunshine_hours_annual']:,.0f} jam/thn</div>
         </div>
-        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">ROOF AREA</div>
-            <div style="color: #38BDF8; font-size: 1.1rem; font-weight: 700;">{asset_row['max_roof_area_m2']:,.0f} m²</div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">ROOF AREA</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['max_roof_area_m2']:,.0f} m²</div>
         </div>
-        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">MAX PANELS</div>
-            <div style="color: #00E676; font-size: 1.1rem; font-weight: 700;">{asset_row['max_panels_count']:,} unit</div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">MAX PANELS</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['max_panels_count']:,} unit</div>
         </div>
-        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">ANNUAL OUTPUT</div>
-            <div style="color: #A78BFA; font-size: 1.1rem; font-weight: 700;">{asset_row['annual_generation_mwh']:,.1f} MWh/thn</div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">ANNUAL OUTPUT</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['annual_generation_mwh']:,.1f} MWh/thn</div>
         </div>
-        <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">CO2 SAVINGS</div>
-            <div style="color: #34D399; font-size: 1.1rem; font-weight: 700;">{asset_row['ghg_reduction_tons_co2']:,.1f} Ton/thn</div>
+        <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">CO2 SAVINGS</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['ghg_reduction_tons_co2']:,.1f} Ton/thn</div>
         </div>
     </div>
 </div>
