@@ -258,43 +258,43 @@ st.markdown(f"""
     <hr style="border-color: #1E293B; margin: 12px 0;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; text-align: center;">
         <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem;">☀️ SUNSHINE</div>
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">SUNSHINE</div>
             <div style="color: #FBBF24; font-size: 1.1rem; font-weight: 700;">{asset_row['sunshine_hours_annual']:,.0f} jam/thn</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem;">📐 ROOF AREA</div>
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">ROOF AREA</div>
             <div style="color: #38BDF8; font-size: 1.1rem; font-weight: 700;">{asset_row['max_roof_area_m2']:,.0f} m²</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem;">⚡ MAX PANELS</div>
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">MAX PANELS</div>
             <div style="color: #00E676; font-size: 1.1rem; font-weight: 700;">{asset_row['max_panels_count']:,} unit</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem;">🔋 ANNUAL OUTPUT</div>
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">ANNUAL OUTPUT</div>
             <div style="color: #A78BFA; font-size: 1.1rem; font-weight: 700;">{asset_row['annual_generation_mwh']:,.1f} MWh/thn</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px;">
-            <div style="color: #94A3B8; font-size: 0.7rem;">🌿 CO₂ SAVINGS</div>
+            <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600;">CO2 SAVINGS</div>
             <div style="color: #34D399; font-size: 1.1rem; font-weight: 700;">{asset_row['ghg_reduction_tons_co2']:,.1f} Ton/thn</div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Tabs to explore all SKU layers
+# Tabs to explore all SKU layers (Text only, clean academic styling)
 tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
-    "⚡ Layout Panel di Atap",
-    "🛰️ Citra Satelit RGB",
-    "☀️ Annual Solar Flux",
-    "🏔️ DSM 3D Elevasi",
-    "📐 Roof Mask",
-    "🗂️ Komparasi 5 Layer Bersandingan"
+    "Layout Panel di Atap",
+    "Citra Satelit RGB",
+    "Annual Solar Flux",
+    "DSM 3D Elevasi",
+    "Roof Mask",
+    "Komparasi 5 Layer Bersandingan"
 ])
 
 with tab_panels:
     col_p1, col_p2 = st.columns([1.6, 1.0])
     with col_p1:
-        st.markdown("#### ⚡ Simulasi Distribusi Panel Surya di Atap (*Show Panels on Roof*)")
+        st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
         st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
         panels_img_rel = asset_row.get("preview_panels_png")
         if panels_img_rel and (PROJECT_ROOT / panels_img_rel).exists():
@@ -312,12 +312,12 @@ with tab_panels:
         * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
         * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
         """)
-        st.info("💡 **Catatan Metodologi:** Setiap kotak biru mewakili 1 modul panel surya fisik yang diposisikan oleh algoritma Google dengan menghindari bayangan cerobong/AC dan area berpenyinaran rendah.")
+        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul panel surya fisik yang diposisikan oleh algoritma Google dengan menghindari bayangan cerobong/AC dan area berpenyinaran rendah.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
     with col_rgb1:
-        st.markdown("#### 🛰️ Citra Satelit Aerial Resolusi Tinggi (RGB)")
+        st.markdown("#### Citra Satelit Aerial Resolusi Tinggi (RGB)")
         st.caption("Foto satelit ortorektifikasi resolusi 0.25 m/pixel Google Maps Platform:")
         rgb_img_rel = asset_row.get("preview_rgb_png")
         if rgb_img_rel and (PROJECT_ROOT / rgb_img_rel).exists():
@@ -336,7 +336,7 @@ with tab_rgb:
 with tab_flux:
     col_f1, col_f2 = st.columns([1.6, 1.0])
     with col_f1:
-        st.markdown("#### ☀️ Annual Solar Flux Heatmap")
+        st.markdown("#### Annual Solar Flux Heatmap")
         st.caption("Peta kontur iradiasi radiasi matahari tahunan (kWh/kW/year) per piksel atap:")
         flux_img_rel = asset_row.get("preview_flux_png")
         if flux_img_rel and (PROJECT_ROOT / flux_img_rel).exists():
@@ -354,7 +354,7 @@ with tab_flux:
 with tab_dsm:
     col_d1, col_d2 = st.columns([1.6, 1.0])
     with col_d1:
-        st.markdown("#### 🏔️ Digital Surface Model (DSM 3D Elevation)")
+        st.markdown("#### Digital Surface Model (DSM 3D Elevation)")
         st.caption("Model elevasi dan ketinggian fisik permukaan struktur atap (meter di atas permukaan tanah):")
         dsm_img_rel = asset_row.get("preview_dsm_png")
         if dsm_img_rel and (PROJECT_ROOT / dsm_img_rel).exists():
@@ -372,7 +372,7 @@ with tab_dsm:
 with tab_mask:
     col_m1, col_m2 = st.columns([1.6, 1.0])
     with col_m1:
-        st.markdown("#### 📐 Roof Mask (Segmentasi Atap Layak Panel)")
+        st.markdown("#### Roof Mask (Segmentasi Atap Layak Panel)")
         st.caption("Binary mask yang memisahkan permukaan atap bangunan (hijau) vs area jalan/tanah (gelap):")
         mask_img_rel = asset_row.get("preview_mask_png")
         if mask_img_rel and (PROJECT_ROOT / mask_img_rel).exists():
@@ -388,7 +388,7 @@ with tab_mask:
         st.code(f"{asset_row['path_mask_geotiff']}", language="bash")
 
 with tab_gallery:
-    st.markdown("#### 🗂️ Galeri Komparasi Seluruh 5 Layer Bersandingan")
+    st.markdown("#### Galeri Komparasi Seluruh 5 Layer Bersandingan")
     st.caption(f"Perbandingan visual lengkap seluruh SKU untuk **{asset_row['asset_name']}**:")
     
     g_col1, g_col2, g_col3, g_col4, g_col5 = st.columns(5)

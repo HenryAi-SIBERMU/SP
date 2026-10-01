@@ -115,7 +115,7 @@ for idx, (nama, lingkup, status_data) in enumerate(fasilitas_publik):
         <div style="background:#1E2530; padding:1rem; border-radius:6px; margin-bottom:0.8rem; border:1px dashed #FFA726;">
             <div style="font-weight:600; color:#FFF; margin-bottom:0.3rem; font-size:0.9rem;">{nama}</div>
             <div style="font-size:0.75rem; color:#B0BEC5;">{lingkup}</div>
-            <div style="font-size:0.8rem; color:#FFA726; font-weight:600; margin-top:0.5rem;">⚡ {status_data}</div>
+            <div style="font-size:0.8rem; color:#FFA726; font-weight:600; margin-top:0.5rem;">Status: {status_data}</div>
         </div>
         """, unsafe_allow_html=True)
 
