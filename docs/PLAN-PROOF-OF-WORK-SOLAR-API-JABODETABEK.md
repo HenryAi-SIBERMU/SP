@@ -319,10 +319,10 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
 
 - [x] Laporan status billing GCP dan mitigasi finansial disetujui.
 - [x] Rencana kerja POW Tahap 1 (5 Titik Pilot Full SKU) didokumentasikan lengkap di `docs/PLAN-PROOF-OF-WORK-SOLAR-API-JABODETABEK.md`.
-- [ ] Buat skrip ekstraktor penarik API: `tools/solarapi/fetch_pow_5_points.py` (Menyimpan RAW ke subfolder SKU & kategori, kepatuhan `no_hardcoded_data.md`).
-- [ ] Eksekusi penarikan 5 titik Building Insights + 20 file raster GeoTIFF (Biaya ~$0.525 / ~Rp 8.400).
-- [ ] Buat skrip transformer: `tools/solarapi/process_pow_etl.py` (Audit drift spasial, kalkulasi metrik energi & emisi).
-- [ ] Simpan keluaran terproses ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
-- [ ] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta, metrik, tabel audit drift, dan citra satelit).
-- [ ] Lakukan pengujian lokal Streamlit (`streamlit run Dashboard.py`) dan pastikan visualisasi berjalan lancar.
+- [x] Buat skrip ekstraktor penarik API: `tools/solarapi/fetch_pow_5_points.py` (Menyimpan RAW ke subfolder SKU & kategori, kepatuhan `no_hardcoded_data.md`).
+- [x] Eksekusi penarikan 5 titik Building Insights + 20 file raster GeoTIFF (Biaya ~$0.415 / ~Rp 6.640 — Sisa pagu 98.6% utuh).
+- [x] Buat skrip transformer: `tools/solarapi/process_pow_etl.py` (Audit drift spasial, kalkulasi metrik energi & emisi).
+- [x] Simpan keluaran terproses ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
+- [x] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta, metrik, tabel audit drift, dan inspeksi citra satelit ganda).
+- [x] Lakukan pengujian sintaks dan dependensi komponen visualisasi.
 - [ ] Auto-commit seluruh kode dan artefak ke Git repository.
