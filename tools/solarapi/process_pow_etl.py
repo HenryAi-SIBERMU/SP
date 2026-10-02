@@ -275,6 +275,7 @@ def process_targets():
     ]
 
     records = []
+    segment_records = []
 
     for t in targets_info:
         aid = t["asset_id"].lower()
@@ -366,19 +367,54 @@ def process_targets():
         }
         records.append(rec)
         print(f"   Kapasitas: {capacity_kwp:.1f} kWp ({max_panels:,} panel) | Luas Atap: {max_roof_area:,.1f} m² | Emisi: {ghg_reduc_tons:.1f} Ton CO2/thn")
-        print(f"   Previews Generated: {list(preview_paths.keys())}")
+
+        # Collect granular roof segment stats
+        sp = bi_data.get("solarPotential", {})
+        segs = sp.get("roofSegmentStats", [])
+        panels = sp.get("solarPanels", [])
+        dirs = ["U (0°)", "TL (45°)", "T (90°)", "TG (135°)", "S (180°)", "BD (225°)", "B (270°)", "BL (315°)"]
+        for s_idx, s in enumerate(segs):
+            p_cnt = sum(1 for pan in panels if pan.get("segmentIndex") == s_idx)
+            p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in panels if pan.get("segmentIndex") == s_idx)
+            az = s.get("azimuthDegrees", 0.0)
+            d_idx = int((az + 22.5) // 45) % 8
+            segment_records.append({
+                "asset_id": t["asset_id"],
+                "asset_name": t["asset_name"],
+                "category": cat,
+                "category_display": t["category_display"],
+                "segment_index": s_idx,
+                "pitch_degrees": round(s.get("pitchDegrees", 0.0), 2),
+                "azimuth_degrees": round(az, 2),
+                "azimuth_direction": dirs[d_idx],
+                "plane_height_m": round(s.get("planeHeightAtCenterMeters", 0.0), 2),
+                "area_m2": round(s.get("stats", {}).get("areaMeters2", 0.0), 2),
+                "ground_area_m2": round(s.get("stats", {}).get("groundAreaMeters2", 0.0), 2),
+                "panels_count": p_cnt,
+                "capacity_kwp": round(p_cnt * 0.4, 2),
+                "annual_generation_mwh": round(p_kwh / 1000.0, 2)
+            })
 
     df = pd.DataFrame(records)
+    df_segs = pd.DataFrame(segment_records)
 
-    # 1. Save CSV
+    # 1. Save Summary CSV & Parquet
     csv_out = CALC_OUT_DIR / "pow_solar_5_titik_summary.csv"
     df.to_csv(csv_out, index=False, encoding="utf-8")
     print(f"\n[OK] CSV Summary Saved -> {csv_out.relative_to(PROJECT_ROOT)}")
 
-    # 2. Save Parquet
     parquet_out = CALC_OUT_DIR / "pow_solar_5_titik_summary.parquet"
     df.to_parquet(parquet_out, index=False)
     print(f"[OK] Parquet Summary Saved -> {parquet_out.relative_to(PROJECT_ROOT)}")
+
+    # 2. Save Granular Segments CSV & Parquet
+    csv_segs_out = CALC_OUT_DIR / "pow_solar_5_titik_segments.csv"
+    df_segs.to_csv(csv_segs_out, index=False, encoding="utf-8")
+    print(f"[OK] CSV Segments Saved -> {csv_segs_out.relative_to(PROJECT_ROOT)} ({len(df_segs)} segments)")
+
+    parquet_segs_out = CALC_OUT_DIR / "pow_solar_5_titik_segments.parquet"
+    df_segs.to_parquet(parquet_segs_out, index=False)
+    print(f"[OK] Parquet Segments Saved -> {parquet_segs_out.relative_to(PROJECT_ROOT)}")
 
     # 3. Save GeoJSON
     geometry = [Point(xy) for xy in zip(df['google_center_lon'], df['google_center_lat'])]

@@ -40,17 +40,19 @@ st.markdown(get_solar_css(), unsafe_allow_html=True)
 
 # ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
 PROCESSED_CALC_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv"
+PROCESSED_SEGMENTS_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv"
 PROCESSED_GIS_PATH = PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson"
 
 @st.cache_data
 def load_processed_data():
     if not PROCESSED_CALC_PATH.exists():
-        return None, None
+        return None, None, None
     df = pd.read_csv(PROCESSED_CALC_PATH)
     gdf = gpd.read_file(PROCESSED_GIS_PATH) if PROCESSED_GIS_PATH.exists() else None
-    return df, gdf
+    df_segs = pd.read_csv(PROCESSED_SEGMENTS_PATH) if PROCESSED_SEGMENTS_PATH.exists() else pd.DataFrame()
+    return df, gdf, df_segs
 
-df_summary, gdf_points = load_processed_data()
+df_summary, gdf_points, df_segments = load_processed_data()
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
@@ -282,8 +284,9 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Tabs to explore all SKU layers (Text only, clean academic styling)
-tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
+tab_panels, tab_segments, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
     "Layout Panel di Atap",
+    "Segmentasi Atap & Metodologi",
     "Citra Satelit RGB",
     "Annual Solar Flux",
     "DSM 3D Elevasi",
@@ -312,7 +315,108 @@ with tab_panels:
         * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
         * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
         """)
-        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul panel surya fisik yang diposisikan oleh algoritma Google dengan menghindari bayangan cerobong/AC dan area berpenyinaran rendah.")
+        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
+
+with tab_segments:
+    st.markdown("#### Metodologi Segmentasi Bidang 3D & Algoritma Penempatan Panel Google Solar API")
+    st.caption("Penjelasan teknis bagaimana Google Maps Platform memecah atap bangunan menjadi segmen geometris dan menempatkan modul fotovoltaik:")
+
+    col_mth1, col_mth2, col_mth3 = st.columns(3)
+    with col_mth1:
+        st.markdown("""
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">1. Segmentasi 3D (RANSAC)</div>
+            <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
+                Google memproses point cloud elevasi <strong>Digital Surface Model (DSM)</strong> menggunakan algoritma <em>Random Sample Consensus (RANSAC)</em> untuk mendeteksi bidang datar homogen (<em>planar facets</em>). Setiap segmen memiliki kemiringan (<em>pitch</em>) dan arah hadap (<em>azimuth</em>) seragam. Permukaan lengkung atau tidak teratur tidak dibentuk menjadi segmen datar.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_mth2:
+        st.markdown("""
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">2. Filter Rintangan & Ambang Batas</div>
+            <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
+                Model 3D mendeteksi cerobong, ventilasi AC, tangga, dan kubah kaca sebagai rintangan fisik (<em>obstacles</em>). Google menetapkan syarat mutlak: bidang harus memiliki ruang bersih minimal <strong>4 m²</strong> dan menampung minimal <strong>4 modul panel bersebelahan (contiguous)</strong> dengan daya total ≥ 1,6 kWp. Area yang terlalu sempit otomatis dieliminasi.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_mth3:
+        st.markdown("""
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">3. Optimasi Penataan (Greedy)</div>
+            <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
+                Setelah bidang segmen terbentuk, Google menggunakan <em>greedy placement algorithm</em> untuk menata modul surya. Posisi panel diurutkan berdasarkan estimasi produksi energi tahunan tertinggi (kWh) serta mengutamakan keterikatan susunan baris-kolom (<em>spatial contiguity</em>) yang mengunci rapi di atas bidang atap.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="background: #0E1626; border-left: 4px solid #66BB6A; padding: 14px 16px; border-radius: 6px; margin-bottom: 20px;">
+        <strong style="color: #ECEFF1; font-size: 0.95rem;">Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?</strong>
+        <p style="color: #94A3B8; font-size: 0.83rem; line-height: 1.6; margin: 6px 0 0 0;">
+            Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terjadi karena tiga faktor rekayasa:
+            <br>1. <strong>Multi-Segmen & Perbedaan Ketinggian:</strong> Atap terpecah menjadi puluhan bidang dengan elevasi berbeda. Celah antara bidang (misalnya lembah talang air atau sambungan ekspansi) tidak memenuhi syarat bidang datar RANSAC.
+            <br>2. <strong>Bukaan Pencahayaan Alami (Skylight):</strong> Kanopi kaca atau membran transparan memanjang (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas) sengaja dikecualikan oleh model AI Google dari pemasangan modul fotovoltaik.
+            <br>3. <strong>Batas Bingkai Citra Satelit:</strong> Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m atau Lippo Mall Puri bentang 260 m) melampaui jendela radius pengambilan citra 60 meter (120 m × 120 m), sehingga sebagian panel berada di dek atap yang terpotong batas bingkai.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if not df_segments.empty:
+        curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
+        if not curr_segs.empty:
+            total_segs = len(curr_segs)
+            active_segs = len(curr_segs[curr_segs["panels_count"] > 0])
+            total_seg_area = curr_segs["area_m2"].sum()
+
+            st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
+            st.caption("Data spesifikasi geometris setiap bidang atap yang diekstrak langsung dari field `roofSegmentStats` Google Solar API:")
+
+            sm1, sm2, sm3, sm4 = st.columns(4)
+            with sm1:
+                st.metric("Total Segmen Atap Terdeteksi", f"{total_segs} segmen")
+            with sm2:
+                st.metric("Segmen Layak PLTS Terisi", f"{active_segs} segmen", f"{active_segs/total_segs*100:.0f}% terutilisasi")
+            with sm3:
+                st.metric("Total Luas Bidang Segmen", f"{total_seg_area:,.1f} m²")
+            with sm4:
+                st.metric("Total Modul di Seluruh Segmen", f"{curr_segs['panels_count'].sum():,} unit")
+
+            display_segs = curr_segs[[
+                "segment_index", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
+                "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
+            ]].rename(columns={
+                "segment_index": "Index Segmen",
+                "pitch_degrees": "Kemiringan (Pitch)",
+                "azimuth_degrees": "Azimuth (°)",
+                "azimuth_direction": "Arah Hadap",
+                "plane_height_m": "Elevasi (m)",
+                "area_m2": "Luas Bidang (m²)",
+                "panels_count": "Panel (unit)",
+                "capacity_kwp": "Kapasitas (kWp)",
+                "annual_generation_mwh": "Listrik (MWh/thn)"
+            })
+
+            st.dataframe(
+                display_segs,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
+                    "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
+                    "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
+                    "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                    "Panel (unit)": st.column_config.NumberColumn(format="%d"),
+                    "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                    "Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh")
+                }
+            )
+        else:
+            st.info("Data segmen belum tersedia untuk infrastruktur ini.")
+    else:
+        st.warning("File dataset segmen atap belum dimuat.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
