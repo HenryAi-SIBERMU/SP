@@ -130,7 +130,7 @@ with c4:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─── MASTER SUMMARY DROPDOWN TABLE ──────────────────────────────────────────
-with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers & Building Insights)", expanded=False):
+with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers & Building Insights)", expanded=True):
     st.markdown("#### Kompilasi Terpadu Seluruh Indikator Teknis, Spasial, & Lingkungan")
     st.caption("Tabel ini merangkum seluruh parameter dari Google Solar API Building Insights, Data Layers GeoTIFF, Segmentasi Bidang Atap, dan Audit Spasial yang ditampilkan di halaman ini:")
 
