@@ -468,6 +468,7 @@ def process_targets():
             "raw_lat": t["raw_lat"],
             "raw_lon": t["raw_lon"],
             "google_building_id": bi_data.get("name", ""),
+            "google_maps_url": f"https://www.google.com/maps/place/?q=place_id:{bi_data.get('name', '').replace('buildings/', '')}" if bi_data.get("name") else "",
             "google_center_lat": g_lat,
             "google_center_lon": g_lon,
             "spatial_drift_meters": round(drift_m, 2),

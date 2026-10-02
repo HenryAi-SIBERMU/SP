@@ -150,6 +150,11 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
     df_master["prod_per_panel_kwh"] = df_master["annual_generation_kwh"] / df_master["max_panels_count"].clip(lower=1)
     df_master["res_tier"] = "0.25 m/px (" + df_master["quality_tier"] + ")"
 
+    if "google_maps_url" not in df_master.columns:
+        df_master["google_maps_url"] = df_master["google_building_id"].apply(
+            lambda x: f"https://www.google.com/maps/place/?q=place_id:{str(x).replace('buildings/', '')}" if pd.notna(x) and x else ""
+        )
+
     f_col1, f_col2 = st.columns([1.2, 1.8])
     with f_col1:
         cat_options = ["Semua Kategori"] + sorted(df_master["category_display"].unique().tolist())
@@ -171,7 +176,7 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "max_panels_count", "installed_capacity_kwp",
         "sunshine_hours_annual", "google_dc_mwh", "annual_generation_mwh", "prod_per_panel_kwh",
         "carbon_offset_factor", "ghg_reduction_tons_co2",
-        "spatial_drift_meters", "drift_status", "imagery_date", "res_tier", "google_building_id"
+        "spatial_drift_meters", "drift_status", "imagery_date", "res_tier", "google_building_id", "google_maps_url"
     ]].rename(columns={
         "category_display": "Kategori",
         "asset_name": "Infrastruktur",
@@ -198,7 +203,8 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "drift_status": "Status Spasial",
         "imagery_date": "Tgl Citra Satelit",
         "res_tier": "Kualitas Citra",
-        "google_building_id": "Google Building ID"
+        "google_building_id": "Google Building ID",
+        "google_maps_url": "URL Verifikasi Google Maps"
     })
 
     st.dataframe(
@@ -228,7 +234,13 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
             "Status Spasial": st.column_config.TextColumn(),
             "Tgl Citra Satelit": st.column_config.TextColumn(),
             "Kualitas Citra": st.column_config.TextColumn(),
-            "Google Building ID": st.column_config.TextColumn()
+            "Google Building ID": st.column_config.TextColumn(),
+            "URL Verifikasi Google Maps": st.column_config.LinkColumn(
+                "URL Verifikasi Google Maps",
+                help="Tautan verifikasi resmi Place ID Google Maps untuk memvalidasi posisi kanopi atap di peta satelit",
+                display_text=None,
+                width="large"
+            )
         }
     )
 
@@ -362,6 +374,10 @@ selected_asset_name = st.selectbox(
 )
 
 asset_row = df_summary[df_summary["asset_name"] == selected_asset_name].iloc[0]
+maps_url = asset_row.get("google_maps_url", "")
+if not maps_url:
+    b_id = str(asset_row.get("google_building_id", "")).replace("buildings/", "")
+    maps_url = f"https://www.google.com/maps/place/?q=place_id:{b_id}"
 
 # Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
@@ -370,7 +386,7 @@ st.markdown(f"""
         <div>
             <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{asset_row['category_display']}</span>
             <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
-            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code></p>
+            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code> | <a href="{maps_url}" target="_blank" style="color: #38BDF8; text-decoration: underline;">Buka di Google Maps</a></p>
         </div>
         <div style="text-align: right; margin-top: 8px;">
             <span style="font-size: 1.8rem; font-weight: 800; color: #66BB6A;">{asset_row['installed_capacity_kwp']:,.1f} kWp</span><br>
