@@ -238,7 +238,10 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                     if s_idx in seg_points:
                         seg_points[s_idx].append((px, py))
 
+                badge_coords = []
                 for s_idx, pts in seg_points.items():
+                    if not pts:
+                        continue
                     color = cmap(s_idx % 20)
 
                     if len(pts) >= 3:
@@ -257,6 +260,37 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
 
                     for px, py in pts:
                         ax.plot(px, py, marker="s", markersize=2, color=color, alpha=0.85)
+
+                    # Centroid for badge (only from points inside visible canvas)
+                    pts_in = [p for p in pts if 0 <= p[0] < src.width and 0 <= p[1] < src.height]
+                    if pts_in:
+                        pts_in_arr = np.array(pts_in)
+                        cx = float(np.median(pts_in_arr[:, 0]))
+                        cy = float(np.median(pts_in_arr[:, 1]))
+                        badge_coords.append((s_idx, cx, cy, color))
+
+                # Collision avoidance repulsion loop
+                for _ in range(3):
+                    for i in range(len(badge_coords)):
+                        for j in range(i + 1, len(badge_coords)):
+                            s_i, xi, yi, c_i = badge_coords[i]
+                            s_j, xj, yj, c_j = badge_coords[j]
+                            dist = np.hypot(xi - xj, yi - yj)
+                            if dist < 26:
+                                angle = np.arctan2(yj - yi, xj - xi)
+                                if dist == 0:
+                                    angle = np.pi / 4
+                                nudge = (26 - max(dist, 1)) / 2.0
+                                badge_coords[j] = (s_j, xj + np.cos(angle) * nudge, yj + np.sin(angle) * nudge, c_j)
+                                badge_coords[i] = (s_i, xi - np.cos(angle) * nudge, yi - np.sin(angle) * nudge, c_i)
+
+                for s_idx, cx, cy, color in badge_coords:
+                    seg_num = s_idx + 1
+                    ax.text(
+                        cx, cy, str(seg_num), fontsize=8.5, fontweight='bold', color='white',
+                        bbox=dict(boxstyle='circle,pad=0.22', facecolor='#0B111E', edgecolor=color, linewidth=2.0, alpha=0.92),
+                        ha='center', va='center', zorder=10
+                    )
 
                 ax.set_xlim(0, src.width)
                 ax.set_ylim(src.height, 0)

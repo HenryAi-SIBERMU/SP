@@ -457,7 +457,7 @@ with tab_segments:
         if segments_img_path:
             st.image(
                 segments_img_path,
-                caption=f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']}",
+                caption=f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label lingkaran nomor ①, ②, ③, ... menunjukkan Nomor Segmen yang terhubung langsung dengan tabel rincian di bawah)",
                 use_container_width=True
             )
         else:
@@ -498,13 +498,17 @@ with tab_segments:
         if not curr_segs.empty:
             total_segs = len(curr_segs)
             st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
-            st.caption("Data spesifikasi geometris setiap bidang atap yang diekstrak langsung dari field `roofSegmentStats` Google Solar API:")
+            st.caption("Nomor pada kolom **No. Segmen** bersesuaian langsung dengan label lingkaran nomor ①, ②, ③, ... pada citra satelit di atas (ID Google API mencatat indeks teknis internal S0, S1, ...):")
+
+            curr_segs["seg_no"] = curr_segs["segment_index"] + 1
+            curr_segs["api_id"] = "S" + curr_segs["segment_index"].astype(str)
 
             display_segs = curr_segs[[
-                "segment_index", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
+                "seg_no", "api_id", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
                 "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
             ]].rename(columns={
-                "segment_index": "Index Segmen",
+                "seg_no": "No. Segmen",
+                "api_id": "ID Google API",
                 "pitch_degrees": "Kemiringan (Pitch)",
                 "azimuth_degrees": "Azimuth (°)",
                 "azimuth_direction": "Arah Hadap",
@@ -520,6 +524,8 @@ with tab_segments:
                 use_container_width=True,
                 hide_index=True,
                 column_config={
+                    "No. Segmen": st.column_config.NumberColumn(format="%d", help="Nomor segmen yang dicantumkan pada lingkaran gambar di atas"),
+                    "ID Google API": st.column_config.TextColumn(help="Indeks teknis 0-based dari Google Solar API roofSegmentStats"),
                     "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
                     "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
                     "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
