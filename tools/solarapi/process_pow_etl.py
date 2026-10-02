@@ -149,7 +149,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 ax.axis("off")
                 fig.patch.set_facecolor("#0E1117")
                 fig.tight_layout()
-                fig.savefig(panels_png_path, facecolor=fig.get_facecolor(), bbox_inches="tight")
+                fig.savefig(str(panels_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight")
                 plt.close(fig)
                 out_paths["preview_panels_png"] = str(panels_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
@@ -168,7 +168,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 ax.set_title(f"DSM (Model Ketinggian 3D): {asset_name}", fontsize=11, fontweight="bold")
                 ax.axis("off")
                 fig.tight_layout()
-                fig.savefig(dsm_png_path, bbox_inches="tight")
+                fig.savefig(str(dsm_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
                 out_paths["preview_dsm_png"] = str(dsm_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
@@ -185,7 +185,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 ax.set_title(f"Roof Mask (Segmentasi Atap Layak PLTS): {asset_name}", fontsize=11, fontweight="bold")
                 ax.axis("off")
                 fig.tight_layout()
-                fig.savefig(mask_png_path, bbox_inches="tight")
+                fig.savefig(str(mask_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
                 out_paths["preview_mask_png"] = str(mask_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
@@ -206,7 +206,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 ax.set_title(f"Annual Solar Flux: {asset_name}", fontsize=11, fontweight="bold")
                 ax.axis("off")
                 fig.tight_layout()
-                fig.savefig(flux_png_path, bbox_inches="tight")
+                fig.savefig(str(flux_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
                 out_paths["preview_flux_png"] = str(flux_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
