@@ -66,6 +66,56 @@ Pipeline geospasial lokal yang telah dirancang dalam PRD adalah metode yang **pa
 2. **Centroid Geometris Atap (`polygon.centroid` / `representative_point`):** Titik koordinat dihitung tepat di titik berat atap gedung, sehingga panggilan Solar API dipastikan 100% menghantam kanopi bangunan target tanpa bias gerbang jalan.
 3. **Cakupan 13 Kategori Penuh:** Semua 13 kategori infrastruktur (MRT, LRT, KRL, Halte BRT, Park & Ride, Rumah Sakit, Kampus, Pasar Tradisional, Stadion, Sekolah Negeri, Bandara, Terminal Bus, Gedung Parkir) memiliki tag OSM standar (`building=*`, `amenity=*`, `public_transport=*`, `railway=*`, `parking=*`), sehingga 2.000+ titik dapat diekstraksi secara sistematis tanpa membayar API pencarian Google.
 
+### 2.4. MITIGASI CITRA TERPOTONG: METODOLOGI ADAPTIVE PREPROCESSING & DYNAMIC RADIUS
+
+Pada eksekusi awal, ditemukan evaluasi penting: **Stasiun KRL Manggarai Sentral terpotong sekitar 16%** saat ditarik menggunakan parameter default `radiusMeters = 60` (kanvas $120\text{ m} \times 120\text{ m}$), karena bentang atap stasiun mencapai $163\text{ m} \times 146\text{ m}$ dengan panel terluar berada pada jarak $86,6\text{ m}$ dari pusat bangunan.
+
+Agar penarikan pada skala aglomerasi (ribuan titik) tidak mengalami pemotongan citra acak dan tidak memboroskan kuota API akibat *trial-and-error*, diterapkan arsitektur **Adaptive Footprint Preprocessor** melalui skrip [`tools/solarapi/adaptive_radius_preprocessor.py`](file:///C:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/tools/solarapi/adaptive_radius_preprocessor.py):
+
+```mermaid
+flowchart TD
+    RawCoord["1. Input Titik Koordinat Kasar"] --> BI["2. Tahap 1: Building Insights API ($0.0075)"]
+    BI --> Extract["3. Ekstrak 'center' fisik Google & Bounding Box Modul/Segmen"]
+    Extract --> Preprocessor["4. Skrip Preprocessing: adaptive_radius_preprocessor.py"]
+    
+    subgraph Logic["Logika Preprocessing Otomatis"]
+        Reach["Hitung Max Reach: R_max = Max(Jarak Centroid ke Panel Terjauh)"]
+        Aspect["Deteksi Aspek Rasio: Panjang vs Lebar (Utara-Selatan & Timur-Barat)"]
+        ClampCheck{"Apakah Struktur Linier Memanjang? (LRT/MRT/Viaduct Rasio >= 2.4)"}
+        ClampYes["Linear Clamping: Batasi Max 95m (Prioritas Peron Penumpang, Rel Luar Dikecualikan)"]
+        ClampNo["Normal Envelope: R_optimal = R_max + 15m Buffer Margin"]
+        ClampCheck -->|Ya| ClampYes
+        ClampCheck -->|Tidak| ClampNo
+    end
+    
+    Preprocessor --> Logic
+    ClampYes --> DLParams["5. Parameter Optimal (Center Presisi, Radius Dinamis 35m - 250m)"]
+    ClampNo --> DLParams
+    DLParams --> DataLayers["6. Tahap 2: Data Layers API ($0.075) — 100% Citra Utuh & Tepat Sasaran"]
+```
+
+#### Formulasi Matematis Radius Adaptif:
+1. **Jarak Jangkauan Maksimal ($R_{\max}$):**
+   $$D_i = \text{Haversine}\left(\text{Lat}_{\text{center}}, \text{Lon}_{\text{center}}, \text{Lat}_{\text{panel}_i}, \text{Lon}_{\text{panel}_i}\right), \quad R_{\max} = \max_{i} (D_i)$$
+2. **Kaidah Bangunan Linier Memanjang (*Linear Infrastructure Clamping Rule*):**
+   * Bangunan rel layang elevated seperti **Stasiun LRT Dukuh Atas** ($\text{Rasio Aspek} = 2.67$) dan **Stasiun MRT Cipete Raya** ($\text{Rasio Aspek} = 2.75$) memiliki peron memanjang yang tersambung jembatan rel (*viaduct*) berkilo-kilometer.
+   * Karena Google Solar API membatasi kanvas raster berupa bujur sangkar simetris ($2R \times 2R$), memaksakan radius raksasa ($> 200\text{ m}$) akan memboroskan kanvas pada jalan raya dan lingkungan sekitar yang tidak relevan.
+   * **Solusi Baku:** Diterapkan *Station-Centric Clamping* ($R \le 95\text{ m}$) yang memprioritaskan kanopi peron utama penumpang, sementara jalur rel layang di luar stasiun dibiarkan di luar kanvas tanpa mengurangi validitas potensi PLTS atap.
+3. **Penyempurnaan Kelipatan Raster (*Step Clamping*):**
+   $$R_{\text{final}} = \text{clamp}\left(\left\lceil \frac{R_{\text{optimal}}}{5} \right\rceil \times 5, \quad 35\text{ m}, \quad 250\text{ m}\right)$$
+
+#### Hasil Audit Empiris Preprocessing 5 Titik Pilot:
+
+| ID Aset | Kategori | Nama Infrastruktur | Dimensi Atap (U-S × T-B) | Aspek Rasio | Jangkauan Panel Maksimal | Tipe Bangunan | Radius Optimal | Status Clamping |
+| :---: | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **KRL-032** | KRL | Stasiun KRL Manggarai Sentral | $146,8\text{ m} \times 162,5\text{ m}$ | 1.11 | $86,62\text{ m}$ | Kompak / Blok | **$105\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **LRT-014** | LRT | Stasiun LRT Dukuh Atas | $55,0\text{ m} \times 146,9\text{ m}$ | 2.67 | $102,46\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
+| **MRT-003** | MRT | Stasiun MRT Cipete Raya | $154,9\text{ m} \times 56,4\text{ m}$ | 2.75 | $85,74\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
+| **RS-007** | RS | RSUD Tarakan Jakarta | $46,4\text{ m} \times 75,5\text{ m}$ | 1.63 | $46,92\text{ m}$ | Kompak / Blok | **$65\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **PKG-020** | Parkir | Lippo Mall Puri Parking | $215,2\text{ m} \times 259,1\text{ m}$ | 1.20 | $153,04\text{ m}$ | Kompak / Mega Deck | **$170\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+
+> **File Bukti Audit:** `data/processed/calculations/adaptive_radius_audit_5_titik.csv`.
+
 ---
 
 ## 3. DETAIL TITIK TARGET TAHAP 1 (5 PILOT POINTS FULL SKU)
