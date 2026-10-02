@@ -148,11 +148,11 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                     )
                     ax.add_patch(poly)
 
-                ax.set_title(f"Layout Panel Surya di Atap: {asset_name} ({len(panels):,} Panel)", fontsize=11, fontweight="bold", color="white")
+                ax.set_xlim(0, src.width)
+                ax.set_ylim(src.height, 0)
                 ax.axis("off")
                 fig.patch.set_facecolor("#0E1117")
-                fig.tight_layout()
-                fig.savefig(str(panels_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight")
+                fig.savefig(str(panels_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0)
                 plt.close(fig)
                 out_paths["preview_panels_png"] = str(panels_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
@@ -240,7 +240,6 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
 
                 for s_idx, pts in seg_points.items():
                     color = cmap(s_idx % 20)
-                    seg = segs[s_idx]
 
                     if len(pts) >= 3:
                         pts_arr = np.array(pts)
@@ -249,8 +248,8 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                             hull_pts = pts_arr[hull.vertices]
                             poly = Polygon(
                                 hull_pts, closed=True,
-                                facecolor=color, edgecolor="white",
-                                alpha=0.35, linewidth=1.4, linestyle="--"
+                                facecolor=color, edgecolor=color,
+                                alpha=0.42, linewidth=1.8
                             )
                             ax.add_patch(poly)
                         except Exception:
@@ -259,24 +258,11 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                     for px, py in pts:
                         ax.plot(px, py, marker="s", markersize=2, color=color, alpha=0.85)
 
-                    c = seg.get("center", {})
-                    if "longitude" in c:
-                        ux, uy = transformer.transform(c["longitude"], c["latitude"])
-                        cy, cx = src.index(ux, uy)
-                        p_cnt = len(pts)
-                        if p_cnt > 0:
-                            label = f"S{s_idx} ({p_cnt}p)"
-                            ax.text(
-                                cx, cy, label, fontsize=7, fontweight="bold", color="white",
-                                bbox=dict(boxstyle="round,pad=0.2", facecolor="black", edgecolor=color, alpha=0.85, linewidth=1.2),
-                                ha="center", va="center"
-                            )
-
-                ax.set_title(f"Grid Segmentasi Atap 3D: {asset_name} ({len(segs)} Segmen)", fontsize=11, fontweight="bold", color="white")
+                ax.set_xlim(0, src.width)
+                ax.set_ylim(src.height, 0)
                 ax.axis("off")
                 fig.patch.set_facecolor("#0E1117")
-                fig.tight_layout()
-                fig.savefig(str(segments_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight")
+                fig.savefig(str(segments_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0)
                 plt.close(fig)
                 out_paths["preview_segments_png"] = str(segments_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
@@ -381,6 +367,19 @@ def process_targets():
         sunshine_hours = float(sp.get("maxSunshineHoursPerYear", 0.0))
         co2_factor = float(sp.get("carbonOffsetFactorKgPerMwh", 808.999))
 
+        # Additional Google Solar API Native Metrics (Maximize RAB return)
+        wr = sp.get("wholeRoofStats", {})
+        whole_roof_area = float(wr.get("areaMeters2", 0.0))
+        suitability_ratio = round((max_roof_area / whole_roof_area * 100), 1) if whole_roof_area > 0 else 0.0
+        
+        configs = sp.get("solarPanelConfigs", [])
+        google_dc_kwh = float(configs[-1].get("yearlyEnergyDcKwh", 0.0)) if configs else 0.0
+        google_dc_mwh = round(google_dc_kwh / 1000.0, 2)
+        
+        bs = sp.get("buildingStats", {})
+        building_footprint = float(bs.get("areaMeters2", 0.0))
+        postal_code = bi_data.get("postalCode", "")
+
         # CELIOS Formulas
         panel_wp = 400
         capacity_kwp = (max_panels * panel_wp) / 1000.0
@@ -406,6 +405,7 @@ def process_targets():
             "category": cat,
             "category_display": t["category_display"],
             "city_regency": t["city_regency"],
+            "postal_code": postal_code,
             "source_raw_file": t["source_raw_file"],
             "raw_lat": t["raw_lat"],
             "raw_lon": t["raw_lon"],
@@ -416,11 +416,15 @@ def process_targets():
             "drift_status": drift_status,
             "imagery_date": imagery_date,
             "quality_tier": "BASE",
-            "max_panels_count": max_panels,
+            "whole_roof_area_m2": round(whole_roof_area, 2),
             "max_roof_area_m2": round(max_roof_area, 2),
+            "roof_suitability_ratio_pct": suitability_ratio,
+            "building_footprint_m2": round(building_footprint, 2),
+            "max_panels_count": max_panels,
             "sunshine_hours_annual": round(sunshine_hours, 2),
             "panel_capacity_wp": panel_wp,
             "installed_capacity_kwp": round(capacity_kwp, 2),
+            "google_dc_mwh": google_dc_mwh,
             "annual_generation_kwh": round(annual_gen_kwh, 2),
             "annual_generation_mwh": round(annual_gen_mwh, 2),
             "carbon_offset_factor": round(co2_factor, 2),
