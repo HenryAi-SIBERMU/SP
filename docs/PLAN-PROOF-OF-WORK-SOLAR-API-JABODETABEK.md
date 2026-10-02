@@ -215,6 +215,55 @@ flowchart TD
 
 > **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit.csv`.
 
+### 2.6. PELAJARAN METODOLOGIS KASUS LIPPO MALL PURI: MENGAPA TARGET INGEST HARUS DIRE-CENTER (FOCUSED FACILITY VS MIXED-USE SUPERBLOCK)
+
+Selama pengujian visual dan evaluasi citra raster titik ke-5 (**Lippo Mall Puri Multilevel Parking / `PKG-020`**), ditemukan fenomena distorsi optik dan ketidaktepatan spasial yang memberikan pelajaran metodologis krusial untuk otomatisasi ribuan titik aglomerasi berikutnya:
+
+#### 1. Fenomena Distorsi Optik (*True-Orthorectification Smearing*):
+* **Gejala Awal:** Pada penarikan awal dengan titik OSM mentah (`-6.19028, 106.73937`) dan radius $170\text{ m}$, citra RGB dan DSM memperlihatkan distorsi visual: dinding vertikal apartemen tampak teregang (*stretching / smearing*) ke bawah, dan bayangan pelangi menutupi aspal dan vegetasi.
+* **Akar Penyebab Matematis/Fotogrametris:** 
+  * Google Solar API memproyeksikan citra satelit aerial menggunakan algoritma *True-Orthorectification* berbasis model permukaan 3D (*Digital Surface Model*).
+  * Di dalam radius $170\text{ m}$ tersebut, terdapat 4 menara apartemen pencakar langit *The St. Moritz Penthouses & Residences* setinggi **$128,5\text{ meter}$**.
+  * Dinding vertikal menara yang sangat tinggi menyebabkan oklusi optik (*building lean & occlusion*). Algoritma ortorektifikasi berusaha merekonstruksi tanah yang tertutup dinding tegak dengan meregangkan piksel dinding ke permukaan jalan, menciptakan efek lelehan piksel (*smearing artifact*).
+  * Secara bersamaan, kanvas DSM didominasi kontras ekstrim: lantai dasar ($3,8\text{ m}$) hingga puncak menara ($128,5\text{ m}$), sehingga variasi elevasi lantai gedung parkir ($12 - 24\text{ m}$) terkompresi secara visual.
+
+#### 2. Kelemahan Logika Preprocessing Awal (Celah Validasi Drift Sederhana):
+* **False Positive pada Audit Drift Jarak Centroid:**
+  * Titik OSM mentah (`-6.19028, 106.73937`) memiliki jarak pergeseran hanya **$24,2\text{ meter}$** terhadap titik tengah tapak Google (`-6.19036, 106.73957`).
+  * Karena $24,2\text{ m} < 30\text{ m}$ (ambang batas validitas), audit drift sederhana menandai titik tersebut sebagai **VALID**.
+  * Namun titik tengah tersebut adalah centroid dari *seluruh superblok gabungan* (mall + apartemen + jalan akses), bukan atap fasilitas fisik gedung parkir yang sebenarnya. Akibatnya, titik ingest API ditarik tepat di atas jalan akses drop-off internal di antara menara apartemen, bukan di atas dek parkir.
+
+#### 3. Solusi Koreksi Spasial: *Focused Spatial Re-Centering* & *Adaptive Radius Reduction*:
+* **Penentuan Titik Fisik Dek Parkir Sebenarnya:**
+  * Struktur fisik gedung parkir multilevel (*multilevel parking deck*, Segmen S2) terverifikasi secara fotogrametris dan geospasial pada koordinat pusat dek:
+    $$\text{Rooftop Parking Deck: } (-6.1907208,\ 106.7399529)$$
+* **Penyusutan Radius Adaptif ($R = 75\text{ m}$):**
+  * Dengan melakukan *re-centering* ke koordinat atap dek parkir dan memperkecil radius kanvas raster dari $170\text{ m}$ menjadi **$75\text{ m}$**, batas kanvas raster ($150\text{ m} \times 150\text{ m}$) memotong bersih kawasan parkir tanpa menyentuh kaki 4 menara apartemen $128\text{ m}$.
+* **Hasil Refetch Raster & Transformasi ETL:**
+  * **Zero Distortion:** Citra RGB satelit $0.25\text{ m/pixel}$ kembali tajam sempurna, memperlihatkan persegi lantai dak atap parkir, marka aspal, ramp spiral kendaraan, dan kanopi tanpa artefak distorsi fasad dinding.
+  * **Kontras Elevasi Ideal:** Rentang elevasi DSM kini terisolasi pada $3,8\text{ m} - 43,8\text{ m}$ (lantai dek parkir datar kuning pada level $\sim 24\text{ m}$).
+  * **Presisi Potensi PLTS Fasilitas:** Menghasilkan potensi terfokus fasilitas parkir murni sebesar **873 panel ($349,2\text{ kWp}$)**, luas atap efektif **$2.423,2\text{ m}^2$**, dan generasi listrik **$468,8\text{ MWh/tahun}$** dengan *spatial drift* terkoreksi menjadi **$0,00\text{ meter}$**.
+
+#### 4. Tabel Perbandingan Metodologis (Superblock Envelope vs Focused Re-Centered):
+
+| Parameter Evaluasi | Pendekatan Awal (OSM Raw + R 170m) | Pendekatan Terkoreksi (Re-Centered + R 75m) | Signifikansi Metodologis |
+| :--- | :--- | :--- | :--- |
+| **Koordinat Pusat Ingest** | `-6.19028, 106.73937` (Jalan Drop-Off) | `-6.1907208, 106.7399529` (Pusat Dek Parkir) | Eliminasi deviasi titik akses ke struktur fisik atap |
+| **Radius Kanvas Raster** | $170\text{ meter}$ ($340\text{ m} \times 340\text{ m}$) | **$75\text{ meter}$ ($150\text{ m} \times 150\text{ m}$)** | Efisiensi ukuran raster & fokus objek target |
+| **Rentang Ketinggian DSM** | $11,6\text{ m} - 128,5\text{ m}$ ($\Delta h = 116,9\text{ m}$) | **$3,8\text{ m} - 43,8\text{ m}$ ($\Delta h = 40,0\text{ m}$)** | Menara 128m berada 100% di luar kanvas |
+| **Kualitas Citra RGB** | Terdistorsi (*smearing* oklusi dinding) | **Tajam sempurna (*clean orthophoto*)** | Verifikasi visual layak dipresentasikan ke pemangku kepentingan |
+| **Cakupan Fasilitas** | Superblok Campuran (4 Menara Apartemen + Mall) | **Gedung Parkir Murni (*Dedicated Parking Deck*)** | Presisi kepemilikan aset dan studi kelayakan pembiayaan |
+| **Jumlah Panel & Kapasitas** | $3.648\text{ panel}$ ($1.459,2\text{ kWp}$) | **$873\text{ panel}$ ($349,2\text{ kWp}$)** | Estimasi investasi teknis realistis per fasilitas |
+| **Generasi Energi Tahunan** | $1.960,3\text{ MWh/tahun}$ | **$468,8\text{ MWh/tahun}$** | Akurasi baseline untuk PPA (*Power Purchase Agreement*) |
+
+#### 5. Kaidah Standar Ingest untuk Pipeline Ribuan Titik ke Depan:
+1. **Deteksi Disparitas Elevasi Pra-Fetch Raster:**
+   * Jika pada tahap *Building Insights* ditemukan $\Delta h > 45\text{ m}$ antara segmen atap terendah dan tertinggi, picu prosedur *Superblock Detection*.
+2. **Facility-Snapping / Rooftop Re-Centering:**
+   * Gunakan centroid segmen atap target (misal: klaster atap parkir terdekat dengan titik POI) sebagai titik pusat pemanggilan endpoint `dataLayers:get`, bukan titik mentah POI gerbang/jalan.
+3. **Clamping Radius Berbasis Luas Tapak Segmen:**
+   * Batasi radius $R = \max(D_{\text{segment\_centroid\_to\_vertex}}) + 15\text{ m}$, sehingga kanvas raster tidak memboroskan kuota dan tidak menyerap gedung pencakar langit di sekitarnya.
+
 ---
 
 ## 3. DETAIL TITIK TARGET TAHAP 1 (5 PILOT POINTS FULL SKU)
@@ -474,4 +523,4 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
 - [x] Simpan keluaran terproses ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
 - [x] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta, metrik, tabel audit drift, dan inspeksi citra satelit ganda).
 - [x] Lakukan pengujian sintaks dan dependensi komponen visualisasi.
-- [ ] Auto-commit seluruh kode dan artefak ke Git repository.
+- [x] Auto-commit seluruh kode dan artefak ke Git repository.

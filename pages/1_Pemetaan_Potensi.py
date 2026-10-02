@@ -385,13 +385,14 @@ is_pkg = (asset_row.get("asset_id") == "PKG-020") or ("Lippo Mall Puri" in str(a
 if is_pkg:
     st.markdown("##### Cakupan Analisis Spasial Kawasan Superblok")
     st.markdown(
-        "Kawasan Lippo Mall Puri terintegrasi dalam superblok *mixed-use* St. Moritz yang menggabungkan dek gedung parkir, podium ritel, dan menara hunian vertikal. "
-        "Gunakan sakelar di bawah ini untuk beralih antara fokus fasilitas parkir murni vs konsolidasi seluruh kawasan:"
+        "Kawasan Lippo Mall Puri terintegrasi dalam superblok *mixed-use* St. Moritz. "
+        "Titik ingest telah dire-centering presisi ke atap dek gedung parkir fisik (radius fokus 75 meter, bebas distorsi menara). "
+        "Gunakan sakelar di bawah ini untuk beralih antara fokus fasilitas parkir murni vs konsolidasi seluruh kawasan superblok:"
     )
     scope_mode = st.radio(
         "Pilih Cakupan Analisis Lippo Mall Puri:",
         options=[
-            "🚗 Dek Gedung Parkir Saja (1,03 MWp / 2.580 Panel)",
+            "🚗 Dek Gedung Parkir Murni (349,2 kWp / 873 Panel)",
             "🏢 Seluruh Kawasan Superblok (1,46 MWp / 3.648 Panel)"
         ],
         index=0,
@@ -404,22 +405,24 @@ else:
     is_parking_only = False
 
 # Dinamisasi Metrik Berdasarkan Cakupan Terpilih
-if is_parking_only:
-    disp_capacity_kwp = 1032.0
-    disp_panels_count = 2580
-    disp_roof_area_m2 = 6064.1
-    disp_annual_gen_mwh = 1486.7
-    disp_ghg_co2 = 1202.7
-    disp_category_badge = "FASILITAS PARKIR & PODIUM RITEL (SUB-KLASTER)"
-    disp_subtitle_extra = " | Cakupan: Dek Gedung Parkir Saja (Segmen 1–9)"
+if is_pkg and not is_parking_only:
+    # Mode Konsolidasi Seluruh Kawasan Superblok
+    disp_capacity_kwp = 1459.2
+    disp_panels_count = 3648
+    disp_roof_area_m2 = 9061.9
+    disp_annual_gen_mwh = 2101.6
+    disp_ghg_co2 = 1700.1
+    disp_category_badge = "SELURUH KAWASAN SUPERBLOK ST. MORITZ (KONSOLIDASI)"
+    disp_subtitle_extra = " | Cakupan: Superblok Penuh (Podium + 4 Menara Apartemen)"
 else:
+    # Mode Gedung Parkir Murni (Re-centered 75m)
     disp_capacity_kwp = float(asset_row['installed_capacity_kwp'])
     disp_panels_count = int(asset_row['max_panels_count'])
     disp_roof_area_m2 = float(asset_row['max_roof_area_m2'])
     disp_annual_gen_mwh = float(asset_row['annual_generation_mwh'])
     disp_ghg_co2 = float(asset_row['ghg_reduction_tons_co2'])
-    disp_category_badge = str(asset_row['category_display'])
-    disp_subtitle_extra = " | Cakupan: Seluruh Kawasan Superblok St. Moritz" if is_pkg else ""
+    disp_category_badge = "FASILITAS PARKIR MURNI (RE-CENTERED 75M)" if is_pkg else str(asset_row['category_display'])
+    disp_subtitle_extra = " | Cakupan: Dek Gedung Parkir Murni (Re-centered 75m Radius)" if is_pkg else ""
 
 # Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
@@ -515,14 +518,14 @@ with tab_segments:
     with col_seg_vis:
         st.markdown("##### Visualisasi Poligon Bidang Segmen Atap")
         st.caption("Peta kelompok poligon segmen atap 3D (setiap warna poligon mewakili satu bidang orientasi/kemiringan homogen):")
-        if is_parking_only:
-            segments_img_rel = "data/processed/previews/pkg-020_segments_parking_only.png"
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — Segmen 1 s/d 9, Total 2.580 Panel)"
+        if is_pkg and is_parking_only:
+            segments_img_rel = asset_row.get("preview_segments_png")
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Fokus Dek Gedung Parkir Murni — Re-centered R 75m, Bebas Distorsi Menara, Total 873 Panel)"
         elif "Dukuh Atas" in str(asset_row['asset_name']) or "LRT" in str(asset_row['asset_name']):
             segments_img_rel = asset_row.get("preview_segments_png")
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)"
         elif is_pkg:
-            segments_img_rel = asset_row.get("preview_segments_png")
+            segments_img_rel = "data/processed/previews/pkg-020_segments_parking_only.png"
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Seluruh 21 Segmen Superblok St. Moritz, Total 3.648 Panel)"
         else:
             segments_img_rel = asset_row.get("preview_segments_png")
@@ -541,21 +544,21 @@ with tab_segments:
     with col_seg_info:
         if not df_segments.empty:
             curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
-            if is_parking_only:
-                curr_segs = curr_segs[curr_segs["segment_index"].isin(range(0, 9))].copy()
+            if is_pkg and is_parking_only:
+                curr_segs = curr_segs[curr_segs["spatial_status"] == "Tampil di Citra"].copy()
             if not curr_segs.empty:
                 total_segs = len(curr_segs)
                 active_segs = len(curr_segs[curr_segs["panels_count"] > 0])
                 total_seg_area = curr_segs["area_m2"].sum()
 
                 st.markdown("##### Karakteristik Geometri Atap")
-                if is_parking_only:
+                if is_pkg and is_parking_only:
                     st.markdown(f"""
-                    * **Cakupan Wilayah:** `Dek Gedung Parkir Saja (Sub-Klaster)`
-                    * **Total Bidang Segmen Parkir:** `{total_segs} bidang (Segmen 1 s/d 9)`
+                    * **Cakupan Wilayah:** `Dek Gedung Parkir Murni (Re-centered 75m)`
+                    * **Total Bidang Segmen Parkir Aktif:** `{total_segs} bidang (Segmen 2, 3, 4, 5, 6, 7, 9, 10)`
                     * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
-                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
-                    * **Total Modul di Klaster Parkir:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
+                    * **Total Luas Bidang Segmen Parkir:** `{total_seg_area:,.1f} m²`
+                    * **Total Modul di Gedung Parkir:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
                     """)
                 else:
                     st.markdown(f"""
@@ -601,12 +604,12 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
 
     if not df_segments.empty:
         curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
-        if is_parking_only:
-            curr_segs = curr_segs[curr_segs["segment_index"].isin(range(0, 9))].copy()
+        if is_pkg and is_parking_only:
+            curr_segs = curr_segs[curr_segs["spatial_status"] == "Tampil di Citra"].copy()
         if not curr_segs.empty:
             total_segs = len(curr_segs)
-            if is_parking_only:
-                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — {total_segs} Segmen)")
+            if is_pkg and is_parking_only:
+                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Fasilitas Gedung Parkir Murni — {total_segs} Segmen)")
             elif is_pkg:
                 st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Seluruh Superblok — {total_segs} Segmen)")
             else:
@@ -753,19 +756,20 @@ Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
                 elif is_pkg:
                     if is_parking_only:
                         st.markdown("""
-Kompleks Lippo Mall Puri (Klaster Dek Gedung Parkir Saja — 9 Segmen):
+Kompleks Lippo Mall Puri (Fasilitas Gedung Parkir Murni — Re-centered R 75m):
 
 - **Dek Parkir Utama (Segmen 3 / S2):** Kemiringan = 0.5° (datar), Elevasi = 24.0 m, Luas = 1.593,4 m² → Menampung **705 panel surya (282,0 kWp)** tepat di atas dek terbuka parkir mobil.
-- **Podium Ritel & Atap Mall (Segmen 1 s/d 9):** Menampung total **2.580 panel surya (1.032,0 kWp)** pada rentang elevasi 11,6 m – 26,3 m.
-- **Fokus Sub-Fasilitas:** Memisahkan secara presisi atap gedung parkir dari menara hunian St. Moritz (elevasi 113 m – 128 m) untuk perhitungan kelayakan PLTS khusus fasilitas parkir.
+- **Ramp & Dak Samping (Segmen 2, 4, 5, 6, 7, 9, 10):** Menampung **168 panel surya (67,2 kWp)** pada struktur atap bertingkat rendah (elevasi 11,6 m – 26,3 m).
+- **Fokus Fasilitas Fisik Murni:** Citra berpusat 100% pada struktur gedung parkir (radius 75m), bebas dari bayangan dan distorsi dinding menara apartemen St. Moritz setinggi 128 meter. Total daya terpasang: **349,2 kWp (873 panel)**.
                         """)
                     else:
                         st.markdown("""
-Kawasan Terpadu Superblok Lippo Mall Puri & St. Moritz (21 Segmen):
+Kawasan Terpadu Superblok Lippo Mall Puri & St. Moritz (Konsolidasi Kawasan):
 
-- **Klaster Dek Parkir & Podium Rendah (Segmen 1–9, 10, 11, 15, 20, 21):** Elevasi 11,6 m – 41,1 m, menampung **2.580 panel surya (1.032,0 kWp)** pada atap bertingkat rendah.
-- **Klaster Menara Hunian Vertikal St. Moritz (Segmen 1, 8, 13, 14, 16, 19):** Elevasi tinggi 102,6 m – 128,5 m, menampung **1.068 panel surya (427,2 kWp)** pada rooftop tower apartemen.
-- **Konsolidasi Seluruh Kawasan:** Total potensi PLTS superblok mencapai **1,46 MWp (3.648 panel)** dengan estimasi reduksi emisi 1.700,1 Ton CO₂/tahun.
+- **Fasilitas Gedung Parkir (Elevasi 11,6 m – 26,3 m):** Menampung **873 panel surya (349,2 kWp)** pada atap bertingkat rendah.
+- **Podium Ritel & Atap Mall Penghubung:** Menampung panel surya tambahan di atas atap mall.
+- **Menara Apartemen Vertikal St. Moritz (Elevasi 102,6 m – 128,5 m):** Menampung **2.400+ panel surya** pada rooftop penthouse tower apartemen.
+- **Konsolidasi Seluruh Kawasan:** Total potensi superblok mencapai **1,46 MWp (3.648 panel)** dengan estimasi reduksi emisi 1.700,1 Ton CO₂/tahun.
                         """)
                 else:
                     st.markdown(f"""
@@ -802,11 +806,11 @@ with tab_panels:
     with col_p1:
         st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
         st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
-        if is_parking_only:
-            panels_img_rel = "data/processed/previews/pkg-020_panels_parking_only.png"
-            p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — 1.032,0 kWp)"
-        elif is_pkg:
+        if is_pkg and is_parking_only:
             panels_img_rel = asset_row.get("preview_panels_png")
+            p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} (Fokus Dek Gedung Parkir Murni — Re-centered R 75m, {disp_capacity_kwp:,.1f} kWp)"
+        elif is_pkg:
+            panels_img_rel = "data/processed/previews/pkg-020_panels_parking_only.png"
             p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} (Seluruh Superblok St. Moritz — 1.459,2 kWp)"
         else:
             panels_img_rel = asset_row.get("preview_panels_png")
@@ -828,10 +832,10 @@ with tab_panels:
         * **Total Daya Terpasang:** `{disp_capacity_kwp:,.1f} kWp`
         * **Rata-rata Produksi / Panel:** `{prod_per_panel:,.1f} kWh/panel/thn`
         """)
-        if is_parking_only:
-            st.info("**Filter Sub-Fasilitas Aktif:** Hanya memetakan modul fotovoltaik pada klaster dek gedung parkir mobil dan podium ritel (2.580 unit). Panel pada menara apartemen St. Moritz (1.068 unit) diisolasi untuk akuntansi portofolio parkir murni.")
+        if is_pkg and is_parking_only:
+            st.info("**Fasilitas Parkir Murni:** Memetakan 873 modul fotovoltaik langsung di atas dek gedung parkir mobil dan struktur kanopinya. Bebas dari distorsi dan bayangan menara apartemen St. Moritz.")
         else:
-            st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
+            st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
