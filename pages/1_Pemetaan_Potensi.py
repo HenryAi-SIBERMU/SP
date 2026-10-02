@@ -485,7 +485,7 @@ with tab_segments:
         if "Dukuh Atas" in str(asset_row['asset_name']) or "LRT" in str(asset_row['asset_name']):
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)"
         elif "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Fokus Dek Gedung Parkir Sesuai Data OSM, Total 873 Panel / 349,2 kWp)"
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Fokus Atap Lippo Mall Puri 2 Sesuai Data OSM Way 625889355, Total {disp_panels_count:,} Panel / {disp_capacity_kwp:,.1f} kWp)"
         else:
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']}"
 
@@ -510,11 +510,11 @@ with tab_segments:
                 st.markdown("##### Karakteristik Geometri Atap")
                 if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
                     st.markdown(f"""
-                    * **Fokus Fasilitas Fisik:** `Dek Gedung Parkir Bertingkat (Sesuai Entitas OSM)`
-                    * **Total Bidang Segmen Parkir:** `{total_segs} bidang (Segmen 2, 3, 4, 5, 6, 7, 9, 10)`
+                    * **Fokus Fasilitas Fisik:** `Atap Mall Komersial & Teras (Sesuai Entitas OSM Way 625889355)`
+                    * **Total Bidang Segmen Atap:** `{total_segs} bidang (Segmen 1 & Segmen 2)`
                     * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
-                    * **Total Luas Bidang Segmen Parkir:** `{total_seg_area:,.1f} m²`
-                    * **Total Modul di Gedung Parkir:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
+                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
+                    * **Total Modul di Atap Mall:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
                     """)
                 else:
                     st.markdown(f"""
@@ -563,7 +563,7 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
         if not curr_segs.empty:
             total_segs = len(curr_segs)
             if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
-                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Fasilitas Gedung Parkir Sesuai Data OSM — {total_segs} Segmen)")
+                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Atap Mall Komersial Sesuai Data OSM — {total_segs} Segmen)")
             else:
                 st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
             st.caption("Nomor pada kolom **No. Segmen** bersesuaian langsung dengan label lingkaran nomor ①, ②, ③, ... pada citra satelit di atas (ID Google API mencatat indeks teknis internal S0, S1, ...):")
@@ -690,12 +690,12 @@ Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
 - **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
                     """)
                 elif "Lippo" in asset_row["asset_name"] or "PKG-020" in str(asset_row.get("asset_id", "")):
-                    st.markdown("""
-Kompleks Lippo Mall Puri (Fasilitas Gedung Parkir Sesuai Data OSM):
+                    st.markdown(f"""
+Kompleks Lippo Mall Puri 2 (Atap Komersial Sesuai Data Terbuka OSM Way 625889355):
 
-- **Dek Parkir Utama (Segmen 3 / S2):** Kemiringan = 0.5° (datar), Elevasi = 24.0 m, Luas = 1.593,4 m² → Menampung **705 panel surya (282,0 kWp)** tepat di atas dek terbuka parkir mobil.
-- **Ramp & Dak Samping (Segmen 2, 4, 5, 6, 7, 9, 10):** Menampung **168 panel surya (67,2 kWp)** pada struktur atap bertingkat rendah (elevasi 11,6 m – 41,1 m).
-- **Fokus Fasilitas Fisik Murni:** Citra berpusat 100% pada struktur gedung parkir (radius 75m), bebas dari bayangan dan distorsi dinding menara apartemen St. Moritz setinggi 128 meter. Total daya terpasang: **349,2 kWp (873 panel)**.
+- **Sayap Atap Mall 2 (Segmen 1 / S0):** Kemiringan = 25,1°, Azimuth = 229,9° (Barat Daya), Elevasi = 51,2 m → Menampung **147 panel surya (58,8 kWp)** di teras atap barat.
+- **Teras Atap Mall 2 (Segmen 2 / S1):** Kemiringan = 10,7°, Azimuth = 244,4° (Barat Daya), Elevasi = 55,9 m → Menampung **46 panel surya (18,4 kWp)**.
+- **Fokus Fasilitas Fisik Murni:** Citra berpusat langsung pada atap Lippo Mall Puri 2 (radius 95 m, resolusi 0.1 m/px), mencakup sayap mall utara dan fasilitas olahraga/helipad rooftop yang dilingkari pengguna. Total daya terpasang: **{disp_capacity_kwp:,.1f} kWp ({disp_panels_count:,} panel)**.
                     """)
                 else:
                     st.markdown(f"""
@@ -752,7 +752,7 @@ with tab_panels:
         * **Rata-rata Produksi / Panel:** `{prod_per_panel:,.1f} kWh/panel/thn`
         """)
         if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
-            st.info("**Fasilitas Gedung Parkir Sesuai Data OSM:** Memetakan 873 modul fotovoltaik langsung di atas dek gedung parkir mobil dan struktur kanopinya. Menara apartemen St. Moritz setinggi 128 meter sepenuhnya dieliminasi dari analisis.")
+            st.info("**Fasilitas Komersial Sesuai Data OSM:** Memetakan 193 modul fotovoltaik langsung di atas sayap atap Lippo Mall Puri 2. Menara apartemen St. Moritz dan area parkir selatan sepenuhnya terpisah dari lingkup tapak gedung ini.")
         else:
             st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google.")
 

@@ -191,7 +191,7 @@ def run_superblock_audit():
         ("KRL-032", -6.2101704, 106.849935, "Stasiun KRL Manggarai Sentral", RAW_SOLAR_DIR / "building_insights" / "krl" / "krl-032_insights.json"),
         ("LRT-014", -6.2048200, 106.825530, "Stasiun LRT Dukuh Atas", RAW_SOLAR_DIR / "building_insights" / "lrt" / "lrt-014_insights.json"),
         ("RS-007", -6.1715500, 106.810250, "RSUD Tarakan Jakarta", RAW_SOLAR_DIR / "building_insights" / "hospital" / "rs-007_insights.json"),
-        ("PKG-020", -6.1902833, 106.7393679, "Lippo Mall Puri 1 Multilevel Parking", RAW_SOLAR_DIR / "building_insights" / "parking" / "pkg-020_insights.json"),
+        ("PKG-020", -6.1878740, 106.7391067, "Lippo Mall Puri 2", RAW_SOLAR_DIR / "building_insights" / "parking" / "pkg-020_insights.json"),
     ]
 
     records = []

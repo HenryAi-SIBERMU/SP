@@ -149,22 +149,16 @@ def load_raw_targets():
         "lon": float(tarakan_pt.x)
     })
 
-    # 5. Gedung Parkir Lippo Mall Puri
-    park_path = PROJECT_ROOT / "data" / "raw" / "osm" / "parking_jakarta.gpkg"
-    if not park_path.exists():
-        raise FileNotFoundError(f"File tidak ditemukan: {park_path}")
-    gdf_park = gpd.read_file(park_path)
-    puri = gdf_park[gdf_park["name"].astype(str).str.contains("Lippo Mall Puri 1 Multilevel", case=False, na=False)].iloc[0]
-    puri_pt = puri.geometry if puri.geometry.geom_type == "Point" else puri.geometry.centroid
+    # 5. Lippo Mall Puri 2 (Atap Mall Komersial Sesuai OSM Way 625889355)
     targets.append({
         "asset_id": "PKG-020",
-        "asset_name": "Lippo Mall Puri 1 Multilevel Parking",
+        "asset_name": "Lippo Mall Puri 2",
         "category": "parking",
-        "category_display": "Gedung Parkir",
+        "category_display": "Gedung Komersial / Parkir",
         "city_regency": "Jakarta Barat",
-        "source_file": "data/raw/osm/parking_jakarta.gpkg",
-        "lat": float(puri_pt.y),
-        "lon": float(puri_pt.x)
+        "source_file": "OpenStreetMap Way 625889355",
+        "lat": -6.1878740,
+        "lon": 106.7391067
     })
 
     return targets

@@ -183,7 +183,7 @@ def audit_pilot_points():
         ("KRL-032", "krl", "Stasiun KRL Manggarai Sentral", RAW_SOLAR_DIR / "building_insights" / "krl" / "krl-032_insights.json"),
         ("LRT-014", "lrt", "Stasiun LRT Dukuh Atas", RAW_SOLAR_DIR / "building_insights" / "lrt" / "lrt-014_insights.json"),
         ("RS-007", "hospital", "RSUD Tarakan Jakarta", RAW_SOLAR_DIR / "building_insights" / "hospital" / "rs-007_insights.json"),
-        ("PKG-020", "parking", "Lippo Mall Puri Parking", RAW_SOLAR_DIR / "building_insights" / "parking" / "pkg-020_insights.json"),
+        ("PKG-020", "parking", "Lippo Mall Puri 2", RAW_SOLAR_DIR / "building_insights" / "parking" / "pkg-020_insights.json"),
     ]
 
     records = []
