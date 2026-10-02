@@ -41,6 +41,57 @@ graph TD
 | **Sisa Saldo Talangan** | **Rp 491.600 (98.3% Utuh)** | **Rp 483.200 (96.6% Utuh)** | Utuh sepenuhnya |
 | **Deliverable Langsung** | 5 JSON + 20 GeoTIFF + Integrasi Dashboard Streamlit | Dataset 110 Titik + Peta Web GIS | Full Database & Report CELIOS |
 
+### 1.3. Alur Kerja Lengkap Proyek (Dari Data Mentah Sampai Visualisasi Dashboard)
+
+Alur kerja menyeluruh (*end-to-end pipeline*) pemrosesan Google Solar API dari input geospasial mentah hingga antarmuka visualisasi interaktif eksekutif di Streamlit:
+
+```mermaid
+flowchart TD
+    subgraph S1 ["1. Data Sourcing & Target Ingestion"]
+        A1["Dataset Titik Fisik Mentah<br/>(OSM, GTFS MRT/LRT, KRL Stations)"] --> A2["Normalisasi Koordinat WGS84<br/>(GeoJSON, GPKG, CSV)"]
+    end
+
+    subgraph S2 ["2. Preprocessing Spasial & Dynamic Radius"]
+        A2 --> B1["Query Google Building Insights API<br/>($0.0075 / panggilan)"]
+        B1 --> B2["Centroid Snapping & Audit Jangkauan Panel<br/>(Hitung Max Reach & Aspek Rasio)"]
+        B2 --> B3["Kalkulasi Dynamic RadiusMeters<br/>(35m - 250m agar citra tidak terpotong)"]
+    end
+
+    subgraph S3 ["3. Ekstraksi Google Solar Data Layers"]
+        B3 --> C1["Query Data Layers API (FULL_LAYERS)"]
+        C1 --> C2["Download 4 GeoTIFF Resolusi 0.25m/px:<br/>• RGB Satelit Asli<br/>• DSM Elevasi 3D<br/>• Roof Mask Biner<br/>• Annual Solar Flux Heatmap"]
+    end
+
+    subgraph S4 ["4. Pipeline ETL & Sains Fisika PLTS"]
+        C2 --> D1["Transformasi Koordinat Spasial<br/>(WGS84 EPSG:4326 ➔ Raster Affine CRS)"]
+        D1 --> D2["Vektorisasi Modul Panel Surya<br/>(Layout 400Wp, orientasi Ridge vs Slope)"]
+        D1 --> D3["Karakterisasi Segmen Atap 3D<br/>(Pitch, Azimuth, Elevasi, Solar Insight)"]
+        D2 & D3 --> D4["Audit Spasial Otomatis<br/>• Spatial Drift Check (< 30m)<br/>• Boundary Clipping Check<br/>• Zero-Panel Elimination Justification"]
+        D4 --> D5["Model Energi & Emisi CELIOS<br/>• Kapasitas kWp = Panel × 400Wp<br/>• MWh/thn = PR 80% × Insolasi Surya<br/>• Ton CO2 = MWh × Faktor Emisi 0.87"]
+    end
+
+    subgraph S5 ["5. Penyimpanan Data Terstruktur"]
+        D5 --> E1["Tabel Kalkulasi Processed<br/>(CSV & Parquet)"]
+        D5 --> E2["Layer GIS Vektor<br/>(GeoJSON Titik Pilot)"]
+        D5 --> E3["Render Raster Previews PNG<br/>(Panels Overlay, Segments, DSM, Mask, Flux)"]
+    end
+
+    subgraph S6 ["6. Antarmuka Dashboard Eksekutif (Streamlit)"]
+        E1 & E2 & E3 --> F1["KPI Banner Ringkasan 5 Titik"]
+        E1 & E2 & E3 --> F2["Peta Interaktif Jabodetabek (Folium)"]
+        E1 & E2 & E3 --> F3["Tab Visualisasi SKU Multi-Layer:<br/>1. Foto Satelit RGB<br/>2. Sebaran Panel di Atap<br/>3. DSM Elevasi 3D<br/>4. Roof Mask Segmentasi<br/>5. Annual Solar Flux<br/>6. Grid Poligon Segmen Atap"]
+        E1 & E2 & E3 --> F4["Tabel Rincian Segmen, Status Spasial & Sains Pitch/Azimuth"]
+    end
+```
+
+#### Rincian 6 Pilar Utama Alur Kerja:
+1. **Data Sourcing & Target Ingestion:** Standardisasi koordinat WGS84 dari database terbuka (OSM) dan rute transit resmi (GTFS MRT/LRT/KRL).
+2. **Spatial Preprocessing & Dynamic Radius:** Pemanfaatan *Two-Stage API Query*, pergeseran ke *centroid* atap fisik Google, dan kalkulasi radius adaptif (35m – 250m) berbasis bentang terjauh modul.
+3. **Data Layers Extraction:** Penarikan 4 GeoTIFF resolusi tinggi (0,25 m/px) yang mencakup citra RGB asli, DSM elevasi 3D, mask biner atap, dan heatmap radiasi tahunan.
+4. **ETL & Solar Physics Modeling:** Proyeksi spasial ke piksel raster, vektorisasi kotak modul surya 400Wp, audit eliminasi bidang, dan kalkulasi energi serta dekarbonisasi CELIOS.
+5. **Structured Storage:** Persistensi data ke format Parquet, CSV, GeoJSON, dan render berkas pratinjau PNG berkualitas tinggi.
+6. **Executive Dashboard Delivery:** Penyajian komprehensif pada aplikasi Streamlit dengan KPI eksekutif, peta interaktif Jabodetabek, dan 6 tab visualisasi lapisan SKU.
+
 ---
 
 ## 2. EVALUASI METODOLOGI SPASIAL: GOOGLE API VS PIPELINE GEOSPASIAL PRD
