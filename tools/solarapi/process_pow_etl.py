@@ -520,6 +520,17 @@ def process_targets():
             "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)",
             "Menangkap sinar sore"
         ]
+        # Open raster once to check spatial bounds for visibility audit
+        r_w, r_h = 479, 479
+        trans_r = None
+        if rgb_tif and rgb_tif.exists():
+            try:
+                with rasterio.open(rgb_tif) as src_r:
+                    r_w, r_h = src_r.width, src_r.height
+                    trans_r = Transformer.from_crs("EPSG:4326", src_r.crs, always_xy=True)
+            except Exception:
+                pass
+
         for s_idx, s in enumerate(segs):
             p_cnt = sum(1 for pan in panels if pan.get("segmentIndex") == s_idx)
             p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in panels if pan.get("segmentIndex") == s_idx)
@@ -531,6 +542,24 @@ def process_targets():
             else:
                 insight = solar_insights[d_idx]
 
+            # Determine spatial visibility status
+            if p_cnt == 0:
+                spatial_status = "Dieliminasi Google (0 Panel)"
+            elif trans_r is not None:
+                pts_in_count = 0
+                for pan in panels:
+                    if pan.get("segmentIndex") == s_idx:
+                        ux, uy = trans_r.transform(pan["center"]["longitude"], pan["center"]["latitude"])
+                        py, px = src_r.index(ux, uy)
+                        if 0 <= px < r_w and 0 <= py < r_h:
+                            pts_in_count += 1
+                if pts_in_count == 0:
+                    spatial_status = "Di Luar Bingkai Citra (>60m)"
+                else:
+                    spatial_status = "Tampil di Citra"
+            else:
+                spatial_status = "Tampil di Citra"
+
             segment_records.append({
                 "asset_id": t["asset_id"],
                 "asset_name": t["asset_name"],
@@ -540,6 +569,7 @@ def process_targets():
                 "pitch_degrees": pitch,
                 "azimuth_degrees": round(az, 2),
                 "azimuth_direction": dirs[d_idx],
+                "spatial_status": spatial_status,
                 "solar_insight": insight,
                 "plane_height_m": round(s.get("planeHeightAtCenterMeters", 0.0), 2),
                 "area_m2": round(s.get("stats", {}).get("areaMeters2", 0.0), 2),

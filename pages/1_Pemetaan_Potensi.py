@@ -523,12 +523,18 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                     return solar_insights_map[d_i]
                 curr_segs["solar_insight"] = curr_segs.apply(calc_insight, axis=1)
 
+            if "spatial_status" not in curr_segs.columns:
+                curr_segs["spatial_status"] = curr_segs["panels_count"].apply(
+                    lambda p: "Tampil di Citra" if p > 0 else "Dieliminasi Google (0 Panel)"
+                )
+
             display_segs = curr_segs[[
-                "seg_no", "api_id", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
+                "seg_no", "api_id", "spatial_status", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
                 "solar_insight", "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
             ]].rename(columns={
                 "seg_no": "No. Segmen",
                 "api_id": "ID Google API",
+                "spatial_status": "Status Visualisasi",
                 "pitch_degrees": "Kemiringan (Pitch)",
                 "azimuth_degrees": "Azimuth (°)",
                 "azimuth_direction": "Arah Hadap",
@@ -547,6 +553,7 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                 column_config={
                     "No. Segmen": st.column_config.NumberColumn(format="%d", help="Nomor segmen yang dicantumkan pada lingkaran gambar di atas"),
                     "ID Google API": st.column_config.TextColumn(help="Indeks teknis 0-based dari Google Solar API roofSegmentStats"),
+                    "Status Visualisasi": st.column_config.TextColumn(help="Keterangan spasial segmen pada citra satelit (Tampil di Citra, Di Luar Bingkai Citra >60m, atau Dieliminasi Google 0 Panel)"),
                     "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
                     "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
                     "Arah Hadap": st.column_config.TextColumn(),
@@ -600,6 +607,15 @@ Kompleks Stasiun Manggarai Sentral memiliki kombinasi dek atap utama dan kanopi 
 - **Kanopi Sayap Timur (Segmen 6 / S5):** Kemiringan = 2.6°, Azimuth = 76.1° (Timur) → Memanen radiasi **pagi hari** (844 panel).
 
 Kombinasi multi-segmen ini memungkinkan atap Manggarai menampung total 4,429 panel surya (1.77 MWp) secara terstruktur tanpa saling membayangi.
+                    """)
+                elif "Dukuh Atas" in asset_row["asset_name"] or "LRT" in asset_row["asset_name"]:
+                    st.markdown("""
+Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
+
+- **Kubah Utama Stasiun (Segmen 2 / S1):** Kemiringan = 3.0°, Azimuth = 60.8° (Timur Laut) → Menampung **687 panel surya (274.8 kWp)** di atas kanopi lengkung stasiun.
+- **Kanopi Walkway / Jembatan Pejalan Kaki (Segmen 4 / S3):** Kemiringan = 2.25°, Azimuth = 175.4° (Selatan) → Menampung **52 panel surya (20.8 kWp)**.
+- **Sayap Timur (Segmen 1 / S0):** Memiliki **38 panel surya (15.2 kWp)**, berjarak >60 meter dari titik tengah koordinat stasiun sehingga posisinya berada di luar bingkai citra satelit Google (radius 60 m).
+- **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
                     """)
                 else:
                     st.markdown(f"""
