@@ -414,6 +414,30 @@ def process_targets():
         building_footprint = float(bs.get("areaMeters2", 0.0))
         postal_code = bi_data.get("postalCode", "")
 
+        # Slope & Roof Physical Characteristics
+        segs = sp.get("roofSegmentStats", [])
+        if segs:
+            pitches = [s.get("pitchDegrees", 0.0) for s in segs]
+            areas = [s.get("stats", {}).get("areaMeters2", 0.0) for s in segs]
+            min_p = min(pitches)
+            max_p = max(pitches)
+            tot_seg_area = sum(areas)
+            weighted_p = sum(p * a for p, a in zip(pitches, areas)) / tot_seg_area if tot_seg_area > 0 else 0.0
+            pitch_range = f"{min_p:.1f}° – {max_p:.1f}°"
+            weighted_pitch = round(weighted_p, 1)
+        else:
+            pitch_range = "N/A"
+            weighted_pitch = 0.0
+
+        roof_characteristics_dict = {
+            "LRT-014": "Sangat Landai / Datar: Kanopi peron baja bentang panjang modern.",
+            "KRL-032": "Dominan Landai: Sebagian besar berupa dak baja bentang lebar (1,1° – 2,6°), dengan beberapa atap ventilasi curam.",
+            "RS-007": "Campuran: Dominan dak beton datar bertingkat, bersanding dengan atap limasan/pelana teknis.",
+            "MRT-003": "Atap Pelana Melengkung: Sisi sayap timur miring 15°, sayap barat miring 18°.",
+            "PKG-020": "Multi-Level Kompleks: Dek parkir atas datar (0,2°), ramp atap miring (34,6°), hingga dinding/fasad curam (79°, 0 panel)."
+        }
+        roof_char = roof_characteristics_dict.get(t["asset_id"], "")
+
         # CELIOS Formulas
         panel_wp = 400
         capacity_kwp = (max_panels * panel_wp) / 1000.0
@@ -454,6 +478,10 @@ def process_targets():
             "max_roof_area_m2": round(max_roof_area, 2),
             "roof_suitability_ratio_pct": suitability_ratio,
             "building_footprint_m2": round(building_footprint, 2),
+            "total_segments_count": len(segs),
+            "pitch_range": pitch_range,
+            "weighted_pitch_deg": weighted_pitch,
+            "roof_character": roof_char,
             "max_panels_count": max_panels,
             "sunshine_hours_annual": round(sunshine_hours, 2),
             "panel_capacity_wp": panel_wp,
@@ -482,20 +510,37 @@ def process_targets():
         segs = sp.get("roofSegmentStats", [])
         panels = sp.get("solarPanels", [])
         dirs = ["U (0°)", "TL (45°)", "T (90°)", "TG (135°)", "S (180°)", "BD (225°)", "B (270°)", "BL (315°)"]
+        solar_insights = [
+            "Optimal saat matahari condong di utara (April – Agustus)",
+            "Menangkap sinar pagi menjelang siang",
+            "Matahari Terbit: Produksi listrik memuncak di pagi hari (07.00 – 11.00)",
+            "Menangkap sinar pagi menjelang tengah hari",
+            "Optimal saat matahari condong di selatan (Oktober – Februari)",
+            "Menangkap sinar siang menjelang sore",
+            "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)",
+            "Menangkap sinar sore"
+        ]
         for s_idx, s in enumerate(segs):
             p_cnt = sum(1 for pan in panels if pan.get("segmentIndex") == s_idx)
             p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in panels if pan.get("segmentIndex") == s_idx)
+            pitch = round(s.get("pitchDegrees", 0.0), 2)
             az = s.get("azimuthDegrees", 0.0)
             d_idx = int((az + 22.5) // 45) % 8
+            if pitch < 3.0:
+                insight = "Atap Datar (Puncak tengah hari 11.00–13.00, self-cleaning alami rendah)"
+            else:
+                insight = solar_insights[d_idx]
+
             segment_records.append({
                 "asset_id": t["asset_id"],
                 "asset_name": t["asset_name"],
                 "category": cat,
                 "category_display": t["category_display"],
                 "segment_index": s_idx,
-                "pitch_degrees": round(s.get("pitchDegrees", 0.0), 2),
+                "pitch_degrees": pitch,
                 "azimuth_degrees": round(az, 2),
                 "azimuth_direction": dirs[d_idx],
+                "solar_insight": insight,
                 "plane_height_m": round(s.get("planeHeightAtCenterMeters", 0.0), 2),
                 "area_m2": round(s.get("stats", {}).get("areaMeters2", 0.0), 2),
                 "ground_area_m2": round(s.get("stats", {}).get("groundAreaMeters2", 0.0), 2),

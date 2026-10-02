@@ -167,6 +167,7 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "category_display", "asset_name", "city_regency", "postal_code",
         "whole_roof_area_m2", "max_roof_area_m2", "roof_suitability_ratio_pct", "building_footprint_m2",
         "total_segments", "active_segments",
+        "pitch_range", "weighted_pitch_deg", "roof_character",
         "max_panels_count", "installed_capacity_kwp",
         "sunshine_hours_annual", "google_dc_mwh", "annual_generation_mwh", "prod_per_panel_kwh",
         "carbon_offset_factor", "ghg_reduction_tons_co2",
@@ -182,6 +183,9 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "building_footprint_m2": "Tapak Bangunan (m²)",
         "total_segments": "Total Segmen",
         "active_segments": "Segmen Terisi",
+        "pitch_range": "Rentang Kemiringan (Min – Max)",
+        "weighted_pitch_deg": "Bobot Kemiringan",
+        "roof_character": "Karakter Fisik Atap",
         "max_panels_count": "Total Panel (unit)",
         "installed_capacity_kwp": "Kapasitas (kWp)",
         "sunshine_hours_annual": "Jam Sinar (jam/thn)",
@@ -209,6 +213,9 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
             "Tapak Bangunan (m²)": st.column_config.NumberColumn(format="%.1f m²"),
             "Total Segmen": st.column_config.NumberColumn(format="%d"),
             "Segmen Terisi": st.column_config.NumberColumn(format="%d"),
+            "Rentang Kemiringan (Min – Max)": st.column_config.TextColumn(width="medium"),
+            "Bobot Kemiringan": st.column_config.NumberColumn(format="%.1f°"),
+            "Karakter Fisik Atap": st.column_config.TextColumn(width="large"),
             "Total Panel (unit)": st.column_config.NumberColumn(format="%d"),
             "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
             "Jam Sinar (jam/thn)": st.column_config.NumberColumn(format="%.0f jam"),
@@ -232,6 +239,87 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         file_name="pow_solar_5_titik_master_table.csv",
         mime="text/csv"
     )
+
+    st.markdown("<hr style='border-color: #1E293B; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
+
+    # ─── TABEL 1: RINGKASAN KARAKTERISTIK KEMIRINGAN PER BANGUNAN ─────────────
+    st.markdown("#### Tabel 1: Ringkasan Karakteristik Kemiringan per Bangunan")
+    st.caption("Hasil analisis kemiringan bidang atap (pitch) dan klasifikasi karakter fisik atap berdasarkan segmentasi 3D Google Solar API:")
+
+    df_t1 = df_master.sort_values("weighted_pitch_deg").copy()
+    df_t1["No"] = range(1, len(df_t1) + 1)
+    t1_display = df_t1[[
+        "No", "asset_name", "category_display", "total_segments_count",
+        "pitch_range", "weighted_pitch_deg", "roof_character"
+    ]].rename(columns={
+        "asset_name": "Infrastruktur",
+        "category_display": "Kategori",
+        "total_segments_count": "Total Segmen",
+        "pitch_range": "Rentang Kemiringan (Min – Max)",
+        "weighted_pitch_deg": "Rata-rata Bobot Kemiringan",
+        "roof_character": "Karakter Fisik Atap"
+    })
+
+    st.dataframe(
+        t1_display,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "No": st.column_config.NumberColumn(format="%d", width="small"),
+            "Infrastruktur": st.column_config.TextColumn(width="medium"),
+            "Kategori": st.column_config.TextColumn(width="small"),
+            "Total Segmen": st.column_config.NumberColumn(format="%d segmen", width="small"),
+            "Rentang Kemiringan (Min – Max)": st.column_config.TextColumn(width="medium"),
+            "Rata-rata Bobot Kemiringan": st.column_config.NumberColumn(format="%.1f°", width="small"),
+            "Karakter Fisik Atap": st.column_config.TextColumn(width="large")
+        }
+    )
+
+    st.markdown("<hr style='border-color: #1E293B; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
+
+    # ─── TABEL 2: RINCIAN KEMIRINGAN BIDANG SEGMEN UTAMA PER BANGUNAN ────────
+    st.markdown("#### Tabel 2: Rincian Kemiringan Bidang Segmen Utama per Bangunan")
+    st.caption("Berikut data bidang segmen yang menampung panel surya di masing-masing gedung (pilih gedung dari daftar di bawah):")
+
+    selected_t2_asset = st.selectbox(
+        "Pilih Infrastruktur untuk Rincian Segmen:",
+        options=df_summary["asset_name"].tolist(),
+        index=0,
+        key="t2_segment_asset_filter"
+    )
+
+    if not df_segments.empty:
+        t2_segs = df_segments[df_segments["asset_name"] == selected_t2_asset].copy()
+        if not t2_segs.empty:
+            t2_segs["Segmen"] = "Segmen " + t2_segs["segment_index"].astype(str)
+            t2_display = t2_segs[[
+                "Segmen", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
+                "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
+            ]].rename(columns={
+                "pitch_degrees": "Kemiringan (Pitch)",
+                "azimuth_degrees": "Arah Hadap (Azimuth)",
+                "azimuth_direction": "Arah Mata Angin",
+                "area_m2": "Luas Bidang (m²)",
+                "panels_count": "Jumlah Panel",
+                "capacity_kwp": "Kapasitas (kWp)",
+                "annual_generation_mwh": "Estimasi Listrik (MWh/thn)"
+            })
+
+            st.dataframe(
+                t2_display,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Segmen": st.column_config.TextColumn(width="small"),
+                    "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
+                    "Arah Hadap (Azimuth)": st.column_config.NumberColumn(format="%.1f°"),
+                    "Arah Mata Angin": st.column_config.TextColumn(),
+                    "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                    "Jumlah Panel": st.column_config.NumberColumn(format="%d unit"),
+                    "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                    "Estimasi Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh")
+                }
+            )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
