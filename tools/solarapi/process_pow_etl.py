@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Polygon
 from pyproj import Transformer
 from PIL import Image
+from scipy.spatial import ConvexHull
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -61,17 +62,19 @@ def haversine_distance_meters(lat1, lon1, lat2, lon2):
 
 def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_tif_path, mask_tif_path, flux_tif_path):
     """
-    Menghasilkan 5 visualisasi lengkap untuk seluruh SKU data:
+    Menghasilkan 6 visualisasi lengkap untuk seluruh SKU data:
     1. RGB Satellite Image
     2. Solar Panels Layout on Roof (Overlay Biru)
     3. DSM Elevation (Peta Ketinggian 3D)
     4. Roof Mask (Segmentasi Atap)
     5. Annual Flux Heatmap (Iradiasi Matahari)
+    6. Roof Segmentation Grid (Bidang 3D RANSAC)
     """
     out_paths = {}
 
     rgb_png_path = PREVIEW_OUT_DIR / f"{aid}_rgb.png"
     panels_png_path = PREVIEW_OUT_DIR / f"{aid}_panels_overlay.png"
+    segments_png_path = PREVIEW_OUT_DIR / f"{aid}_segments_overlay.png"
     dsm_png_path = PREVIEW_OUT_DIR / f"{aid}_dsm_elevation.png"
     mask_png_path = PREVIEW_OUT_DIR / f"{aid}_roof_mask.png"
     flux_png_path = PREVIEW_OUT_DIR / f"{aid}_flux_heatmap.png"
@@ -211,6 +214,73 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 out_paths["preview_flux_png"] = str(flux_png_path.relative_to(PROJECT_ROOT))
         except Exception as e:
             print(f"      [WARN] Gagal generate Flux Heatmap PNG: {e}")
+
+    # 6. Roof Segmentation Grid Overlay (3D RANSAC Planar Facets with Distinct Colors & Convex Hulls)
+    if rgb_arr is not None and rgb_tif_path and rgb_tif_path.exists():
+        try:
+            sp = bi_data.get("solarPotential", {})
+            panels = sp.get("solarPanels", [])
+            segs = sp.get("roofSegmentStats", [])
+
+            with rasterio.open(rgb_tif_path) as src:
+                transformer = Transformer.from_crs("EPSG:4326", src.crs, always_xy=True)
+                fig, ax = plt.subplots(figsize=(8, 8), dpi=180)
+                ax.imshow(rgb_arr)
+
+                cmap = plt.colormaps['tab20']
+
+                # Group panels by segment
+                seg_points = {i: [] for i in range(len(segs))}
+                for p in panels:
+                    s_idx = p.get("segmentIndex", 0)
+                    ux, uy = transformer.transform(p["center"]["longitude"], p["center"]["latitude"])
+                    py, px = src.index(ux, uy)
+                    if s_idx in seg_points:
+                        seg_points[s_idx].append((px, py))
+
+                for s_idx, pts in seg_points.items():
+                    color = cmap(s_idx % 20)
+                    seg = segs[s_idx]
+
+                    if len(pts) >= 3:
+                        pts_arr = np.array(pts)
+                        try:
+                            hull = ConvexHull(pts_arr)
+                            hull_pts = pts_arr[hull.vertices]
+                            poly = Polygon(
+                                hull_pts, closed=True,
+                                facecolor=color, edgecolor="white",
+                                alpha=0.35, linewidth=1.4, linestyle="--"
+                            )
+                            ax.add_patch(poly)
+                        except Exception:
+                            pass
+
+                    for px, py in pts:
+                        ax.plot(px, py, marker="s", markersize=2, color=color, alpha=0.85)
+
+                    c = seg.get("center", {})
+                    if "longitude" in c:
+                        ux, uy = transformer.transform(c["longitude"], c["latitude"])
+                        cy, cx = src.index(ux, uy)
+                        p_cnt = len(pts)
+                        if p_cnt > 0:
+                            label = f"S{s_idx} ({p_cnt}p)"
+                            ax.text(
+                                cx, cy, label, fontsize=7, fontweight="bold", color="white",
+                                bbox=dict(boxstyle="round,pad=0.2", facecolor="black", edgecolor=color, alpha=0.85, linewidth=1.2),
+                                ha="center", va="center"
+                            )
+
+                ax.set_title(f"Grid Segmentasi Atap 3D: {asset_name} ({len(segs)} Segmen)", fontsize=11, fontweight="bold", color="white")
+                ax.axis("off")
+                fig.patch.set_facecolor("#0E1117")
+                fig.tight_layout()
+                fig.savefig(str(segments_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight")
+                plt.close(fig)
+                out_paths["preview_segments_png"] = str(segments_png_path.relative_to(PROJECT_ROOT))
+        except Exception as e:
+            print(f"      [WARN] Gagal generate Segments Overlay PNG: {e}")
 
     return out_paths
 
@@ -361,6 +431,7 @@ def process_targets():
             "path_flux_geotiff": str(flux_tif.relative_to(PROJECT_ROOT)) if flux_tif.exists() else None,
             "preview_rgb_png": preview_paths.get("preview_rgb_png"),
             "preview_panels_png": preview_paths.get("preview_panels_png"),
+            "preview_segments_png": preview_paths.get("preview_segments_png"),
             "preview_dsm_png": preview_paths.get("preview_dsm_png"),
             "preview_mask_png": preview_paths.get("preview_mask_png"),
             "preview_flux_png": preview_paths.get("preview_flux_png")

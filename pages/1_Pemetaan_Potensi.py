@@ -402,31 +402,40 @@ with tab_segments:
     st.markdown("#### Metodologi Segmentasi Bidang 3D & Algoritma Penempatan Panel Google Solar API")
     st.caption("Penjelasan teknis bagaimana Google Maps Platform memecah atap bangunan menjadi segmen geometris dan menempatkan modul fotovoltaik:")
 
-    col_mth1, col_mth2, col_mth3 = st.columns(3)
-    with col_mth1:
+    col_seg_vis, col_seg_cards = st.columns([1.3, 1.2])
+
+    with col_seg_vis:
+        st.markdown('##### Visualisasi Grid Segmen Bidang Atap (3D Planar Facets)')
+        st.caption('Setiap warna mewakili 1 segmen bidang datar homogen hasil ekstraksi algoritma 3D RANSAC:')
+        segments_img_rel = asset_row.get('preview_segments_png')
+        segments_img_path = get_clean_img_path(segments_img_rel)
+        if segments_img_path:
+            st.image(
+                segments_img_path,
+                caption=f"Peta Segmentasi Bidang Atap 3D: {asset_row['asset_name']} (Label S0, S1, ... menunjukkan indeks segmen)",
+                use_container_width=True
+            )
+        else:
+            st.warning('Visualisasi grid segmentasi atap belum tersedia.')
+
+    with col_seg_cards:
         st.markdown("""
-        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
-            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">1. Segmentasi 3D (RANSAC)</div>
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">1. Segmentasi 3D (RANSAC)</div>
             <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
-                Google memproses point cloud elevasi <strong>Digital Surface Model (DSM)</strong> menggunakan algoritma <em>Random Sample Consensus (RANSAC)</em> untuk mendeteksi bidang datar homogen (<em>planar facets</em>). Setiap segmen memiliki kemiringan (<em>pitch</em>) dan arah hadap (<em>azimuth</em>) seragam. Permukaan lengkung atau tidak teratur tidak dibentuk menjadi segmen datar.
+                Google memproses point cloud elevasi <strong>Digital Surface Model (DSM)</strong> menggunakan algoritma <em>Random Sample Consensus (RANSAC)</em> untuk mendeteksi bidang datar homogen (<em>planar facets</em>). Setiap segmen memiliki kemiringan (<em>pitch</em>) dan arah hadap (<em>azimuth</em>) seragam.
             </p>
         </div>
-        """, unsafe_allow_html=True)
-    with col_mth2:
-        st.markdown("""
-        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
-            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">2. Filter Rintangan & Ambang Batas</div>
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">2. Filter Rintangan & Ambang Batas</div>
             <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
-                Model 3D mendeteksi cerobong, ventilasi AC, tangga, dan kubah kaca sebagai rintangan fisik (<em>obstacles</em>). Google menetapkan syarat mutlak: bidang harus memiliki ruang bersih minimal <strong>4 m²</strong> dan menampung minimal <strong>4 modul panel bersebelahan (contiguous)</strong> dengan daya total ≥ 1,6 kWp. Area yang terlalu sempit otomatis dieliminasi.
+                Model 3D mendeteksi cerobong, ventilasi AC, tangga, dan kubah kaca sebagai rintangan fisik (<em>obstacles</em>). Google menetapkan syarat mutlak: bidang harus memiliki ruang bersih minimal <strong>4 m²</strong> dan menampung minimal <strong>4 modul panel bersebelahan (contiguous)</strong>. Area sempit otomatis dieliminasi.
             </p>
         </div>
-        """, unsafe_allow_html=True)
-    with col_mth3:
-        st.markdown("""
-        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px; height: 100%;">
-            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;">3. Optimasi Penataan (Greedy)</div>
+        <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 14px;">
+            <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">3. Optimasi Penataan (Greedy)</div>
             <p style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.5; margin: 0;">
-                Setelah bidang segmen terbentuk, Google menggunakan <em>greedy placement algorithm</em> untuk menata modul surya. Posisi panel diurutkan berdasarkan estimasi produksi energi tahunan tertinggi (kWh) serta mengutamakan keterikatan susunan baris-kolom (<em>spatial contiguity</em>) yang mengunci rapi di atas bidang atap.
+                Setelah bidang segmen terbentuk, Google menggunakan <em>greedy placement algorithm</em> untuk menata modul surya. Posisi panel diurutkan berdasarkan estimasi produksi energi tahunan tertinggi (kWh) serta mengutamakan keterikatan susunan baris-kolom (<em>spatial contiguity</em>).
             </p>
         </div>
         """, unsafe_allow_html=True)
