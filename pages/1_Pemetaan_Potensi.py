@@ -129,6 +129,101 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# ─── MASTER SUMMARY DROPDOWN TABLE ──────────────────────────────────────────
+with st.expander("📊 Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers & Building Insights)", expanded=False):
+    st.markdown("#### Kompilasi Terpadu Seluruh Indikator Teknis, Spasial, & Lingkungan")
+    st.caption("Tabel ini merangkum seluruh parameter dari Google Solar API Building Insights, Data Layers GeoTIFF, Segmentasi Bidang Atap, dan Audit Spasial yang ditampilkan di halaman ini:")
+
+    if not df_segments.empty:
+        seg_agg = df_segments.groupby("asset_name").agg(
+            total_segments=("segment_index", "count"),
+            active_segments=("panels_count", lambda x: int((x > 0).sum()))
+        ).reset_index()
+        df_master = pd.merge(df_summary, seg_agg, on="asset_name", how="left")
+        df_master["total_segments"] = df_master["total_segments"].fillna(0).astype(int)
+        df_master["active_segments"] = df_master["active_segments"].fillna(0).astype(int)
+    else:
+        df_master = df_summary.copy()
+        df_master["total_segments"] = 0
+        df_master["active_segments"] = 0
+
+    df_master["prod_per_panel_kwh"] = df_master["annual_generation_kwh"] / df_master["max_panels_count"].clip(lower=1)
+    df_master["res_tier"] = "0.25 m/px (" + df_master["quality_tier"] + ")"
+
+    f_col1, f_col2 = st.columns([1.2, 1.8])
+    with f_col1:
+        cat_options = ["Semua Kategori"] + sorted(df_master["category_display"].unique().tolist())
+        selected_cat = st.selectbox("Filter Kategori:", options=cat_options, index=0, key="master_cat_filter")
+    with f_col2:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        st.caption("Menampilkan 5 titik pilot multi-kategori (MRT, KRL, LRT, Rumah Sakit, Gedung Parkir)")
+
+    if selected_cat != "Semua Kategori":
+        df_display_master = df_master[df_master["category_display"] == selected_cat].copy()
+    else:
+        df_display_master = df_master.copy()
+
+    master_table = df_display_master[[
+        "category_display", "asset_name", "city_regency",
+        "max_roof_area_m2", "total_segments", "active_segments",
+        "max_panels_count", "installed_capacity_kwp",
+        "sunshine_hours_annual", "annual_generation_mwh", "prod_per_panel_kwh",
+        "carbon_offset_factor", "ghg_reduction_tons_co2",
+        "spatial_drift_meters", "drift_status", "imagery_date", "res_tier", "google_building_id"
+    ]].rename(columns={
+        "category_display": "Kategori",
+        "asset_name": "Infrastruktur",
+        "city_regency": "Wilayah",
+        "max_roof_area_m2": "Luas Atap (m²)",
+        "total_segments": "Total Segmen",
+        "active_segments": "Segmen Terisi",
+        "max_panels_count": "Total Panel (unit)",
+        "installed_capacity_kwp": "Kapasitas (kWp)",
+        "sunshine_hours_annual": "Jam Sinar (jam/thn)",
+        "annual_generation_mwh": "Listrik (MWh/thn)",
+        "prod_per_panel_kwh": "Rata² kWh/Panel",
+        "carbon_offset_factor": "Faktor CO₂ (kg/MWh)",
+        "ghg_reduction_tons_co2": "Reduksi CO₂ (Ton/thn)",
+        "spatial_drift_meters": "Drift (m)",
+        "drift_status": "Status Spasial",
+        "imagery_date": "Tgl Citra Satelit",
+        "res_tier": "Kualitas Citra",
+        "google_building_id": "Google Building ID"
+    })
+
+    st.dataframe(
+        master_table,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Luas Atap (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+            "Total Segmen": st.column_config.NumberColumn(format="%d"),
+            "Segmen Terisi": st.column_config.NumberColumn(format="%d"),
+            "Total Panel (unit)": st.column_config.NumberColumn(format="%d"),
+            "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+            "Jam Sinar (jam/thn)": st.column_config.NumberColumn(format="%.0f jam"),
+            "Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh"),
+            "Rata² kWh/Panel": st.column_config.NumberColumn(format="%.1f kWh"),
+            "Faktor CO₂ (kg/MWh)": st.column_config.NumberColumn(format="%.2f kg"),
+            "Reduksi CO₂ (Ton/thn)": st.column_config.NumberColumn(format="%.1f Ton"),
+            "Drift (m)": st.column_config.NumberColumn(format="%.2f m"),
+            "Status Spasial": st.column_config.TextColumn(),
+            "Tgl Citra Satelit": st.column_config.TextColumn(),
+            "Kualitas Citra": st.column_config.TextColumn(),
+            "Google Building ID": st.column_config.TextColumn()
+        }
+    )
+
+    csv_bytes = master_table.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Unduh Data Master Lengkap (.CSV)",
+        data=csv_bytes,
+        file_name="pow_solar_5_titik_master_table.csv",
+        mime="text/csv"
+    )
+
+st.markdown("<br>", unsafe_allow_html=True)
+
 # ─── INTERACTIVE MAP & AUDIT TABLE ───────────────────────────────────────────
 st.markdown('<div class="section-header">Peta Interaktif Sebaran & Verifikasi Spasial</div>', unsafe_allow_html=True)
 
