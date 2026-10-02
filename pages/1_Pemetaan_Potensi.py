@@ -630,7 +630,7 @@ Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
 
 - **Kubah Utama Stasiun (Segmen 2 / S1):** Kemiringan = 3.0°, Azimuth = 60.8° (Timur Laut) → Menampung **687 panel surya (274.8 kWp)** di atas kanopi lengkung stasiun.
 - **Kanopi Walkway / Jembatan Pejalan Kaki (Segmen 4 / S3):** Kemiringan = 2.25°, Azimuth = 175.4° (Selatan) → Menampung **52 panel surya (20.8 kWp)**.
-- **Sayap Timur (Segmen 1 / S0):** Memiliki **38 panel surya (15.2 kWp)**, berjarak >60 meter dari titik tengah koordinat stasiun sehingga posisinya berada di luar bingkai citra satelit Google (radius 60 m).
+- **Sayap Timur (Segmen 1 / S0):** Menampung **38 panel surya (15.2 kWp)**, kini tertangkap 100% utuh pada citra satelit setelah ditarik ulang dengan radius adaptif 115 meter.
 - **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
                     """)
                 else:
