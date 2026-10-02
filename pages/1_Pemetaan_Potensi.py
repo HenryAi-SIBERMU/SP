@@ -379,18 +379,60 @@ if not maps_url:
     b_id = str(asset_row.get("google_building_id", "")).replace("buildings/", "")
     maps_url = f"https://www.google.com/maps/place/?q=place_id:{b_id}"
 
+# ─── OPSI DISAMBIGUASI KAWASAN SUPERBLOK (CARA 2: TOGGLE SAKELAR) ─────────────
+is_pkg = (asset_row.get("asset_id") == "PKG-020") or ("Lippo Mall Puri" in str(asset_row.get("asset_name", "")))
+
+if is_pkg:
+    st.markdown("##### Cakupan Analisis Spasial Kawasan Superblok")
+    st.markdown(
+        "Kawasan Lippo Mall Puri terintegrasi dalam superblok *mixed-use* St. Moritz yang menggabungkan dek gedung parkir, podium ritel, dan menara hunian vertikal. "
+        "Gunakan sakelar di bawah ini untuk beralih antara fokus fasilitas parkir murni vs konsolidasi seluruh kawasan:"
+    )
+    scope_mode = st.radio(
+        "Pilih Cakupan Analisis Lippo Mall Puri:",
+        options=[
+            "🚗 Dek Gedung Parkir Saja (1,03 MWp / 2.580 Panel)",
+            "🏢 Seluruh Kawasan Superblok (1,46 MWp / 3.648 Panel)"
+        ],
+        index=0,
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    is_parking_only = "Dek Gedung Parkir" in scope_mode
+    st.markdown("<br>", unsafe_allow_html=True)
+else:
+    is_parking_only = False
+
+# Dinamisasi Metrik Berdasarkan Cakupan Terpilih
+if is_parking_only:
+    disp_capacity_kwp = 1032.0
+    disp_panels_count = 2580
+    disp_roof_area_m2 = 6064.1
+    disp_annual_gen_mwh = 1486.7
+    disp_ghg_co2 = 1202.7
+    disp_category_badge = "FASILITAS PARKIR & PODIUM RITEL (SUB-KLASTER)"
+    disp_subtitle_extra = " | Cakupan: Dek Gedung Parkir Saja (Segmen 1–9)"
+else:
+    disp_capacity_kwp = float(asset_row['installed_capacity_kwp'])
+    disp_panels_count = int(asset_row['max_panels_count'])
+    disp_roof_area_m2 = float(asset_row['max_roof_area_m2'])
+    disp_annual_gen_mwh = float(asset_row['annual_generation_mwh'])
+    disp_ghg_co2 = float(asset_row['ghg_reduction_tons_co2'])
+    disp_category_badge = str(asset_row['category_display'])
+    disp_subtitle_extra = " | Cakupan: Seluruh Kawasan Superblok St. Moritz" if is_pkg else ""
+
 # Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
 <div style="background: #101726; border: 1px solid #1E293B; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div>
-            <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{asset_row['category_display']}</span>
+            <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{disp_category_badge}</span>
             <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
-            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code> | <a href="{maps_url}" target="_blank" style="color: #38BDF8; text-decoration: underline;">Buka di Google Maps</a></p>
+            <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code>{disp_subtitle_extra} | <a href="{maps_url}" target="_blank" style="color: #38BDF8; text-decoration: underline;">Buka di Google Maps</a></p>
         </div>
         <div style="text-align: right; margin-top: 8px;">
-            <span style="font-size: 1.8rem; font-weight: 800; color: #66BB6A;">{asset_row['installed_capacity_kwp']:,.1f} kWp</span><br>
-            <span style="color: #94A3B8; font-size: 0.8rem;">{asset_row['max_panels_count']:,} Panel @ 400Wp</span>
+            <span style="font-size: 1.8rem; font-weight: 800; color: #66BB6A;">{disp_capacity_kwp:,.1f} kWp</span><br>
+            <span style="color: #94A3B8; font-size: 0.8rem;">{disp_panels_count:,} Panel @ 400Wp</span>
         </div>
     </div>
     <hr style="border-color: #1E293B; margin: 12px 0;">
@@ -401,19 +443,19 @@ st.markdown(f"""
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
             <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">ROOF AREA</div>
-            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['max_roof_area_m2']:,.0f} m²</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{disp_roof_area_m2:,.0f} m²</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
             <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">MAX PANELS</div>
-            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['max_panels_count']:,} unit</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{disp_panels_count:,} unit</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
             <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">ANNUAL OUTPUT</div>
-            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['annual_generation_mwh']:,.1f} MWh/thn</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{disp_annual_gen_mwh:,.1f} MWh/thn</div>
         </div>
         <div style="background: #0B111E; padding: 10px; border-radius: 6px; border: 1px solid #1E2530;">
             <div style="color: #94A3B8; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;">CO2 SAVINGS</div>
-            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{asset_row['ghg_reduction_tons_co2']:,.1f} Ton/thn</div>
+            <div style="color: #66BB6A; font-size: 1.15rem; font-weight: 700;">{disp_ghg_co2:,.1f} Ton/thn</div>
         </div>
     </div>
 </div>
@@ -473,12 +515,24 @@ with tab_segments:
     with col_seg_vis:
         st.markdown("##### Visualisasi Poligon Bidang Segmen Atap")
         st.caption("Peta kelompok poligon segmen atap 3D (setiap warna poligon mewakili satu bidang orientasi/kemiringan homogen):")
-        segments_img_rel = asset_row.get("preview_segments_png")
+        if is_parking_only:
+            segments_img_rel = "data/processed/previews/pkg-020_segments_parking_only.png"
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — Segmen 1 s/d 9, Total 2.580 Panel)"
+        elif "Dukuh Atas" in str(asset_row['asset_name']) or "LRT" in str(asset_row['asset_name']):
+            segments_img_rel = asset_row.get("preview_segments_png")
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)"
+        elif is_pkg:
+            segments_img_rel = asset_row.get("preview_segments_png")
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Seluruh 21 Segmen Superblok St. Moritz, Total 3.648 Panel)"
+        else:
+            segments_img_rel = asset_row.get("preview_segments_png")
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']}"
+
         segments_img_path = get_clean_img_path(segments_img_rel)
         if segments_img_path:
             st.image(
                 segments_img_path,
-                caption=f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)",
+                caption=seg_caption,
                 use_container_width=True
             )
         else:
@@ -487,18 +541,29 @@ with tab_segments:
     with col_seg_info:
         if not df_segments.empty:
             curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
+            if is_parking_only:
+                curr_segs = curr_segs[curr_segs["segment_index"].isin(range(0, 9))].copy()
             if not curr_segs.empty:
                 total_segs = len(curr_segs)
                 active_segs = len(curr_segs[curr_segs["panels_count"] > 0])
                 total_seg_area = curr_segs["area_m2"].sum()
 
                 st.markdown("##### Karakteristik Geometri Atap")
-                st.markdown(f"""
-                * **Total Bidang Segmen Terdeteksi:** `{total_segs} bidang`
-                * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
-                * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
-                * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit`
-                """)
+                if is_parking_only:
+                    st.markdown(f"""
+                    * **Cakupan Wilayah:** `Dek Gedung Parkir Saja (Sub-Klaster)`
+                    * **Total Bidang Segmen Parkir:** `{total_segs} bidang (Segmen 1 s/d 9)`
+                    * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
+                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
+                    * **Total Modul di Klaster Parkir:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
+                    """)
+                else:
+                    st.markdown(f"""
+                    * **Total Bidang Segmen Terdeteksi:** `{total_segs} bidang`
+                    * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
+                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
+                    * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit`
+                    """)
 
                 zero_segs = curr_segs[curr_segs["panels_count"] == 0]
                 if not zero_segs.empty:
@@ -529,20 +594,37 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
 
 1. **Multi-Segmen & Perbedaan Ketinggian:** Atap terpecah menjadi puluhan bidang dengan elevasi berbeda. Celah antara bidang (misalnya lembah talang air atau sambungan ekspansi) tidak memenuhi syarat bidang datar planar RANSAC.
 2. **Bukaan Pencahayaan Alami (Skylight):** Kanopi kaca atau membran transparan memanjang (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas) sengaja dikecualikan oleh model AI Google dari pemasangan modul fotovoltaik.
-3. **Batas Bingkai Citra Satelit:** Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m atau Lippo Mall Puri bentang 260 m) melampaui jendela radius pengambilan citra 60 meter (120 m × 120 m), sehingga sebagian panel berada di dek atap yang terpotong batas bingkai.
+3. **Batas Bingkai Citra Satelit:** Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m) melampaui jendela radius citra standar jika tidak ditarik dengan radius adaptif.
         """)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     if not df_segments.empty:
         curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
+        if is_parking_only:
+            curr_segs = curr_segs[curr_segs["segment_index"].isin(range(0, 9))].copy()
         if not curr_segs.empty:
             total_segs = len(curr_segs)
-            st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
+            if is_parking_only:
+                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — {total_segs} Segmen)")
+            elif is_pkg:
+                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Seluruh Superblok — {total_segs} Segmen)")
+            else:
+                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
             st.caption("Nomor pada kolom **No. Segmen** bersesuaian langsung dengan label lingkaran nomor ①, ②, ③, ... pada citra satelit di atas (ID Google API mencatat indeks teknis internal S0, S1, ...):")
 
             curr_segs["seg_no"] = curr_segs["segment_index"] + 1
             curr_segs["api_id"] = "S" + curr_segs["segment_index"].astype(str)
+
+            if is_pkg:
+                def get_cluster_label(elev):
+                    if elev >= 100.0:
+                        return "🏢 Menara Apartemen St. Moritz"
+                    elif elev >= 30.0:
+                        return "🛍️ Podium Ritel & Canopy"
+                    else:
+                        return "🚗 Dek Gedung Parkir & Podium"
+                curr_segs["area_cluster"] = curr_segs["plane_height_m"].apply(get_cluster_label)
 
             if "solar_insight" not in curr_segs.columns:
                 solar_insights_map = [
@@ -567,12 +649,18 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                     lambda p: "Tampil di Citra" if p > 0 else "Dieliminasi Google (0 Panel)"
                 )
 
-            display_segs = curr_segs[[
-                "seg_no", "api_id", "spatial_status", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
+            cols_to_display = ["seg_no", "api_id"]
+            if is_pkg:
+                cols_to_display.append("area_cluster")
+            cols_to_display.extend([
+                "spatial_status", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
                 "solar_insight", "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
-            ]].rename(columns={
+            ])
+
+            rename_cols = {
                 "seg_no": "No. Segmen",
                 "api_id": "ID Google API",
+                "area_cluster": "Klaster Bangunan",
                 "spatial_status": "Status Visualisasi",
                 "pitch_degrees": "Kemiringan (Pitch)",
                 "azimuth_degrees": "Azimuth (°)",
@@ -583,26 +671,32 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                 "panels_count": "Panel (unit)",
                 "capacity_kwp": "Kapasitas (kWp)",
                 "annual_generation_mwh": "Listrik (MWh/thn)"
-            })
+            }
+
+            display_segs = curr_segs[cols_to_display].rename(columns=rename_cols)
+
+            col_cfg = {
+                "No. Segmen": st.column_config.NumberColumn(format="%d", help="Nomor segmen yang dicantumkan pada lingkaran gambar di atas"),
+                "ID Google API": st.column_config.TextColumn(help="Indeks teknis 0-based dari Google Solar API roofSegmentStats"),
+                "Status Visualisasi": st.column_config.TextColumn(help="Keterangan spasial segmen pada citra satelit (Tampil di Citra atau Dieliminasi Google 0 Panel)"),
+                "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
+                "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
+                "Arah Hadap": st.column_config.TextColumn(),
+                "Karakteristik & Jam Puncak Sinar Surya": st.column_config.TextColumn(help="Interpretasi sains radiasi berdasarkan kombinasi sudut azimuth dan pitch atap"),
+                "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
+                "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                "Panel (unit)": st.column_config.NumberColumn(format="%d"),
+                "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                "Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh")
+            }
+            if is_pkg:
+                col_cfg["Klaster Bangunan"] = st.column_config.TextColumn(help="Pemisahan fisik antara Dek Parkir, Podium Ritel, dan Menara Hunian St. Moritz")
 
             st.dataframe(
                 display_segs,
                 use_container_width=True,
                 hide_index=True,
-                column_config={
-                    "No. Segmen": st.column_config.NumberColumn(format="%d", help="Nomor segmen yang dicantumkan pada lingkaran gambar di atas"),
-                    "ID Google API": st.column_config.TextColumn(help="Indeks teknis 0-based dari Google Solar API roofSegmentStats"),
-                    "Status Visualisasi": st.column_config.TextColumn(help="Keterangan spasial segmen pada citra satelit (Tampil di Citra, Di Luar Bingkai Citra >60m, atau Dieliminasi Google 0 Panel)"),
-                    "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
-                    "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
-                    "Arah Hadap": st.column_config.TextColumn(),
-                    "Karakteristik & Jam Puncak Sinar Surya": st.column_config.TextColumn(help="Interpretasi sains radiasi berdasarkan kombinasi sudut azimuth dan pitch atap"),
-                    "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
-                    "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
-                    "Panel (unit)": st.column_config.NumberColumn(format="%d"),
-                    "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
-                    "Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh")
-                }
+                column_config=col_cfg
             )
 
             st.markdown("<br>", unsafe_allow_html=True)
@@ -656,6 +750,23 @@ Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
 - **Sayap Timur (Segmen 1 / S0):** Menampung **38 panel surya (15.2 kWp)**, kini tertangkap 100% utuh pada citra satelit setelah ditarik ulang dengan radius adaptif 115 meter.
 - **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
                     """)
+                elif is_pkg:
+                    if is_parking_only:
+                        st.markdown("""
+Kompleks Lippo Mall Puri (Klaster Dek Gedung Parkir Saja — 9 Segmen):
+
+- **Dek Parkir Utama (Segmen 3 / S2):** Kemiringan = 0.5° (datar), Elevasi = 24.0 m, Luas = 1.593,4 m² → Menampung **705 panel surya (282,0 kWp)** tepat di atas dek terbuka parkir mobil.
+- **Podium Ritel & Atap Mall (Segmen 1 s/d 9):** Menampung total **2.580 panel surya (1.032,0 kWp)** pada rentang elevasi 11,6 m – 26,3 m.
+- **Fokus Sub-Fasilitas:** Memisahkan secara presisi atap gedung parkir dari menara hunian St. Moritz (elevasi 113 m – 128 m) untuk perhitungan kelayakan PLTS khusus fasilitas parkir.
+                        """)
+                    else:
+                        st.markdown("""
+Kawasan Terpadu Superblok Lippo Mall Puri & St. Moritz (21 Segmen):
+
+- **Klaster Dek Parkir & Podium Rendah (Segmen 1–9, 10, 11, 15, 20, 21):** Elevasi 11,6 m – 41,1 m, menampung **2.580 panel surya (1.032,0 kWp)** pada atap bertingkat rendah.
+- **Klaster Menara Hunian Vertikal St. Moritz (Segmen 1, 8, 13, 14, 16, 19):** Elevasi tinggi 102,6 m – 128,5 m, menampung **1.068 panel surya (427,2 kWp)** pada rooftop tower apartemen.
+- **Konsolidasi Seluruh Kawasan:** Total potensi PLTS superblok mencapai **1,46 MWp (3.648 panel)** dengan estimasi reduksi emisi 1.700,1 Ton CO₂/tahun.
+                        """)
                 else:
                     st.markdown(f"""
 Gedung {asset_row['asset_name']} terdeteksi memiliki {total_segs} segmen bidang atap mandiri:
@@ -691,23 +802,36 @@ with tab_panels:
     with col_p1:
         st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
         st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
-        panels_img_rel = asset_row.get("preview_panels_png")
+        if is_parking_only:
+            panels_img_rel = "data/processed/previews/pkg-020_panels_parking_only.png"
+            p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} (Klaster Dek Gedung Parkir Saja — 1.032,0 kWp)"
+        elif is_pkg:
+            panels_img_rel = asset_row.get("preview_panels_png")
+            p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} (Seluruh Superblok St. Moritz — 1.459,2 kWp)"
+        else:
+            panels_img_rel = asset_row.get("preview_panels_png")
+            p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']}"
+
         panels_img_path = get_clean_img_path(panels_img_rel)
         if panels_img_path:
-            st.image(panels_img_path, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
+            st.image(panels_img_path, caption=p_cap, use_container_width=True)
         else:
             st.warning("Preview panel overlay belum tersedia.")
     with col_p2:
         st.markdown("#### Karakteristik Panel Atap")
+        prod_per_panel = (disp_annual_gen_mwh * 1000.0) / max(disp_panels_count, 1)
         st.markdown(f"""
         * **Kapasitas Per Modul:** `400 Watt-peak (Wp)`
         * **Dimensi Modul:** `1.88 m × 1.05 m (1.97 m²)`
         * **Orientasi:** Dinamis (Landscape / Portrait menyesuaikan slope atap)
-        * **Total Modul Maksimal:** `{asset_row['max_panels_count']:,} panel`
-        * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
-        * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
+        * **Total Modul Maksimal:** `{disp_panels_count:,} panel`
+        * **Total Daya Terpasang:** `{disp_capacity_kwp:,.1f} kWp`
+        * **Rata-rata Produksi / Panel:** `{prod_per_panel:,.1f} kWh/panel/thn`
         """)
-        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
+        if is_parking_only:
+            st.info("**Filter Sub-Fasilitas Aktif:** Hanya memetakan modul fotovoltaik pada klaster dek gedung parkir mobil dan podium ritel (2.580 unit). Panel pada menara apartemen St. Moritz (1.068 unit) diisolasi untuk akuntansi portofolio parkir murni.")
+        else:
+            st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
@@ -805,7 +929,8 @@ with tab_gallery:
             st.caption("Tidak tersedia")
     with g_col2:
         st.markdown("**2. Layout Panel**")
-        p_pan = get_clean_img_path(asset_row.get("preview_panels_png"))
+        p_pan_rel = "data/processed/previews/pkg-020_panels_parking_only.png" if is_parking_only else asset_row.get("preview_panels_png")
+        p_pan = get_clean_img_path(p_pan_rel)
         if p_pan:
             st.image(p_pan, use_container_width=True)
         else:
