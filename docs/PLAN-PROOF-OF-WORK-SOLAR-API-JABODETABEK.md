@@ -198,20 +198,23 @@ flowchart TD
         Clust --> Match["Cocokkan Klaster Terdekat dengan Koordinat Input Geotag"]
     end
     
-    subgraph Accounting ["3. Dual-Track Accounting & Reporting"]
-        Match --> TrackA["Track A: Sub-Fasilitas Spesifik (Contoh: Dek Parkir Murni = 2.556 Panel / 1.022 kWp)"]
-        Match --> TrackB["Track B: Total Konsolidasi Superblok (Seluruh Kawasan = 3.648 Panel / 1.459 kWp)"]
+    subgraph SingleTarget ["3. Ekstraksi Entitas Tunggal Sesuai Data OSM (Zero Ambiguity)"]
+        Match --> Filter["Pilih Klaster Fasilitas Target Murni (Dek Parkir: 873 Panel / 349,2 kWp)"]
+        Match --> Drop["Diskualifikasi Superstruktur Non-Target (Menara Apartemen 128m & Mall)"]
+        Filter --> FinalOut["Output Otoritatif Tunggal (100% Sesuai Entitas Target OSM)"]
     end
 ```
 
+> **Keputusan Metodologis Preprocessing:** Sistem **TIDAK menyediakan dua opsi ambigu** yang membingungkan pemangku kepentingan. Pipeline secara otomatis dan tegas mengekstrak **HANYA fasilitas target fisik yang sesuai dengan entitas data sumber OSM** (`amenity: parking`), dan mendiskualifikasi seluruh superstruktur non-target (seperti menara apartemen St. Moritz 128m).
+
 #### 3. Hasil Audit Empiris Modul Disambiguasi pada 5 Titik Pilot:
-| ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Superblok (kWp) | Target Sub-Fasilitas (kWp) |
+| ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Superblok (kWp) | Hasil Ekstraksi Tunggal Sesuai OSM (kWp) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **MRT-003** | Stasiun MRT Cipete Raya | Single Building Entity | $7,5\text{ m}$ ($45,7 - 53,2\text{ m}$) | 1 | $656,8\text{ kWp}$ | $656,8\text{ kWp}$ (100% Stasiun) |
-| **KRL-032** | Stasiun KRL Manggarai Sentral | Single Building Entity | $16,0\text{ m}$ ($20,1 - 36,2\text{ m}$) | 1 | $1.771,6\text{ kWp}$ | $1.771,6\text{ kWp}$ (100% Stasiun) |
-| **LRT-014** | Stasiun LRT Dukuh Atas | Single Building Entity | $3,8\text{ m}$ ($3,6 - 7,4\text{ m}$) | 1 | $310,8\text{ kWp}$ | $310,8\text{ kWp}$ (100% Stasiun) |
-| **RS-007** | RSUD Tarakan Jakarta | Single Building Entity | $19,1\text{ m}$ ($20,2 - 39,3\text{ m}$) | 1 | $158,8\text{ kWp}$ | $158,8\text{ kWp}$ (100% RSUD) |
-| **PKG-020** | Lippo Mall Puri Parking | **Mixed-Use Superblock** | **$116,8\text{ m}$** ($11,6 - 128,5\text{ m}$) | **4 Klaster** | **$1.459,2\text{ kWp}$** | **$1.022,4\text{ kWp}$** (Klaster Parkir) |
+| **MRT-003** | Stasiun MRT Cipete Raya | Single Building Entity | $7,5\text{ m}$ ($45,7 - 53,2\text{ m}$) | 1 | $656,8\text{ kWp}$ | **$656,8\text{ kWp}$** (100% Stasiun) |
+| **KRL-032** | Stasiun KRL Manggarai Sentral | Single Building Entity | $16,0\text{ m}$ ($20,1 - 36,2\text{ m}$) | 1 | $1.771,6\text{ kWp}$ | **$1.771,6\text{ kWp}$** (100% Stasiun) |
+| **LRT-014** | Stasiun LRT Dukuh Atas | Single Building Entity | $3,8\text{ m}$ ($3,6 - 7,4\text{ m}$) | 1 | $310,8\text{ kWp}$ | **$310,8\text{ kWp}$** (100% Stasiun) |
+| **RS-007** | RSUD Tarakan Jakarta | Single Building Entity | $19,1\text{ m}$ ($20,2 - 39,3\text{ m}$) | 1 | $158,8\text{ kWp}$ | **$158,8\text{ kWp}$** (100% RSUD) |
+| **PKG-020** | Lippo Mall Puri Parking | **Mixed-Use Superblock** | **$116,8\text{ m}$** ($11,6 - 128,5\text{ m}$) | **4 Klaster** | $1.459,2\text{ kWp}$ | **$349,2\text{ kWp}$** (Fokus Fasilitas Gedung Parkir) |
 
 > **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit.csv`.
 

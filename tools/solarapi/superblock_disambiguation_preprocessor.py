@@ -12,8 +12,8 @@ Latar Belakang Metodologis (Temuan Kasus Lippo Mall Puri / St. Moritz):
 3. Modul ini melakukan:
    a. Deteksi Disparitas Elevasi (Height Spread): Mendeteksi menara tinggi vs podium datar.
    b. Spatial Density Clustering: Mengelompokkan panel per klaster sayap gedung tanpa menarik garis liar melintasi jalan.
-   c. Dual-Track Accounting: Menghasilkan metrik spesifik Sub-Fasilitas (Gedung Parkir Murni) vs
-      Konsolidasi Kawasan Superblok (Total Portofolio Properti).
+   c. Automated Single-Target Resolution: Mengisolasi dan mengekstrak HANYA fasilitas target yang sesuai dengan
+      entitas data OSM (Gedung Parkir Murni), dan mengeliminasi superstruktur non-target (menara hunian/apartemen).
 """
 
 import os

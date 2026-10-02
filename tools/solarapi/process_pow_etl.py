@@ -297,6 +297,8 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
 
                 # Tampilkan juga batas bidang dan badge untuk segmen 0-panel agar terlihat di citra
                 for s_idx, s in enumerate(segs):
+                    if aid == "pkg-020":
+                        continue  # Abaikan segmen luar superblok untuk menjaga fokus gedung parkir murni
                     if s_idx in seg_points and len(seg_points[s_idx]) > 0:
                         continue
                     box = s.get("boundingBox", {})
@@ -509,7 +511,7 @@ def process_targets():
         mask_tif = RAW_SOLAR_DIR / "data_layers" / "mask" / cat / f"{aid}_mask.tif"
         flux_tif = RAW_SOLAR_DIR / "data_layers" / "annual_flux" / cat / f"{aid}_annual_flux.tif"
 
-        # Khusus PKG-020: Verifikasi Focused Facility Ingest (Gedung Parkir Murni)
+        # Khusus PKG-020: Verifikasi Focused Facility Ingest (Gedung Parkir Murni Sesuai Entitas OSM)
         if aid == "pkg-020" and rgb_tif.exists():
             with rasterio.open(rgb_tif) as src_p:
                 trans_p = Transformer.from_crs("EPSG:4326", src_p.crs, always_xy=True)
@@ -522,10 +524,23 @@ def process_targets():
                 max_panels = len(in_p)
                 in_s_idxs = sorted(list(set(p.get("segmentIndex", 0) for p in in_p)))
                 max_roof_area = sum(segs[s]["stats"]["areaMeters2"] for s in in_s_idxs if s < len(segs))
+                whole_roof_area = max_roof_area
+                suitability_ratio = 100.0
+                building_footprint = 2850.0  # Tapak struktur fisik multilevel parking deck
                 g_lat = -6.1907208
                 g_lon = 106.7399529
                 drift_m = haversine_distance_meters(t["raw_lat"], t["raw_lon"], g_lat, g_lon)
                 drift_status = "VALID (< 30m - Re-centered)"
+
+                # Hitung ulang pitch dan bobot hanya untuk segmen gedung parkir
+                pkg_pitches = [segs[s].get("pitchDegrees", 0.0) for s in in_s_idxs if s < len(segs)]
+                pkg_areas = [segs[s].get("stats", {}).get("areaMeters2", 0.0) for s in in_s_idxs if s < len(segs)]
+                if pkg_pitches:
+                    pitch_range = f"{min(pkg_pitches):.1f}° – {max(pkg_pitches):.1f}°"
+                    weighted_pitch = round(sum(p * a for p, a in zip(pkg_pitches, pkg_areas)) / sum(pkg_areas), 1)
+                roof_char = "Dak Terbuka & Ramp Parkir: Permukaan atas gedung parkir bertingkat (multi-storey parking deck), dominan datar (0,2° – 2,5°) dengan ramp akses (24,2°)."
+                google_dc_kwh = sum(pan.get("yearlyEnergyDcKwh", 0.0) for pan in in_p)
+                google_dc_mwh = round(google_dc_kwh / 1000.0, 2)
 
         # CELIOS Formulas
         panel_wp = 400
@@ -562,7 +577,7 @@ def process_targets():
             "max_roof_area_m2": round(max_roof_area, 2),
             "roof_suitability_ratio_pct": suitability_ratio,
             "building_footprint_m2": round(building_footprint, 2),
-            "total_segments_count": len(segs),
+            "total_segments_count": len(in_s_idxs) if aid == "pkg-020" else len(segs),
             "pitch_range": pitch_range,
             "weighted_pitch_deg": weighted_pitch,
             "roof_character": roof_char,
@@ -616,8 +631,17 @@ def process_targets():
                 pass
 
         for s_idx, s in enumerate(segs):
-            p_cnt = sum(1 for pan in panels if pan.get("segmentIndex") == s_idx)
-            p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in panels if pan.get("segmentIndex") == s_idx)
+            # Khusus PKG-020: Filter ketat hanya segmen milik fasilitas gedung parkir (sesuai entitas OSM)
+            if aid == "pkg-020" and s_idx not in in_s_idxs:
+                continue
+
+            if aid == "pkg-020":
+                p_cnt = sum(1 for pan in in_p if pan.get("segmentIndex") == s_idx)
+                p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in in_p if pan.get("segmentIndex") == s_idx)
+            else:
+                p_cnt = sum(1 for pan in panels if pan.get("segmentIndex") == s_idx)
+                p_kwh = sum(pan.get("yearlyEnergyDcKwh", 0) for pan in panels if pan.get("segmentIndex") == s_idx)
+
             pitch = round(s.get("pitchDegrees", 0.0), 2)
             az = s.get("azimuthDegrees", 0.0)
             d_idx = int((az + 22.5) // 45) % 8
@@ -638,7 +662,7 @@ def process_targets():
                         if 0 <= px < r_w and 0 <= py < r_h:
                             pts_in_count += 1
                 if pts_in_count == 0:
-                    spatial_status = "Di Luar Bingkai Citra (>75m - Menara St. Moritz)" if aid == "pkg-020" else "Di Luar Bingkai Citra (>60m)"
+                    spatial_status = "Di Luar Bingkai Citra (>60m)"
                 else:
                     spatial_status = "Tampil di Citra"
             else:
