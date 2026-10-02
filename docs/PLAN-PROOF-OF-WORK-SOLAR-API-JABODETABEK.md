@@ -116,6 +116,54 @@ flowchart TD
 
 > **File Bukti Audit:** `data/processed/calculations/adaptive_radius_audit_5_titik.csv`.
 
+### 2.5. METODOLOGI DISAMBIGUASI SPASIAL: PEMISAHAN GEDUNG TUNGGAL VS KAWASAN SUPERBLOK (SUPERBLOCK CLUSTERING PREPROCESSOR)
+
+Pada pengujian pilot titik ke-5 (**Lippo Mall Puri 1 Multilevel Parking**), ditemukan anomali spasial mendasar yang menjadi temuan metodologis krusial untuk penarikan ribuan titik aglomerasi:
+
+#### 1. Temuan Anomali Spasial Kasus Superblok:
+* **Input Geotag OSM:** Berupa titik `Point` (`OSM Node: 4506095353`) bertuliskan *"Lippo Mall Puri 1 Multilevel Parking"*.
+* **Perilaku Endpoint Google Solar API (`findClosest`):** Di dunia nyata, gedung parkir menyatu secara struktural di lantai podium bawah tanah dengan kawasan **The St. Moritz Penthouses & Residences** (mall, 6 menara apartemen 30+ lantai, dan gedung ruko). AI Google tidak memisahkan gedung-gedung yang memiliki podium bersambung, melainkan menganggap seluruh kawasan $>7\text{ hektar}$ sebagai **Satu Kesatuan Tapak Bangunan (Single Mega Footprint)**.
+* **Bukti Empiris Disparitas Ketinggian:**
+  * Dek gedung parkir berada pada elevasi **$12 - 35\text{ meter}$**.
+  * Namun Google juga menaruh panel di atap menara apartemen The St. Moritz pada elevasi **$102 - 128,5\text{ meter}$** (selisih tinggi $\Delta h = 116,8\text{ meter}$).
+* **Penyebab Poligon Menyeberang Jalan (Convex Hull Artifact):**  
+  Penggunaan algoritma *single Convex Hull* pada segmen yang memiliki panel di sayap gedung terpisah mengakibatkan poligon membungkus ruang kosong di tengahnya (jalan raya, void, drop-off), menciptakan ilusi visual seolah-olah panel dipasang di atas jalan.
+
+#### 2. Arsitektur Preprocessing Disambiguasi Superblok:
+Untuk menangani kasus superblok pada ribuan titik aglomerasi berikutnya, dibangun modul terpisah [`tools/solarapi/superblock_disambiguation_preprocessor.py`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/tools/solarapi/superblock_disambiguation_preprocessor.py) yang bekerja otomatis:
+
+```mermaid
+flowchart TD
+    RawBI["Building Insights JSON Mentah"] --> Pre["superblock_disambiguation_preprocessor.py"]
+    
+    subgraph Detection ["1. Deteksi Multi-Tier Superblok"]
+        Pre --> HeightDiff{"Rentang Ketinggian Segmen > 45m OR Luas > 15.000 m²?"}
+        HeightDiff -->|Ya| Superblock["Klasifikasi: Mixed-Use Superblock (Podium + Towers)"]
+        HeightDiff -->|Tidak| Single["Klasifikasi: Single Building Entity"]
+    end
+    
+    subgraph Clustering ["2. Spatial Density Clustering (DBSCAN / Distance Threshold = 28m)"]
+        Superblock --> Clust["Pecah Panel Menjadi Klaster Fisik Terpisah (Tanpa Menyeberang Jalan)"]
+        Clust --> Match["Cocokkan Klaster Terdekat dengan Koordinat Input Geotag"]
+    end
+    
+    subgraph Accounting ["3. Dual-Track Accounting & Reporting"]
+        Match --> TrackA["Track A: Sub-Fasilitas Spesifik (Contoh: Dek Parkir Murni = 2.556 Panel / 1.022 kWp)"]
+        Match --> TrackB["Track B: Total Konsolidasi Superblok (Seluruh Kawasan = 3.648 Panel / 1.459 kWp)"]
+    end
+```
+
+#### 3. Hasil Audit Empiris Modul Disambiguasi pada 5 Titik Pilot:
+| ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Superblok (kWp) | Target Sub-Fasilitas (kWp) |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: |
+| **MRT-003** | Stasiun MRT Cipete Raya | Single Building Entity | $7,5\text{ m}$ ($45,7 - 53,2\text{ m}$) | 1 | $656,8\text{ kWp}$ | $656,8\text{ kWp}$ (100% Stasiun) |
+| **KRL-032** | Stasiun KRL Manggarai Sentral | Single Building Entity | $16,0\text{ m}$ ($20,1 - 36,2\text{ m}$) | 1 | $1.771,6\text{ kWp}$ | $1.771,6\text{ kWp}$ (100% Stasiun) |
+| **LRT-014** | Stasiun LRT Dukuh Atas | Single Building Entity | $3,8\text{ m}$ ($3,6 - 7,4\text{ m}$) | 1 | $310,8\text{ kWp}$ | $310,8\text{ kWp}$ (100% Stasiun) |
+| **RS-007** | RSUD Tarakan Jakarta | Single Building Entity | $19,1\text{ m}$ ($20,2 - 39,3\text{ m}$) | 1 | $158,8\text{ kWp}$ | $158,8\text{ kWp}$ (100% RSUD) |
+| **PKG-020** | Lippo Mall Puri Parking | **Mixed-Use Superblock** | **$116,8\text{ m}$** ($11,6 - 128,5\text{ m}$) | **4 Klaster** | **$1.459,2\text{ kWp}$** | **$1.022,4\text{ kWp}$** (Klaster Parkir) |
+
+> **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit.csv`.
+
 ---
 
 ## 3. DETAIL TITIK TARGET TAHAP 1 (5 PILOT POINTS FULL SKU)

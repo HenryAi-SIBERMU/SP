@@ -245,18 +245,41 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                     color = cmap(s_idx % 20)
 
                     if len(pts) >= 3:
-                        pts_arr = np.array(pts)
-                        try:
-                            hull = ConvexHull(pts_arr)
-                            hull_pts = pts_arr[hull.vertices]
-                            poly = Polygon(
-                                hull_pts, closed=True,
-                                facecolor=color, edgecolor=color,
-                                alpha=0.42, linewidth=1.8
-                            )
-                            ax.add_patch(poly)
-                        except Exception:
-                            pass
+                        # Cluster titik berdasarkan jarak spasial (maks 40 px / ~10m) agar poligon tidak menyeberang jalan/void
+                        sub_clusters = []
+                        visited = [False] * len(pts)
+                        for i in range(len(pts)):
+                            if visited[i]:
+                                continue
+                            c_pts = [pts[i]]
+                            visited[i] = True
+                            q = [i]
+                            while q:
+                                curr = q.pop(0)
+                                cx, cy = pts[curr]
+                                for j in range(len(pts)):
+                                    if not visited[j]:
+                                        nx, ny = pts[j]
+                                        if (cx - nx)**2 + (cy - ny)**2 <= 40**2:
+                                            visited[j] = True
+                                            c_pts.append(pts[j])
+                                            q.append(j)
+                            sub_clusters.append(c_pts)
+
+                        for cl_pts in sub_clusters:
+                            if len(cl_pts) >= 3:
+                                cl_arr = np.array(cl_pts)
+                                try:
+                                    hull = ConvexHull(cl_arr)
+                                    hull_pts = cl_arr[hull.vertices]
+                                    poly = Polygon(
+                                        hull_pts, closed=True,
+                                        facecolor=color, edgecolor=color,
+                                        alpha=0.42, linewidth=1.8
+                                    )
+                                    ax.add_patch(poly)
+                                except Exception:
+                                    pass
 
                     for px, py in pts:
                         ax.plot(px, py, marker="s", markersize=2, color=color, alpha=0.85)
