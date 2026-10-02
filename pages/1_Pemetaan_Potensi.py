@@ -591,15 +591,34 @@ with tab_segments:
             curr_segs["seg_no"] = curr_segs["segment_index"] + 1
             curr_segs["api_id"] = "S" + curr_segs["segment_index"].astype(str)
 
+            if "solar_insight" not in curr_segs.columns:
+                solar_insights_map = [
+                    "Optimal saat matahari condong di utara (April – Agustus)",
+                    "Menangkap sinar pagi menjelang siang",
+                    "Matahari Terbit: Produksi listrik memuncak di pagi hari (07.00 – 11.00)",
+                    "Menangkap sinar pagi menjelang tengah hari",
+                    "Optimal saat matahari condong di selatan (Oktober – Februari)",
+                    "Menangkap sinar siang menjelang sore",
+                    "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)",
+                    "Menangkap sinar sore"
+                ]
+                def calc_insight(r):
+                    if r["pitch_degrees"] < 3.0:
+                        return "Atap Datar (Puncak tengah hari 11.00–13.00, self-cleaning alami rendah)"
+                    d_i = int((r["azimuth_degrees"] + 22.5) // 45) % 8
+                    return solar_insights_map[d_i]
+                curr_segs["solar_insight"] = curr_segs.apply(calc_insight, axis=1)
+
             display_segs = curr_segs[[
                 "seg_no", "api_id", "pitch_degrees", "azimuth_degrees", "azimuth_direction",
-                "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
+                "solar_insight", "plane_height_m", "area_m2", "panels_count", "capacity_kwp", "annual_generation_mwh"
             ]].rename(columns={
                 "seg_no": "No. Segmen",
                 "api_id": "ID Google API",
                 "pitch_degrees": "Kemiringan (Pitch)",
                 "azimuth_degrees": "Azimuth (°)",
                 "azimuth_direction": "Arah Hadap",
+                "solar_insight": "Karakteristik & Jam Puncak Sinar Surya",
                 "plane_height_m": "Elevasi (m)",
                 "area_m2": "Luas Bidang (m²)",
                 "panels_count": "Panel (unit)",
@@ -616,6 +635,8 @@ with tab_segments:
                     "ID Google API": st.column_config.TextColumn(help="Indeks teknis 0-based dari Google Solar API roofSegmentStats"),
                     "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
                     "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
+                    "Arah Hadap": st.column_config.TextColumn(),
+                    "Karakteristik & Jam Puncak Sinar Surya": st.column_config.TextColumn(help="Interpretasi sains radiasi berdasarkan kombinasi sudut azimuth dan pitch atap"),
                     "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
                     "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
                     "Panel (unit)": st.column_config.NumberColumn(format="%d"),
@@ -623,6 +644,106 @@ with tab_segments:
                     "Listrik (MWh/thn)": st.column_config.NumberColumn(format="%.1f MWh")
                 }
             )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # ─── DASAR SAINS PLTS: HUBUNGAN PITCH & AZIMUTH ─────────────────────
+            st.markdown("#### Dasar Sains PLTS: Mengapa Kemiringan (Pitch) & Azimuth Harus Dianalisis Berpasangan?")
+            st.caption("Prinsip fisika radiasi matahari yang mendasari analisis segmentasi bidang atap oleh Google Solar API:")
+
+            col_sc1, col_sc2 = st.columns([1.1, 1.1])
+
+            with col_sc1:
+                st.markdown("""
+                <div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 16px; height: 100%;">
+                    <div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px;">
+                        Mengapa Keduanya Harus Berpasangan dalam Analisis PLTS?
+                    </div>
+                    <p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 12px;">
+                        Untuk menata panel surya secara optimal, kita <strong>tidak bisa hanya tahu kemiringannya saja</strong> tanpa mengetahui arah hadapnya:
+                    </p>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #81C784; font-size: 0.85rem;">1. Kemiringan Menentukan Efisiensi & Pembersihan:</strong>
+                        <p style="color: #94A3B8; font-size: 0.80rem; margin: 2px 0 0 0; line-height: 1.45;">
+                            Jika atap kemiringannya 0° (terlalu datar), debu dan air hujan akan menggenang. Kemiringan minimal <strong>10°</strong> membantu pembersihan debu alami (<em>self-cleaning</em> saat hujan).
+                        </p>
+                    </div>
+                    <div>
+                        <strong style="color: #81C784; font-size: 0.85rem;">2. Azimuth Menentukan Jam Puncak Produksi:</strong>
+                        <p style="color: #94A3B8; font-size: 0.80rem; margin: 2px 0 0 0; line-height: 1.45;">
+                            • Miring ke <strong>Timur (Azimuth ~90°)</strong>: Memproduksi listrik maksimal di <strong>pagi hari (07.00 – 11.00)</strong>.<br>
+                            • Miring ke <strong>Barat (Azimuth ~270°)</strong>: Memproduksi listrik maksimal di <strong>siang–sore (12.00 – 16.00)</strong>.<br>
+                            • Miring ke <strong>Utara/Selatan (0° / 180°)</strong>: Produksi tersebar merata sepanjang hari sesuai deklinasi matahari tahunan.
+                        </p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col_sc2:
+                if "Cipete" in asset_row["asset_name"]:
+                    ex_body = """
+                    <p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">
+                        Atap Stasiun MRT berbentuk pelana memanjang dari utara ke selatan. Di dataset kita:
+                    </p>
+                    <ul style="color: #94A3B8; font-size: 0.80rem; margin: 0 0 8px 16px; padding: 0; line-height: 1.5;">
+                        <li><strong>Sayap Timur (Segmen 1 / S0):</strong> Kemiringan = 15.1°, Azimuth = 98.4° (Timur) → Memanen sinar matahari <strong>pagi hari</strong>.</li>
+                        <li><strong>Sayap Barat (Segmen 2 / S1):</strong> Kemiringan = 17.8°, Azimuth = 286.1° (Barat) → Memanen sinar matahari <strong>sore hari</strong>.</li>
+                    </ul>
+                    <p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0; line-height: 1.45;">
+                        Kombinasi kedua sayap ini membuat Stasiun MRT Cipete Raya menghasilkan pasokan listrik yang sangat seimbang dari pukul 07.00 pagi hingga 16.30 sore!
+                    </p>
+                    """
+                elif "Manggarai" in asset_row["asset_name"]:
+                    ex_body = """
+                    <p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">
+                        Kompleks Stasiun Manggarai Sentral memiliki kombinasi dek atap utama dan kanopi peron:
+                    </p>
+                    <ul style="color: #94A3B8; font-size: 0.80rem; margin: 0 0 8px 16px; padding: 0; line-height: 1.5;">
+                        <li><strong>Dek Atap Utama (Segmen 2 / S1):</strong> Kemiringan = 1.15° (hampir datar), Luas = 5,106 m² → Memanen radiasi puncak <strong>tengah hari</strong> (2,410 panel).</li>
+                        <li><strong>Kanopi Sayap Timur (Segmen 6 / S5):</strong> Kemiringan = 2.6°, Azimuth = 76.1° (Timur) → Memanen radiasi <strong>pagi hari</strong> (844 panel).</li>
+                    </ul>
+                    <p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0; line-height: 1.45;">
+                        Kombinasi multi-segmen ini memungkinkan atap Manggarai menampung total 4,429 panel surya (1.77 MWp) secara terstruktur tanpa saling membayangi.
+                    </p>
+                    """
+                else:
+                    ex_body = f"""
+                    <p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">
+                        Gedung {asset_row['asset_name']} terdeteksi memiliki {total_segs} segmen bidang atap mandiri:
+                    </p>
+                    <p style="color: #94A3B8; font-size: 0.80rem; line-height: 1.5; margin: 0 0 8px 0;">
+                        Kombinasi sudut kemiringan (pitch) dan orientasi azimuth memastikan setiap kelompok modul menerima radiasi surya maksimal sesuai jam edar matahari tahunan wilayah Jakarta (-6.2° LS).
+                    </p>
+                    <p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0;">
+                        Sebanyak {active_segs} dari {total_segs} segmen berhasil diutilisasi menampung {curr_segs['panels_count'].sum():,} panel surya.
+                    </p>
+                    """
+
+                st.markdown(f"""
+                <div style="background: #0E1626; border: 1px solid #2E5A36; border-left: 4px solid #66BB6A; border-radius: 8px; padding: 16px; height: 100%;">
+                    <div style="color: #81C784; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px;">
+                        Contoh Nyata dari Data Kita: {asset_row['asset_name']}
+                    </div>
+                    {ex_body}
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # Reference table of 8 azimuth compass directions
+            st.markdown("##### Tabel Standar Referensi Azimuth & Karakteristik Penerimaan Sinar Surya")
+            st.caption("Klasifikasi 8 arah mata angin dan karakteristik radiasi surya yang dijadikan acuan evaluasi teknis:")
+            df_azimuth_ref = pd.DataFrame([
+                {"Rentang Sudut Azimuth": "337,5° – 22,5°", "Titik Tengah": "0° / 360°", "Arah Mata Angin": "⬆️ Utara (U)", "Karakteristik Penerimaan Sinar Surya": "Optimal saat matahari condong di utara (April – Agustus)."},
+                {"Rentang Sudut Azimuth": "22,5° – 67,5°", "Titik Tengah": "45°", "Arah Mata Angin": "↗️ Timur Laut (TL)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar pagi menjelang siang."},
+                {"Rentang Sudut Azimuth": "67,5° – 112,5°", "Titik Tengah": "90°", "Arah Mata Angin": "➡️ Timur (T)", "Karakteristik Penerimaan Sinar Surya": "Matahari Terbit: Produksi listrik memuncak di pagi hari (07.00 – 11.00)."},
+                {"Rentang Sudut Azimuth": "112,5° – 157,5°", "Titik Tengah": "135°", "Arah Mata Angin": "↘️ Tenggara (TG)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar pagi menjelang tengah hari."},
+                {"Rentang Sudut Azimuth": "157,5° – 202,5°", "Titik Tengah": "180°", "Arah Mata Angin": "⬇️ Selatan (S)", "Karakteristik Penerimaan Sinar Surya": "Optimal saat matahari condong di selatan (Oktober – Februari)."},
+                {"Rentang Sudut Azimuth": "202,5° – 247,5°", "Titik Tengah": "225°", "Arah Mata Angin": "↙️ Barat Daya (BD)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar siang menjelang sore."},
+                {"Rentang Sudut Azimuth": "247,5° – 292,5°", "Titik Tengah": "270°", "Arah Mata Angin": "⬅️ Barat (B)", "Karakteristik Penerimaan Sinar Surya": "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)."},
+                {"Rentang Sudut Azimuth": "292,5° – 337,5°", "Titik Tengah": "315°", "Arah Mata Angin": "↖️ Barat Laut (BL)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar sore."}
+            ])
+            st.dataframe(df_azimuth_ref, use_container_width=True, hide_index=True)
         else:
             st.info("Data segmen belum tersedia untuk infrastruktur ini.")
     else:
