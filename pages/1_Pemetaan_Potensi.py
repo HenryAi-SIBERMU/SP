@@ -500,6 +500,29 @@ with tab_segments:
                 * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit`
                 """)
 
+                zero_segs = curr_segs[curr_segs["panels_count"] == 0]
+                if not zero_segs.empty:
+                    st.markdown(f"##### Alasan Eliminasi Bidang (0 Panel): `{len(zero_segs)} Bidang`")
+                    st.caption("Faktor rekayasa mengapa Google Solar API mengecualikan segmen berikut dari penempatan panel:")
+                    for _, z_row in zero_segs.iterrows():
+                        s_no = int(z_row["segment_index"]) + 1
+                        api_id = f"S{z_row['segment_index']}"
+                        p_deg = float(z_row["pitch_degrees"])
+                        area = float(z_row["area_m2"])
+                        
+                        if p_deg >= 70.0:
+                            reason = f"**Fasad / Dinding Vertikal** (Kemiringan {p_deg:.1f}°, Luas {area:,.1f} m²): Merupakan fasad dinding tegak gedung bertingkat, bukan permukaan atap horizontal."
+                        elif area < 3.0:
+                            reason = f"**Parapet / Talang Mikro** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Dimensi jauh lebih kecil dari ukuran 1 modul standar (1.63 m²) dan terpotong aturan jarak aman tepi (*roof setback*)."
+                        elif area < 10.0:
+                            reason = f"**Bidang Sempit di Bawah Ambang Kelayakan** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Tidak memenuhi syarat minimal luas bidang Google (≥ 10 m²) dan tidak cukup untuk string minimum 4 modul."
+                        elif p_deg >= 40.0:
+                            reason = f"**Kemiringan Curam & Terhalang Bayangan** (Kemiringan {p_deg:.1f}°, Luas {area:.1f} m²): Kemiringan atap ventilasi terlalu terjal dan terhalang bayangan struktur utama peron."
+                        else:
+                            reason = f"**Bayangan Struktural & Rintangan MEP** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Radiasi sinar matahari terhalang bayangan tower utama (*drop shadow*) atau dipenuhi instalasi mekanikal gedung."
+                            
+                        st.markdown(f"- **Segmen {s_no} ({api_id}):** {reason}")
+
         st.markdown("##### Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?")
         st.markdown("""
 Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terjadi karena tiga faktor rekayasa:
