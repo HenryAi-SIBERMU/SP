@@ -287,38 +287,15 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Tabs to explore all SKU layers (Text only, clean academic styling)
-tab_panels, tab_segments, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
-    "Layout Panel di Atap",
+tab_segments, tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
     "Segmentasi Atap & Metodologi",
+    "Layout Panel di Atap",
     "Citra Satelit RGB",
     "Annual Solar Flux",
     "DSM 3D Elevasi",
     "Roof Mask",
     "Komparasi 5 Layer Bersandingan"
 ])
-
-with tab_panels:
-    col_p1, col_p2 = st.columns([1.6, 1.0])
-    with col_p1:
-        st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
-        st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
-        panels_img_rel = asset_row.get("preview_panels_png")
-        if is_valid_img_path(panels_img_rel):
-            panels_img = Image.open(PROJECT_ROOT / panels_img_rel)
-            st.image(panels_img, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
-        else:
-            st.warning("Preview panel overlay belum tersedia.")
-    with col_p2:
-        st.markdown("#### Karakteristik Panel Atap")
-        st.markdown(f"""
-        * **Kapasitas Per Modul:** `400 Watt-peak (Wp)`
-        * **Dimensi Modul:** `1.88 m × 1.05 m (1.97 m²)`
-        * **Orientasi:** Dinamis (Landscape / Portrait menyesuaikan slope atap)
-        * **Total Modul Maksimal:** `{asset_row['max_panels_count']:,} panel`
-        * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
-        * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
-        """)
-        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
 
 with tab_segments:
     st.markdown("#### Metodologi Segmentasi Bidang 3D & Algoritma Penempatan Panel Google Solar API")
@@ -420,6 +397,29 @@ with tab_segments:
             st.info("Data segmen belum tersedia untuk infrastruktur ini.")
     else:
         st.warning("File dataset segmen atap belum dimuat.")
+
+with tab_panels:
+    col_p1, col_p2 = st.columns([1.6, 1.0])
+    with col_p1:
+        st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
+        st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
+        panels_img_rel = asset_row.get("preview_panels_png")
+        if is_valid_img_path(panels_img_rel):
+            panels_img = Image.open(PROJECT_ROOT / panels_img_rel)
+            st.image(panels_img, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
+        else:
+            st.warning("Preview panel overlay belum tersedia.")
+    with col_p2:
+        st.markdown("#### Karakteristik Panel Atap")
+        st.markdown(f"""
+        * **Kapasitas Per Modul:** `400 Watt-peak (Wp)`
+        * **Dimensi Modul:** `1.88 m × 1.05 m (1.97 m²)`
+        * **Orientasi:** Dinamis (Landscape / Portrait menyesuaikan slope atap)
+        * **Total Modul Maksimal:** `{asset_row['max_panels_count']:,} panel`
+        * **Total Daya Terpasang:** `{asset_row['installed_capacity_kwp']:,.1f} kWp`
+        * **Rata-rata Produksi / Panel:** `{(asset_row['annual_generation_kwh'] / max(asset_row['max_panels_count'], 1)):,.1f} kWh/panel/thn`
+        """)
+        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google. Jika terdapat celah kosong pada atap, rincian pembagian segmen bidang dan batasannya dapat ditinjau pada tab **Segmentasi Atap & Metodologi**.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
