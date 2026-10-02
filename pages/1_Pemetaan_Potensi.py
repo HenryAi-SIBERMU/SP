@@ -478,7 +478,7 @@ with tab_segments:
         if segments_img_path:
             st.image(
                 segments_img_path,
-                caption=f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label lingkaran nomor ①, ②, ③, ... menunjukkan Nomor Segmen yang terhubung langsung dengan tabel rincian di bawah)",
+                caption=f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)",
                 use_container_width=True
             )
         else:

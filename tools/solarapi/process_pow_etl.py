@@ -269,6 +269,45 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                         cy = float(np.median(pts_in_arr[:, 1]))
                         badge_coords.append((s_idx, cx, cy, color))
 
+                # Tampilkan juga batas bidang dan badge untuk segmen 0-panel agar terlihat di citra
+                for s_idx, s in enumerate(segs):
+                    if s_idx in seg_points and len(seg_points[s_idx]) > 0:
+                        continue
+                    box = s.get("boundingBox", {})
+                    c = s.get("center", {})
+                    if box and "sw" in box and "ne" in box and transformer:
+                        try:
+                            sw_ux, sw_uy = transformer.transform(box["sw"]["longitude"], box["sw"]["latitude"])
+                            ne_ux, ne_uy = transformer.transform(box["ne"]["longitude"], box["ne"]["latitude"])
+                            sw_py, sw_px = src.index(sw_ux, sw_uy)
+                            ne_py, ne_px = src.index(ne_ux, ne_uy)
+                            min_x = min(sw_px, ne_px)
+                            max_x = max(sw_px, ne_px)
+                            min_y = min(sw_py, ne_py)
+                            max_y = max(sw_py, ne_py)
+                            cx = (min_x + max_x) / 2.0
+                            cy = (min_y + max_y) / 2.0
+                            if 0 <= cx < src.width and 0 <= cy < src.height:
+                                rect_w = max(abs(max_x - min_x), 12)
+                                rect_h = max(abs(max_y - min_y), 12)
+                                rect = plt.Rectangle(
+                                    (min_x, min_y), rect_w, rect_h,
+                                    fill=True, facecolor="#EF5350", edgecolor="#EF5350",
+                                    linestyle="--", linewidth=1.8, alpha=0.45
+                                )
+                                ax.add_patch(rect)
+                                badge_coords.append((s_idx, cx, cy, "#EF5350"))
+                        except Exception:
+                            pass
+                    elif c and "latitude" in c and transformer:
+                        try:
+                            ux, uy = transformer.transform(c["longitude"], c["latitude"])
+                            py, px = src.index(ux, uy)
+                            if 0 <= px < src.width and 0 <= py < src.height:
+                                badge_coords.append((s_idx, px, py, "#EF5350"))
+                        except Exception:
+                            pass
+
                 # Collision avoidance repulsion loop
                 for _ in range(3):
                     for i in range(len(badge_coords)):
