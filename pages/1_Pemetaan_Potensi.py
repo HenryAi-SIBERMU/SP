@@ -43,7 +43,6 @@ PROCESSED_CALC_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "po
 PROCESSED_SEGMENTS_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv"
 PROCESSED_GIS_PATH = PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson"
 
-@st.cache_data
 def load_processed_data():
     if not PROCESSED_CALC_PATH.exists():
         return None, None, None
@@ -55,7 +54,14 @@ def load_processed_data():
 df_summary, gdf_points, df_segments = load_processed_data()
 
 def is_valid_img_path(rel_path):
-    return pd.notna(rel_path) and isinstance(rel_path, str) and len(rel_path.strip()) > 0 and (PROJECT_ROOT / rel_path).exists()
+    if not pd.notna(rel_path) or not isinstance(rel_path, str) or len(rel_path.strip()) == 0:
+        return False
+    return (PROJECT_ROOT / Path(rel_path)).resolve().exists()
+
+def get_clean_img_path(rel_path):
+    if is_valid_img_path(rel_path):
+        return str((PROJECT_ROOT / Path(rel_path)).resolve())
+    return None
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
@@ -287,9 +293,9 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Tabs to explore all SKU layers (Text only, clean academic styling)
-tab_segments, tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
-    "Segmentasi Atap & Metodologi",
+tab_panels, tab_segments, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
     "Layout Panel di Atap",
+    "Segmentasi Atap & Metodologi",
     "Citra Satelit RGB",
     "Annual Solar Flux",
     "DSM 3D Elevasi",
@@ -404,9 +410,9 @@ with tab_panels:
         st.markdown("#### Simulasi Distribusi Panel Surya di Atap (Show Panels on Roof)")
         st.caption("Posisi presisi koordinat setiap modul panel surya (400 Wp) yang diekstrak langsung dari Building Insights API:")
         panels_img_rel = asset_row.get("preview_panels_png")
-        if is_valid_img_path(panels_img_rel):
-            panels_img = Image.open(PROJECT_ROOT / panels_img_rel)
-            st.image(panels_img, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
+        panels_img_path = get_clean_img_path(panels_img_rel)
+        if panels_img_path:
+            st.image(panels_img_path, caption=f"Tata Letak {asset_row['max_panels_count']:,} Panel Surya di Atap {asset_row['asset_name']}", use_container_width=True)
         else:
             st.warning("Preview panel overlay belum tersedia.")
     with col_p2:
@@ -427,9 +433,9 @@ with tab_rgb:
         st.markdown("#### Citra Satelit Aerial Resolusi Tinggi (RGB)")
         st.caption("Foto satelit ortorektifikasi resolusi 0.25 m/pixel Google Maps Platform:")
         rgb_img_rel = asset_row.get("preview_rgb_png")
-        if is_valid_img_path(rgb_img_rel):
-            rgb_img = Image.open(PROJECT_ROOT / rgb_img_rel)
-            st.image(rgb_img, caption=f"Foto Satelit Atap: {asset_row['asset_name']}", use_container_width=True)
+        rgb_img_path = get_clean_img_path(rgb_img_rel)
+        if rgb_img_path:
+            st.image(rgb_img_path, caption=f"Foto Satelit Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
             st.warning("Preview citra satelit RGB belum tersedia.")
     with col_rgb2:
@@ -448,9 +454,9 @@ with tab_flux:
         st.markdown("#### Annual Solar Flux Heatmap")
         st.caption("Peta kontur iradiasi radiasi matahari tahunan (kWh/kW/year) per piksel atap:")
         flux_img_rel = asset_row.get("preview_flux_png")
-        if is_valid_img_path(flux_img_rel):
-            flux_img = Image.open(PROJECT_ROOT / flux_img_rel)
-            st.image(flux_img, caption=f"Heatmap Iradiasi Surya: {asset_row['asset_name']}", use_container_width=True)
+        flux_img_path = get_clean_img_path(flux_img_rel)
+        if flux_img_path:
+            st.image(flux_img_path, caption=f"Heatmap Iradiasi Surya: {asset_row['asset_name']}", use_container_width=True)
         else:
             st.warning("Preview heatmap iradiasi surya belum tersedia.")
     with col_f2:
@@ -468,9 +474,9 @@ with tab_dsm:
         st.markdown("#### Digital Surface Model (DSM 3D Elevation)")
         st.caption("Model elevasi dan ketinggian fisik permukaan struktur atap (meter di atas permukaan tanah):")
         dsm_img_rel = asset_row.get("preview_dsm_png")
-        if is_valid_img_path(dsm_img_rel):
-            dsm_img = Image.open(PROJECT_ROOT / dsm_img_rel)
-            st.image(dsm_img, caption=f"Model Ketinggian 3D Atap: {asset_row['asset_name']}", use_container_width=True)
+        dsm_img_path = get_clean_img_path(dsm_img_rel)
+        if dsm_img_path:
+            st.image(dsm_img_path, caption=f"Model Ketinggian 3D Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
             st.warning("Preview model DSM 3D belum tersedia.")
     with col_d2:
@@ -488,9 +494,9 @@ with tab_mask:
         st.markdown("#### Roof Mask (Segmentasi Atap Layak Panel)")
         st.caption("Binary mask yang memisahkan permukaan atap bangunan (hijau) vs area jalan/tanah (gelap):")
         mask_img_rel = asset_row.get("preview_mask_png")
-        if is_valid_img_path(mask_img_rel):
-            mask_img = Image.open(PROJECT_ROOT / mask_img_rel)
-            st.image(mask_img, caption=f"Mask Boundary Atap: {asset_row['asset_name']}", use_container_width=True)
+        mask_img_path = get_clean_img_path(mask_img_rel)
+        if mask_img_path:
+            st.image(mask_img_path, caption=f"Mask Boundary Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
             st.warning("Preview mask atap belum tersedia.")
     with col_m2:
@@ -510,37 +516,37 @@ with tab_gallery:
     
     with g_col1:
         st.markdown("**1. RGB Asli**")
-        p_rgb = asset_row.get("preview_rgb_png")
-        if is_valid_img_path(p_rgb):
-            st.image(PROJECT_ROOT / p_rgb, use_container_width=True)
+        p_rgb = get_clean_img_path(asset_row.get("preview_rgb_png"))
+        if p_rgb:
+            st.image(p_rgb, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col2:
         st.markdown("**2. Layout Panel**")
-        p_pan = asset_row.get("preview_panels_png")
-        if is_valid_img_path(p_pan):
-            st.image(PROJECT_ROOT / p_pan, use_container_width=True)
+        p_pan = get_clean_img_path(asset_row.get("preview_panels_png"))
+        if p_pan:
+            st.image(p_pan, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col3:
         st.markdown("**3. Annual Flux**")
-        p_flx = asset_row.get("preview_flux_png")
-        if is_valid_img_path(p_flx):
-            st.image(PROJECT_ROOT / p_flx, use_container_width=True)
+        p_flx = get_clean_img_path(asset_row.get("preview_flux_png"))
+        if p_flx:
+            st.image(p_flx, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col4:
         st.markdown("**4. DSM 3D**")
-        p_dsm = asset_row.get("preview_dsm_png")
-        if is_valid_img_path(p_dsm):
-            st.image(PROJECT_ROOT / p_dsm, use_container_width=True)
+        p_dsm = get_clean_img_path(asset_row.get("preview_dsm_png"))
+        if p_dsm:
+            st.image(p_dsm, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col5:
         st.markdown("**5. Roof Mask**")
-        p_msk = asset_row.get("preview_mask_png")
-        if is_valid_img_path(p_msk):
-            st.image(PROJECT_ROOT / p_msk, use_container_width=True)
+        p_msk = get_clean_img_path(asset_row.get("preview_mask_png"))
+        if p_msk:
+            st.image(p_msk, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
 
