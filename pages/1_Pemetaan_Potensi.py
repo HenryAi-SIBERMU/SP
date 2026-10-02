@@ -345,11 +345,9 @@ with col_list:
     )
 
     st.markdown("""
-    <div style="background: #111927; padding: 12px; border-radius: 6px; font-size: 0.8rem; border-left: 3px solid #66BB6A;">
-        <strong>Metodologi Anti-Halusinasi:</strong><br>
-        Rata-rata <em>spatial drift</em> adalah <strong>11.02 meter</strong>. Ini membuktikan bahwa algoritma Google Solar API berhasil mengunci poligon atap stasiun dan gedung sebenarnya, bukan bangunan ruko di pinggir jalan.
-    </div>
-    """, unsafe_allow_html=True)
+**Validasi Akurasi Spasial:**  
+Rata-rata *spatial drift* adalah **11.02 meter**. Hal ini membuktikan bahwa algoritma Google Solar API berhasil mengunci koordinat poligon atap stasiun dan gedung target secara presisi, bukan bangunan ruko di pinggir jalan.
+    """)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -486,17 +484,14 @@ with tab_segments:
                 * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit`
                 """)
 
-        st.markdown(f"""
-        <div style="background: #0E1626; border-left: 4px solid #66BB6A; padding: 14px 16px; border-radius: 6px; margin-top: 10px;">
-            <strong style="color: #ECEFF1; font-size: 0.92rem;">Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?</strong>
-            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.55; margin: 6px 0 0 0;">
-                Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terjadi karena tiga faktor rekayasa:
-                <br>1. <strong>Multi-Segmen & Perbedaan Ketinggian:</strong> Atap terpecah menjadi puluhan bidang dengan elevasi berbeda. Celah antara bidang (misalnya lembah talang air atau sambungan ekspansi) tidak memenuhi syarat bidang datar RANSAC.
-                <br>2. <strong>Bukaan Pencahayaan Alami (Skylight):</strong> Kanopi kaca atau membran transparan memanjang (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas) sengaja dikecualikan oleh model AI Google dari pemasangan modul fotovoltaik.
-                <br>3. <strong>Batas Bingkai Citra Satelit:</strong> Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m atau Lippo Mall Puri bentang 260 m) melampaui jendela radius pengambilan citra 60 meter (120 m × 120 m), sehingga sebagian panel berada di dek atap yang terpotong batas bingkai.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("##### Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?")
+        st.markdown("""
+Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terjadi karena tiga faktor rekayasa:
+
+1. **Multi-Segmen & Perbedaan Ketinggian:** Atap terpecah menjadi puluhan bidang dengan elevasi berbeda. Celah antara bidang (misalnya lembah talang air atau sambungan ekspansi) tidak memenuhi syarat bidang datar planar RANSAC.
+2. **Bukaan Pencahayaan Alami (Skylight):** Kanopi kaca atau membran transparan memanjang (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas) sengaja dikecualikan oleh model AI Google dari pemasangan modul fotovoltaik.
+3. **Batas Bingkai Citra Satelit:** Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m atau Lippo Mall Puri bentang 260 m) melampaui jendela radius pengambilan citra 60 meter (120 m × 120 m), sehingga sebagian panel berada di dek atap yang terpotong batas bingkai.
+        """)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -573,81 +568,47 @@ with tab_segments:
             col_sc1, col_sc2 = st.columns([1.1, 1.1])
 
             with col_sc1:
-                sc1_html = (
-                    '<div style="background: #101726; border: 1px solid #1E293B; border-radius: 8px; padding: 16px; height: 100%;">'
-                    '<div style="color: #66BB6A; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px;">'
-                    'Mengapa Keduanya Harus Berpasangan dalam Analisis PLTS?'
-                    '</div>'
-                    '<p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 12px;">'
-                    'Untuk menata panel surya secara optimal, kita <strong>tidak bisa hanya tahu kemiringannya saja</strong> tanpa mengetahui arah hadapnya:'
-                    '</p>'
-                    '<div style="margin-bottom: 10px;">'
-                    '<strong style="color: #81C784; font-size: 0.85rem;">1. Kemiringan Menentukan Efisiensi & Pembersihan:</strong>'
-                    '<p style="color: #94A3B8; font-size: 0.80rem; margin: 2px 0 0 0; line-height: 1.45;">'
-                    'Jika atap kemiringannya 0° (terlalu datar), debu dan air hujan akan menggenang. Kemiringan minimal <strong>10°</strong> membantu pembersihan debu alami (<em>self-cleaning</em> saat hujan).'
-                    '</p>'
-                    '</div>'
-                    '<div>'
-                    '<strong style="color: #81C784; font-size: 0.85rem;">2. Azimuth Menentukan Jam Puncak Produksi:</strong>'
-                    '<p style="color: #94A3B8; font-size: 0.80rem; margin: 2px 0 0 0; line-height: 1.45;">'
-                    '• Miring ke <strong>Timur (Azimuth ~90°)</strong>: Memproduksi listrik maksimal di <strong>pagi hari (07.00 – 11.00)</strong>.<br>'
-                    '• Miring ke <strong>Barat (Azimuth ~270°)</strong>: Memproduksi listrik maksimal di <strong>siang–sore (12.00 – 16.00)</strong>.<br>'
-                    '• Miring ke <strong>Utara/Selatan (0° / 180°)</strong>: Produksi tersebar merata sepanjang hari sesuai deklinasi matahari tahunan.'
-                    '</p>'
-                    '</div>'
-                    '</div>'
-                )
-                st.markdown(sc1_html, unsafe_allow_html=True)
+                st.markdown("##### Mengapa Keduanya Harus Berpasangan dalam Analisis PLTS?")
+                st.markdown("""
+Untuk menata panel surya secara optimal, kita **tidak bisa hanya tahu kemiringannya saja** tanpa mengetahui arah hadapnya:
+
+1. **Kemiringan Menentukan Efisiensi & Pembersihan:**  
+   Jika atap kemiringannya 0° (terlalu datar), debu dan air hujan akan menggenang. Kemiringan minimal **10°** membantu pembersihan debu alami (*self-cleaning* saat hujan).
+
+2. **Azimuth Menentukan Jam Puncak Produksi:**  
+   - Miring ke **Timur (Azimuth ~90°)**: Memproduksi listrik maksimal di **pagi hari (07.00 – 11.00)**.
+   - Miring ke **Barat (Azimuth ~270°)**: Memproduksi listrik maksimal di **siang–sore (12.00 – 16.00)**.
+   - Miring ke **Utara/Selatan (0° / 180°)**: Produksi tersebar merata sepanjang hari sesuai deklinasi matahari tahunan.
+                """)
 
             with col_sc2:
+                st.markdown(f"##### Contoh Nyata dari Data Kita: {asset_row['asset_name']}")
                 if "Cipete" in asset_row["asset_name"]:
-                    ex_body = (
-                        '<p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">'
-                        'Atap Stasiun MRT berbentuk pelana memanjang dari utara ke selatan. Di dataset kita:'
-                        '</p>'
-                        '<ul style="color: #94A3B8; font-size: 0.80rem; margin: 0 0 8px 16px; padding: 0; line-height: 1.5;">'
-                        '<li><strong>Sayap Timur (Segmen 1 / S0):</strong> Kemiringan = 15.1°, Azimuth = 98.4° (Timur) → Memanen sinar matahari <strong>pagi hari</strong>.</li>'
-                        '<li><strong>Sayap Barat (Segmen 2 / S1):</strong> Kemiringan = 17.8°, Azimuth = 286.1° (Barat) → Memanen sinar matahari <strong>sore hari</strong>.</li>'
-                        '</ul>'
-                        '<p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0; line-height: 1.45;">'
-                        'Kombinasi kedua sayap ini membuat Stasiun MRT Cipete Raya menghasilkan pasokan listrik yang sangat seimbang dari pukul 07.00 pagi hingga 16.30 sore!'
-                        '</p>'
-                    )
-                elif "Manggarai" in asset_row["asset_name"]:
-                    ex_body = (
-                        '<p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">'
-                        'Kompleks Stasiun Manggarai Sentral memiliki kombinasi dek atap utama dan kanopi peron:'
-                        '</p>'
-                        '<ul style="color: #94A3B8; font-size: 0.80rem; margin: 0 0 8px 16px; padding: 0; line-height: 1.5;">'
-                        '<li><strong>Dek Atap Utama (Segmen 2 / S1):</strong> Kemiringan = 1.15° (hampir datar), Luas = 5,106 m² → Memanen radiasi puncak <strong>tengah hari</strong> (2,410 panel).</li>'
-                        '<li><strong>Kanopi Sayap Timur (Segmen 6 / S5):</strong> Kemiringan = 2.6°, Azimuth = 76.1° (Timur) → Memanen radiasi <strong>pagi hari</strong> (844 panel).</li>'
-                        '</ul>'
-                        '<p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0; line-height: 1.45;">'
-                        'Kombinasi multi-segmen ini memungkinkan atap Manggarai menampung total 4,429 panel surya (1.77 MWp) secara terstruktur tanpa saling membayangi.'
-                        '</p>'
-                    )
-                else:
-                    ex_body = (
-                        f'<p style="color: #CBD5E1; font-size: 0.82rem; line-height: 1.55; margin-bottom: 8px;">'
-                        f'Gedung {asset_row["asset_name"]} terdeteksi memiliki {total_segs} segmen bidang atap mandiri:'
-                        f'</p>'
-                        f'<p style="color: #94A3B8; font-size: 0.80rem; line-height: 1.5; margin: 0 0 8px 0;">'
-                        f'Kombinasi sudut kemiringan (pitch) dan orientasi azimuth memastikan setiap kelompok modul menerima radiasi surya maksimal sesuai jam edar matahari tahunan wilayah Jakarta (-6.2° LS).'
-                        f'</p>'
-                        f'<p style="color: #66BB6A; font-weight: 600; font-size: 0.81rem; margin: 0;">'
-                        f'Sebanyak {active_segs} dari {total_segs} segmen berhasil diutilisasi menampung {curr_segs["panels_count"].sum():,} panel surya.'
-                        f'</p>'
-                    )
+                    st.markdown("""
+Atap Stasiun MRT berbentuk pelana memanjang dari utara ke selatan. Di dataset kita:
 
-                sc2_html = (
-                    f'<div style="background: #0E1626; border: 1px solid #2E5A36; border-left: 4px solid #66BB6A; border-radius: 8px; padding: 16px; height: 100%;">'
-                    f'<div style="color: #81C784; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px;">'
-                    f'Contoh Nyata dari Data Kita: {asset_row["asset_name"]}'
-                    f'</div>'
-                    f'{ex_body}'
-                    f'</div>'
-                )
-                st.markdown(sc2_html, unsafe_allow_html=True)
+- **Sayap Timur (Segmen 1 / S0):** Kemiringan = 15.1°, Azimuth = 98.4° (Timur) → Memanen sinar matahari **pagi hari**.
+- **Sayap Barat (Segmen 2 / S1):** Kemiringan = 17.8°, Azimuth = 286.1° (Barat) → Memanen sinar matahari **sore hari**.
+
+Kombinasi kedua sayap ini membuat Stasiun MRT Cipete Raya menghasilkan pasokan listrik yang sangat seimbang dari pukul 07.00 pagi hingga 16.30 sore!
+                    """)
+                elif "Manggarai" in asset_row["asset_name"]:
+                    st.markdown("""
+Kompleks Stasiun Manggarai Sentral memiliki kombinasi dek atap utama dan kanopi peron:
+
+- **Dek Atap Utama (Segmen 2 / S1):** Kemiringan = 1.15° (hampir datar), Luas = 5,106 m² → Memanen radiasi puncak **tengah hari** (2,410 panel).
+- **Kanopi Sayap Timur (Segmen 6 / S5):** Kemiringan = 2.6°, Azimuth = 76.1° (Timur) → Memanen radiasi **pagi hari** (844 panel).
+
+Kombinasi multi-segmen ini memungkinkan atap Manggarai menampung total 4,429 panel surya (1.77 MWp) secara terstruktur tanpa saling membayangi.
+                    """)
+                else:
+                    st.markdown(f"""
+Gedung {asset_row['asset_name']} terdeteksi memiliki {total_segs} segmen bidang atap mandiri:
+
+Kombinasi sudut kemiringan (pitch) dan orientasi azimuth memastikan setiap kelompok modul menerima radiasi surya maksimal sesuai jam edar matahari tahunan wilayah Jakarta (-6.2° LS).
+
+Sebanyak {active_segs} dari {total_segs} segmen berhasil diutilisasi menampung {curr_segs['panels_count'].sum():,} panel surya.
+                    """)
 
             st.markdown("<br>", unsafe_allow_html=True)
 
