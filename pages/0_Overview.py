@@ -120,7 +120,7 @@ st.markdown(f"""
 <strong>Fase Saat Ini: Validasi Spasial Empiris & Ekspansi Dataset</strong><br><br>
 
 <strong>Selesai (Tahap 1 Pilot):</strong><br>
-Akuisisi data {fetched_titik} titik pilot multi-kategori (KRL Manggarai, MRT Cipete Raya, LRT Dukuh Atas, RSUD Tarakan, Lippo Mall Puri) via Google Solar API Full SKU ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn). Verifikasi spasial, segmentasi 3D atap, dan visualisasi citra satelit di halaman Pemetaan Potensi.<br><br>
+Akuisisi data {fetched_titik} titik pilot multi-kategori (KRL Manggarai Sentral, MRT Cipete Raya, LRT Dukuh Atas, RSUD Tarakan, Pondok Indah Mall 1) via Google Solar API Full SKU ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn). Verifikasi spasial, segmentasi 3D atap, dan visualisasi citra satelit di halaman Pemetaan Potensi.<br><br>
 
 <strong>Sedang Berjalan (Tahap 2):</strong><br>
 Persiapan ekspansi 110 titik ikonik se-Jabodetabek lintas kategori infrastruktur.<br><br>
