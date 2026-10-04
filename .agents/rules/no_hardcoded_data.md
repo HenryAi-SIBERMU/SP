@@ -1,4 +1,4 @@
-﻿---
+---
 description: Aturan Mutlak Larangan Data Hardcoded dalam Skrip, Dashboard, dan Tool Analisis (Zero Hardcoded Data Rule)
 ---
 
@@ -61,3 +61,29 @@ Setiap angka yang muncul pada tabel, grafik, kartu metrik, maupun laporan Word/P
 - **Identitas baris / query filter** (misalnya `id_izin`, nomor SK, atau `row_index`).
 
 Jika suatu angka tidak dapat dibuktikan asal-usulnya dari file fisik di folder `data/`, angka tersebut dikategorikan sebagai **data tidak sah (*invalid / unverified data*)** dan dilarang ditampilkan ke pengguna atau dimasukkan ke laporan resmi.
+
+---
+
+### 5. GOLDEN STANDARD 5 PILAR REPRODUCIBILITAS & DATA NARATIF TERSTANDARISASI
+Untuk menjamin riset berskala ribuan titik (2.000+ titik) tetap 100% reproducible, bebas halu, dan deterministik tanpa meledakkan baris kode script:
+
+1. **Pilar 1: Pemisahan Total Kode vs Data (Zero Hardcoded Text / Pure Template Engine):**
+   - Skrip Python (`.py`) dan dashboard Streamlit murni bertindak sebagai template engine / renderer dinamis.
+   - Dilarang keras menuliskan nama entitas/gedung spesifik dalam logika percabangan `if entity == "X"` atau `if "Cipete" in name` untuk menghasilkan teks naratif kustom.
+   - Panjang baris kode tidak boleh bertambah saat jumlah dataset berkembang dari sampel pilot menuju populasi makro ($N > 2.000$).
+
+2. **Pilar 2: Dynamic Analytical Engine (Menggantikan Narasi Fiktif):**
+   - Karakteristik geometris dan orientasi fisik (atap, azimuth, kemiringan) wajib dihitung secara dinamis dari tabel segmen (`df_segments`) menggunakan operasi vektor standar industri.
+   - Deskripsi segmen dominan dibentuk melalui template parameter dinamis berbasis data kuantitatif murni (derajat pitch, derajat azimuth, luas $m^2$, dan kapasitas kWp), bukan teks cerita buatan agen.
+
+3. **Pilar 3: Transparansi Kriteria Eliminasi (Zero Fabricated Diagnosis):**
+   - Dilarang mengarang alasan kualitatif eliminasi bidang atap (seperti "Parapet Mikro", "Fasad Vertikal", atau "Rintangan MEP") seolah-olah merupakan diagnosis resmi dari penyedia data (Google Solar API).
+   - Tampilkan parameter geometris murni apa adanya dan cantumkan kriteria ambang batas teknis resmi sesuai dokumentasi penyedia data.
+
+4. **Pilar 4: Arsitektur Kolumnar Skalabel (Parquet & Vectorized Indexing):**
+   - Untuk mengelola ribuan fasilitas dan puluhan ribu segmen atap, data wajib disimpan dalam format kolumnar efisien (Apache Parquet) dengan skema terindeks.
+   - Pemfilteran data dilakukan via operasi vectorized/indexed query untuk menjamin performa rendering sub-detik tanpa membebani memori skrip.
+
+5. **Pilar 5: Data Lineage 100% Deterministik (Single-Command Reproducibility):**
+   - Setiap titik data wajib dapat dilacak (*traceable*) dari raw input JSON/GeoJSON hingga processed output.
+   - Seluruh pipeline pengolahan data wajib dapat dijalankan ulang (*re-run*) melalui satu perintah CLI mandiri dan menghasilkan output identik hingga desimal terakhir tanpa intervensi manual.

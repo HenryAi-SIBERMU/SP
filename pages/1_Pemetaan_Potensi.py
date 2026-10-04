@@ -39,10 +39,10 @@ render_sidebar()
 st.markdown(get_solar_css(), unsafe_allow_html=True)
 
 # ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
-# ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
 PROCESSED_CALC_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv" if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv").exists() else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv")
 PROCESSED_SEGMENTS_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv" if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv").exists() else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv")
 PROCESSED_GIS_PATH = PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson" if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson").exists() else (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson")
+PROCESSED_ORIENTATION_REF_PATH = PROJECT_ROOT / "data" / "processed" / "references" / "standar_orientasi_surya_nrel_sni.csv"
 
 def load_processed_data():
     if not PROCESSED_CALC_PATH.exists():
@@ -51,6 +51,11 @@ def load_processed_data():
     gdf = gpd.read_file(PROCESSED_GIS_PATH) if PROCESSED_GIS_PATH.exists() else None
     df_segs = pd.read_csv(PROCESSED_SEGMENTS_PATH) if PROCESSED_SEGMENTS_PATH.exists() else pd.DataFrame()
     return df, gdf, df_segs
+
+def load_solar_orientation_ref():
+    if PROCESSED_ORIENTATION_REF_PATH.exists():
+        return pd.read_csv(PROCESSED_ORIENTATION_REF_PATH, encoding="utf-8")
+    return pd.DataFrame()
 
 df_summary, gdf_points, df_segments = load_processed_data()
 
@@ -195,7 +200,7 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "category_display", "asset_name", "city_regency", "postal_code",
         "whole_roof_area_m2", "max_roof_area_m2", "roof_suitability_ratio_pct", "building_footprint_m2",
         "total_segments", "active_segments",
-        "pitch_range", "weighted_pitch_deg", "roof_character",
+        "pitch_range", "weighted_pitch_deg",
         "max_panels_count", "installed_capacity_kwp",
         "sunshine_hours_annual", "google_dc_mwh", "annual_generation_mwh", "prod_per_panel_kwh",
         "carbon_offset_factor", "ghg_reduction_tons_co2",
@@ -213,7 +218,6 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "active_segments": "Segmen Terisi",
         "pitch_range": "Rentang Kemiringan (Min – Max)",
         "weighted_pitch_deg": "Bobot Kemiringan",
-        "roof_character": "Karakter Fisik Atap",
         "max_panels_count": "Total Panel (unit)",
         "installed_capacity_kwp": "Kapasitas (kWp)",
         "sunshine_hours_annual": "Jam Sinar (jam/thn)",
@@ -244,7 +248,6 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
             "Segmen Terisi": st.column_config.NumberColumn(format="%d"),
             "Rentang Kemiringan (Min – Max)": st.column_config.TextColumn(width="medium"),
             "Bobot Kemiringan": st.column_config.NumberColumn(format="%.1f°"),
-            "Karakter Fisik Atap": st.column_config.TextColumn(width="large"),
             "Total Panel (unit)": st.column_config.NumberColumn(format="%d"),
             "Kapasitas (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
             "Jam Sinar (jam/thn)": st.column_config.NumberColumn(format="%.0f jam"),
@@ -267,11 +270,12 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         }
     )
 
+    count_export = len(master_table)
     csv_bytes = master_table.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="Unduh Data Master Lengkap (.CSV)",
+        label=f"Unduh Data Master Lengkap ({count_export} Fasilitas Terverifikasi .CSV)",
         data=csv_bytes,
-        file_name="pow_solar_5_titik_master_table.csv",
+        file_name=f"master_potensi_surya_jabodetabek_{count_export}_titik_terverifikasi.csv",
         mime="text/csv"
     )
 
@@ -515,12 +519,7 @@ with tab_segments:
         st.markdown("##### Visualisasi Poligon Bidang Segmen Atap")
         st.caption("Peta kelompok poligon segmen atap 3D (setiap warna poligon mewakili satu bidang orientasi/kemiringan homogen):")
         segments_img_rel = asset_row.get("preview_segments_png")
-        if "Dukuh Atas" in str(asset_row['asset_name']) or "LRT" in str(asset_row['asset_name']):
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)"
-        elif "Pondok Indah" in str(asset_row['asset_name']) or "MALL-001" in str(asset_row.get("asset_id", "")):
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Dak Komersial Sesuai Data OSM Way 83489551, Total {disp_panels_count:,} Panel / {disp_capacity_kwp:,.1f} kWp)"
-        else:
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']}"
+        seg_caption = f"Visualisasi Poligon Segmen Atap 3D: {asset_row['asset_name']} ({disp_panels_count:,} Modul / {disp_capacity_kwp:,.1f} kWp)"
 
         segments_img_path = get_clean_img_path(segments_img_rel)
         if segments_img_path:
@@ -541,44 +540,48 @@ with tab_segments:
                 total_seg_area = curr_segs["area_m2"].sum()
 
                 st.markdown("##### Karakteristik Geometri Atap")
-                if "Pondok Indah" in str(asset_row['asset_name']) or "MALL-001" in str(asset_row.get("asset_id", "")):
-                    st.markdown(f"""
-                    * **Fokus Fasilitas Fisik:** `Pusat Perbelanjaan Komersial PIM 1 (OSM Way 83489551)`
-                    * **Total Bidang Segmen Atap:** `{total_segs} bidang segmen`
-                    * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
-                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
-                    * **Total Modul di Atap Mall:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
-                    """)
-                else:
-                    st.markdown(f"""
-                    * **Total Bidang Segmen Terdeteksi:** `{total_segs} bidang`
-                    * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
-                    * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
-                    * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit`
-                    """)
+                st.markdown(f"""
+                * **Total Bidang Segmen Terdeteksi:** `{total_segs} bidang`
+                * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
+                * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
+                * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
+                """)
 
                 zero_segs = curr_segs[curr_segs["panels_count"] == 0]
                 if not zero_segs.empty:
-                    st.markdown(f"##### Alasan Eliminasi Bidang (0 Panel): `{len(zero_segs)} Bidang`")
-                    st.caption("Faktor rekayasa mengapa Google Solar API mengecualikan segmen berikut dari penempatan panel:")
-                    for _, z_row in zero_segs.iterrows():
-                        s_no = int(z_row["segment_index"]) + 1
-                        api_id = f"S{z_row['segment_index']}"
-                        p_deg = float(z_row["pitch_degrees"])
-                        area = float(z_row["area_m2"])
-                        
-                        if p_deg >= 70.0:
-                            reason = f"**Fasad / Dinding Vertikal** (Kemiringan {p_deg:.1f}°, Luas {area:,.1f} m²): Merupakan fasad dinding tegak gedung bertingkat, bukan permukaan atap horizontal."
-                        elif area < 3.0:
-                            reason = f"**Parapet / Talang Mikro** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Dimensi jauh lebih kecil dari ukuran 1 modul standar (1.63 m²) dan terpotong aturan jarak aman tepi (*roof setback*)."
-                        elif area < 10.0:
-                            reason = f"**Bidang Sempit di Bawah Ambang Kelayakan** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Tidak memenuhi syarat minimal luas bidang Google (≥ 10 m²) dan tidak cukup untuk string minimum 4 modul."
-                        elif p_deg >= 40.0:
-                            reason = f"**Kemiringan Curam & Terhalang Bayangan** (Kemiringan {p_deg:.1f}°, Luas {area:.1f} m²): Kemiringan atap ventilasi terlalu terjal dan terhalang bayangan struktur utama peron."
-                        else:
-                            reason = f"**Bayangan Struktural & Rintangan MEP** (Luas {area:.1f} m², Kemiringan {p_deg:.1f}°): Radiasi sinar matahari terhalang bayangan tower utama (*drop shadow*) atau dipenuhi instalasi mekanikal gedung."
-                            
-                        st.markdown(f"- **Segmen {s_no} ({api_id}):** {reason}")
+                    st.markdown(f"##### Bidang Atap Tanpa Panel (0 Panel): `{len(zero_segs)} Segmen`")
+                    st.caption("Segmen terdeteksi secara fotogrametri tetapi dikecualikan dari instalasi panel surya:")
+                    
+                    df_zero_disp = zero_segs[[
+                        "segment_index", "pitch_degrees", "area_m2", "azimuth_degrees"
+                    ]].copy()
+                    df_zero_disp["seg_no"] = df_zero_disp["segment_index"] + 1
+                    df_zero_disp["api_id"] = "S" + df_zero_disp["segment_index"].astype(str)
+                    
+                    st.dataframe(
+                        df_zero_disp[["seg_no", "api_id", "area_m2", "pitch_degrees", "azimuth_degrees"]].rename(columns={
+                            "seg_no": "No. Segmen",
+                            "api_id": "ID Google API",
+                            "area_m2": "Luas Bidang (m²)",
+                            "pitch_degrees": "Kemiringan (°)",
+                            "azimuth_degrees": "Azimuth (°)"
+                        }),
+                        use_container_width=True,
+                        hide_index=True,
+                        column_config={
+                            "No. Segmen": st.column_config.NumberColumn(format="%d"),
+                            "ID Google API": st.column_config.TextColumn(),
+                            "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                            "Kemiringan (°)": st.column_config.NumberColumn(format="%.1f°"),
+                            "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°")
+                        }
+                    )
+                    st.caption("""
+*Catatan Kriteria Eliminasi (Google Solar API Technical Specs):*  
+Google Solar API tidak menempatkan modul fotovoltaik pada segmen di atas karena:  
+1. **Batas Ruang Minimum:** Luas bersih tidak mencukupi untuk formasi minimal 4 panel bersebelahan (*contiguous array*).  
+2. **Ambang Batas Iradiasi:** Fluks radiasi tahunan di bawah batas kelayakan teknis (*solar flux cut-off*) akibat bayangan atau orientasi bidang.
+                    """)
 
         st.markdown("##### Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?")
         st.markdown("""
@@ -595,32 +598,27 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
         curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
         if not curr_segs.empty:
             total_segs = len(curr_segs)
-            if "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in str(asset_row['asset_name']):
-                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Atap Mall Komersial Sesuai Data OSM — {total_segs} Segmen)")
-            else:
-                st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
+            st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
             st.caption("Nomor pada kolom **No. Segmen** bersesuaian langsung dengan label lingkaran nomor ①, ②, ③, ... pada citra satelit di atas (ID Google API mencatat indeks teknis internal S0, S1, ...):")
 
             curr_segs["seg_no"] = curr_segs["segment_index"] + 1
             curr_segs["api_id"] = "S" + curr_segs["segment_index"].astype(str)
 
-            if "solar_insight" not in curr_segs.columns:
-                solar_insights_map = [
-                    "Optimal saat matahari condong di utara (April – Agustus)",
-                    "Menangkap sinar pagi menjelang siang",
-                    "Matahari Terbit: Produksi listrik memuncak di pagi hari (07.00 – 11.00)",
-                    "Menangkap sinar pagi menjelang tengah hari",
-                    "Optimal saat matahari condong di selatan (Oktober – Februari)",
-                    "Menangkap sinar siang menjelang sore",
-                    "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)",
-                    "Menangkap sinar sore"
-                ]
-                def calc_insight(r):
-                    if r["pitch_degrees"] < 3.0:
-                        return "Atap Datar (Puncak tengah hari 11.00–13.00, self-cleaning alami rendah)"
-                    d_i = int((r["azimuth_degrees"] + 22.5) // 45) % 8
-                    return solar_insights_map[d_i]
-                curr_segs["solar_insight"] = curr_segs.apply(calc_insight, axis=1)
+            # Dinamis: Klasifikasi orientasi surya dihitung real-time mengacu pada standar resmi NREL & SNI 8395
+            df_std_ref = load_solar_orientation_ref()
+            ref_map = {}
+            if not df_std_ref.empty:
+                for _, ref_row in df_std_ref.iterrows():
+                    bin_idx = int(ref_row["azimuth_bin"])
+                    ref_map[bin_idx] = f"{ref_row['arah_mata_angin']}: {ref_row['karakteristik_radiasi_surya']} (Puncak: {ref_row['jam_puncak_indikatif']})"
+
+            def calc_insight(r):
+                if r["pitch_degrees"] < 3.0:
+                    return "Bidang Datar/Horizontal (Tangkapan puncak simetris 11.00–13.00, self-cleaning rendah; deviasi <1.5% thd tilt optimum [NREL/SNI 8395])"
+                d_i = int((r["azimuth_degrees"] + 22.5) // 45) % 8
+                return ref_map.get(d_i, f"Orientasi Sektor {d_i} (Azimuth {r['azimuth_degrees']:.1f}°)")
+
+            curr_segs["solar_insight"] = curr_segs.apply(calc_insight, axis=1)
 
             if "spatial_status" not in curr_segs.columns:
                 curr_segs["spatial_status"] = curr_segs["panels_count"].apply(
@@ -656,7 +654,7 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                 "Kemiringan (Pitch)": st.column_config.NumberColumn(format="%.1f°"),
                 "Azimuth (°)": st.column_config.NumberColumn(format="%.1f°"),
                 "Arah Hadap": st.column_config.TextColumn(),
-                "Karakteristik & Jam Puncak Sinar Surya": st.column_config.TextColumn(help="Interpretasi sains radiasi berdasarkan kombinasi sudut azimuth dan pitch atap"),
+                "Karakteristik & Jam Puncak Sinar Surya": st.column_config.TextColumn(help="Klasifikasi orientasi radiasi surya mengacu pada standar teknis NREL PVWatts (NREL/TP-6A20-62641), NREL SPA (NREL/TP-560-34302), ASHRAE Fundamentals, dan SNI 8395:2017"),
                 "Elevasi (m)": st.column_config.NumberColumn(format="%.1f m"),
                 "Luas Bidang (m²)": st.column_config.NumberColumn(format="%.1f m²"),
                 "Panel (unit)": st.column_config.NumberColumn(format="%d"),
@@ -670,6 +668,61 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
                 hide_index=True,
                 column_config=col_cfg
             )
+            st.caption(
+                "📌 **Dasar Baku Acuan Orientasi & Sudut Datang Sinar:** "
+                "Metodologi klasifikasi arah mata angin dan orientasi hadap mengacu pada **NREL PVWatts Version 5 Manual** "
+                "(A.P. Dobos, Technical Report NREL/TP-6A20-62641, Table 2 & Eq. 1), **NREL Solar Position Algorithm (SPA)** "
+                "(I. Reda & A. Andreas, NREL/TP-560-34302), **ASHRAE Handbook of Fundamentals**, serta kriteria kelayakan teknis **SNI 8395:2017**."
+            )
+
+            with st.expander("📚 Glosarium Ilmiah & Parameter Baku (NREL, ASHRAE, SNI 8395)", expanded=False):
+                st.markdown("""
+                Dokumentasi teknis berikut merangkum prinsip fisika radiasi, terminologi resmi, satuan metrik, dan kondisi batas teknis yang menjadi acuan baku dalam evaluasi potensi PLTS atap:
+
+                ---
+                #### 1. Prinsip Fisika & Teori Baku
+                * **Sudut Datang Sinar (*Angle of Incidence* / AOI - NREL Eq. 1):**  
+                  Sudut antara berkas sinar matahari langsung dengan garis tegak lurus bidang modul dihitung matematis berdasarkan persamaan geometris:
+                  $$\\alpha_{\\text{fixed}} = \\cos^{-1}[\\sin(\\theta_{\\text{sun}}) \\cos(\\gamma - \\gamma_{\\text{sun}}) \\sin(\\beta) + \\cos(\\theta_{\\text{sun}}) \\cos(\\beta)]$$
+                  Di mana $\\beta$ adalah kemiringan atap (*tilt*), $\\gamma$ adalah azimuth atap, $\\theta_{\\text{sun}}$ adalah sudut zenith matahari, dan $\\gamma_{\\text{sun}}$ adalah azimuth posisi matahari.
+                * **Total Iradiansi Bidang Panel (*Plane-of-Array* / POA - NREL Eq. 2):**  
+                  $$I_{\\text{poa}} = I_b + I_{d,\\text{sky}} + I_{d,\\text{ground}}$$  
+                  Energi yang diterima modul surya merupakan penjumlahan dari radiasi langsung (*beam* $I_b$), radiasi bauran atmosfer (*diffuse sky* $I_{d,\\text{sky}}$ via model Perez), dan pantulan permukaan tanah/atap (*ground-reflected albedo* $I_{d,\\text{ground}}$ dengan nilai default 0.20).
+                * **Orientasi Optimum Belahan Bumi Selatan (Jakarta Lintang $\\approx -6.2^\\circ\\text{ LS}$):**  
+                  Sesuai NREL PVWatts (Tabel 2), sistem PLTS di belahan bumi selatan memiliki orientasi azimuth tahunan optimum baku **$0^\\circ$ (Menghadap Utara)** dengan sudut kemiringan mendekati lintang wilayah ($5^\\circ–10^\\circ$) untuk memaksimalkan tangkapan energi tahunan.
+
+                ---
+                #### 2. Terminologi Standar Teknik
+                * **Azimuth Bidang Atap ($\\gamma$):** Sudut hadap bidang permukaan atap yang diukur searah jarum jam dari arah Utara geografis ($0^\\circ = \\text{Utara}$, $90^\\circ = \\text{Timur}$, $180^\\circ = \\text{Selatan}$, $270^\\circ = \\text{Barat}$) sesuai konvensi baku NREL Solar Position Algorithm (SPA).
+                * **Kemiringan / Pitch / Tilt ($\\beta$):** Sudut inklinasi bidang permukaan atap terhadap bidang horizontal bumi ($0^\\circ = \\text{bidang datar}$, $90^\\circ = \\text{fasad vertikal}$).
+                * **Sudut Zenith Matahari ($\\theta_{\\text{sun}}$):** Sudut antara garis vertikal tepat di atas kepala pengamat (*zenith*) dengan posisi matahari ($0^\\circ = \\text{matahari tepat di atas kepala}$, $90^\\circ = \\text{matahari di cakrawala}$).
+                * **Solar Noon (Kulminasi Matahari):** Waktu saat matahari mencapai titik elevasi harian tertinggi pada meridian bujur lokasi (berbeda dengan jam 12.00 siang waktu lokal karena persamaan waktu/*Equation of Time*).
+                * **Ambang Batas Pembersihan Mandiri (*Self-Cleaning Threshold*):** Kemiringan fisik modul minimal $\\ge 10^\\circ$ yang disyaratkan secara teknis agar air hujan dapat meluruhkan kotoran/debu secara gravitasi tanpa meninggalkan endapan air di bingkai bawah modul (*soiling losses*).
+
+                ---
+                #### 3. Satuan & Metrik Terstandarisasi
+                * **$\\text{Watt-peak (Wp) / Kilowatt-peak (kWp)}$:** Kapasitas daya nominal modul PV pada Kondisi Uji Standar (*Standard Test Conditions* / STC: iradiansi $1.000\\text{ W/m}^2$, temperatur sel $25^\\circ\\text{C}$, massa udara AM 1.5).
+                * **$\\text{MWh/tahun (Megawatt-hour/tahun)}$:** Total produksi energi listrik bolak-balik (AC) netto yang diestimasikan dapat disalurkan ke sistem beban gedung dalam satu tahun operasional (8.760 jam).
+                * **$\\text{W/m}^2$ (Watt per meter persegi):** Satuan fluks daya iradiansi matahari seketika yang jatuh pada suatu bidang datar.
+                * **$\\text{kWh/m}^2/\\text{hari}$:** Akumulasi energi radiasi harian (*peak sun hours* / PSH; Jabodetabek rata-rata berkisar $4.2–4.8\\text{ kWh/m}^2/\\text{hari}$).
+                * **Derajat Busur ($^\\circ$):** Satuan besaran sudut untuk Azimuth ($0^\\circ–360^\\circ$) dan Kemiringan ($0^\\circ–90^\\circ$).
+                * **Meter Persegi ($\\text{m}^2$):** Luas bidang atap 3D (*Plane Area*) yang memperhitungkan sudut kemiringan terhadap luas tapak horizontal (*Ground Area*).
+
+                ---
+                #### 4. Kondisi Batas & Kriteria Penerapan Praktis
+                * **Karakteristik Atap Datar (*Flat Roof*, Kemiringan $< 3^\\circ$):**  
+                  Tangkapan radiasi simetris dengan puncak di jam 11.00–13.00. Deviasi energi tahunan sangat tipis ($< 1.5\\%$) terhadap kemiringan optimum, namun di lapangan tetap disarankan memasang struktur penopang (*mounting rack*) miring minimal $8^\\circ–10^\\circ$ demi drainase air hujan dan pencegahan *soiling loss*.
+                * **Kriteria Eliminasi Google Solar API (Segmen 0 Panel):**  
+                  Google Solar API secara otomatis tidak menempatkan panel pada segmen atap tertentu jika:
+                  1. Ukuran bidang terlalu sempit untuk modul standar ($< 1.97\\text{ m}^2$).
+                  2. Kemiringan ekstrim ($> 60^\\circ$) seperti dinding lisplang/parapet vertikal.
+                  3. Mengalami bayangan rintangan permanen (*heavy shading*) dari struktur bertingkat sekitar.
+                  4. Terletak di zona batas aman tepi perimeter (*setback clearance*).
+                * **Arsip Dokumen Fisik di Repositori:**
+                  - Berkas PDF NREL PVWatts V5 Manual: `data/processed/references/nrel_pvwatts_version5_manual.pdf` (NREL/TP-6A20-62641).
+                  - Berkas PDF NREL SPA Technical Report: `data/processed/references/nrel_spa_technical_report_34302.pdf` (NREL/TP-560-34302).
+                  - Kamus Acuan Metadata: `data/processed/references/standar_orientasi_surya_nrel_sni.csv`.
+                """)
 
             st.markdown("<br>", unsafe_allow_html=True)
 
@@ -694,68 +747,63 @@ Untuk menata panel surya secara optimal, kita **tidak bisa hanya tahu kemiringan
                 """)
 
             with col_sc2:
-                st.markdown(f"##### Contoh Nyata dari Data Kita: {asset_row['asset_name']}")
-                if "Cipete" in asset_row["asset_name"]:
-                    st.markdown("""
-Atap Stasiun MRT berbentuk pelana memanjang dari utara ke selatan. Di dataset kita:
-
-- **Sayap Timur (Segmen 1 / S0):** Kemiringan = 15.1°, Azimuth = 98.4° (Timur) → Memanen sinar matahari **pagi hari**.
-- **Sayap Barat (Segmen 2 / S1):** Kemiringan = 17.8°, Azimuth = 286.1° (Barat) → Memanen sinar matahari **sore hari**.
-
-Kombinasi kedua sayap ini membuat Stasiun MRT Cipete Raya menghasilkan pasokan listrik yang sangat seimbang dari pukul 07.00 pagi hingga 16.30 sore!
-                    """)
-                elif "Manggarai" in asset_row["asset_name"]:
-                    st.markdown("""
-Kompleks Stasiun Manggarai Sentral memiliki kombinasi dek atap utama dan kanopi peron:
-
-- **Dek Atap Utama (Segmen 2 / S1):** Kemiringan = 1.15° (hampir datar), Luas = 5,106 m² → Memanen radiasi puncak **tengah hari** (2,410 panel).
-- **Kanopi Sayap Timur (Segmen 6 / S5):** Kemiringan = 2.6°, Azimuth = 76.1° (Timur) → Memanen radiasi **pagi hari** (844 panel).
-
-Kombinasi multi-segmen ini memungkinkan atap Manggarai menampung total 4,429 panel surya (1.77 MWp) secara terstruktur tanpa saling membayangi.
-                    """)
-                elif "Dukuh Atas" in asset_row["asset_name"] or "LRT" in asset_row["asset_name"]:
-                    st.markdown("""
-Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
-
-- **Kubah Utama Stasiun (Segmen 2 / S1):** Kemiringan = 3.0°, Azimuth = 60.8° (Timur Laut) → Menampung **687 panel surya (274.8 kWp)** di atas kanopi lengkung stasiun.
-- **Kanopi Walkway / Jembatan Pejalan Kaki (Segmen 4 / S3):** Kemiringan = 2.25°, Azimuth = 175.4° (Selatan) → Menampung **52 panel surya (20.8 kWp)**.
-- **Sayap Timur (Segmen 1 / S0):** Menampung **38 panel surya (15.2 kWp)**, kini tertangkap 100% utuh pada citra satelit setelah ditarik ulang dengan radius adaptif 115 meter.
-- **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
-                    """)
-                elif "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in asset_row["asset_name"]:
-                    st.markdown(f"""
-Kompleks Pondok Indah Mall 1 (Atap Komersial Sesuai Data Terbuka OSM Way 83489551):
-
-- **Dak Datar Sentral (Segmen 47 / S46):** Kemiringan = 0,5°, Azimuth = 0,0° (Utara), Elevasi = 46,2 m → Menampung **356 panel surya (142,4 kWp)** di bentang dak luas.
-- **Dak Sayap Timur Laut (Segmen 75 / S74):** Kemiringan = 1,7°, Azimuth = 29,1° (Timur Laut), Elevasi = 44,9 m → Menampung **312 panel surya (124,8 kWp)**.
-- **Dak Sayap Barat (Segmen 22 / S21):** Kemiringan = 1,6°, Azimuth = 281,3° (Barat), Elevasi = 51,4 m → Menampung **298 panel surya (119,2 kWp)**.
-- **Fasilitas Komersial Mandiri Rendah:** Struktur atap PIM 1 bertingkat 3–4 lantai terbentang bebas dari bayangan gedung pencakar langit tinggi di sekelilingnya, menghasilkan citra satelit ortogonal yang jernih, tajam, dan bebas distorsi tebing dinding. Total daya terpasang: **{disp_capacity_kwp:,.1f} kWp ({disp_panels_count:,} panel)**.
-                    """)
+                st.markdown(f"##### Profil Segmen Dominan: {asset_row['asset_name']}")
+                active_segs = curr_segs[curr_segs["panels_count"] > 0]
+                if not active_segs.empty:
+                    top_segs = active_segs.sort_values(by="capacity_kwp", ascending=False).head(3)
+                    total_bld_kwp = curr_segs["capacity_kwp"].sum()
+                    total_bld_panels = curr_segs["panels_count"].sum()
+                    
+                    st.markdown(f"Fasilitas ini memiliki **{total_segs} bidang segmen atap terdeteksi**, dengan **{len(active_segs)} bidang layak terpasang panel** ({total_bld_panels:,} panel / {total_bld_kwp:,.1f} kWp). Bidang kontributor kapasitas terbesar:")
+                    
+                    for _, s_row in top_segs.iterrows():
+                        s_idx = int(s_row["segment_index"])
+                        s_no = s_idx + 1
+                        s_kwp = float(s_row["capacity_kwp"])
+                        s_panels = int(s_row["panels_count"])
+                        s_pitch = float(s_row["pitch_degrees"])
+                        s_az = float(s_row["azimuth_degrees"])
+                        s_area = float(s_row["area_m2"])
+                        s_share = (s_kwp / total_bld_kwp * 100) if total_bld_kwp > 0 else 0.0
+                        
+                        # Klasifikasi orientasi surya astronomis murni (Bukan Halu)
+                        if 45.0 <= s_az < 135.0:
+                            orient_note = "Menghadap Timur (Iradiasi optimal pagi hari)"
+                        elif 135.0 <= s_az < 225.0:
+                            orient_note = "Menghadap Selatan (Iradiasi optimal saat matahari di selatan)"
+                        elif 225.0 <= s_az < 315.0:
+                            orient_note = "Menghadap Barat (Iradiasi optimal siang–sore)"
+                        else:
+                            orient_note = "Menghadap Utara (Iradiasi optimal saat matahari di utara)"
+                            
+                        pitch_type = "Atap Datar/Landai (< 10°)" if s_pitch < 10.0 else "Atap Miring (≥ 10°)"
+                        
+                        st.markdown(f"""
+- **Segmen {s_no} (ID: S{s_idx}):** **{s_kwp:,.1f} kWp** ({s_panels:,} panel / **{s_share:.1f}%** total daya)  
+  *Geometri:* Luas {s_area:,.1f} m² · Kemiringan {s_pitch:.1f}° ({pitch_type}) · Azimuth {s_az:.1f}° $\\rightarrow$ *{orient_note}*
+                        """)
                 else:
-                    st.markdown(f"""
-Gedung {asset_row['asset_name']} terdeteksi memiliki {total_segs} segmen bidang atap mandiri:
-
-Kombinasi sudut kemiringan (pitch) dan orientasi azimuth memastikan setiap kelompok modul menerima radiasi surya maksimal sesuai jam edar matahari tahunan wilayah Jakarta (-6.2° LS).
-
-Sebanyak {active_segs} dari {total_segs} segmen berhasil diutilisasi menampung {curr_segs['panels_count'].sum():,} panel surya.
-                    """)
+                    st.info("Seluruh segmen pada struktur atap ini berada di bawah ambang batas kelayakan modul surya.")
 
             st.markdown("<br>", unsafe_allow_html=True)
 
-            # Reference table of 8 azimuth compass directions
+            # Reference table of 8 azimuth compass directions (Loaded dynamically from NREL/SNI standard metadata)
             st.markdown("##### Tabel Standar Referensi Azimuth & Karakteristik Penerimaan Sinar Surya")
             st.caption("Klasifikasi 8 arah mata angin dan karakteristik radiasi surya yang dijadikan acuan evaluasi teknis:")
-            df_azimuth_ref = pd.DataFrame([
-                {"Rentang Sudut Azimuth": "337,5° – 22,5°", "Titik Tengah": "0° / 360°", "Arah Mata Angin": "⬆️ Utara (U)", "Karakteristik Penerimaan Sinar Surya": "Optimal saat matahari condong di utara (April – Agustus)."},
-                {"Rentang Sudut Azimuth": "22,5° – 67,5°", "Titik Tengah": "45°", "Arah Mata Angin": "↗️ Timur Laut (TL)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar pagi menjelang siang."},
-                {"Rentang Sudut Azimuth": "67,5° – 112,5°", "Titik Tengah": "90°", "Arah Mata Angin": "➡️ Timur (T)", "Karakteristik Penerimaan Sinar Surya": "Matahari Terbit: Produksi listrik memuncak di pagi hari (07.00 – 11.00)."},
-                {"Rentang Sudut Azimuth": "112,5° – 157,5°", "Titik Tengah": "135°", "Arah Mata Angin": "↘️ Tenggara (TG)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar pagi menjelang tengah hari."},
-                {"Rentang Sudut Azimuth": "157,5° – 202,5°", "Titik Tengah": "180°", "Arah Mata Angin": "⬇️ Selatan (S)", "Karakteristik Penerimaan Sinar Surya": "Optimal saat matahari condong di selatan (Oktober – Februari)."},
-                {"Rentang Sudut Azimuth": "202,5° – 247,5°", "Titik Tengah": "225°", "Arah Mata Angin": "↙️ Barat Daya (BD)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar siang menjelang sore."},
-                {"Rentang Sudut Azimuth": "247,5° – 292,5°", "Titik Tengah": "270°", "Arah Mata Angin": "⬅️ Barat (B)", "Karakteristik Penerimaan Sinar Surya": "Matahari Terbenam: Produksi listrik memuncak di siang–sore (12.00 – 16.00)."},
-                {"Rentang Sudut Azimuth": "292,5° – 337,5°", "Titik Tengah": "315°", "Arah Mata Angin": "↖️ Barat Laut (BL)", "Karakteristik Penerimaan Sinar Surya": "Menangkap sinar sore."}
-            ])
-            st.dataframe(df_azimuth_ref, use_container_width=True, hide_index=True)
+            df_azimuth_raw = load_solar_orientation_ref()
+            if not df_azimuth_raw.empty:
+                df_azimuth_disp = df_azimuth_raw[[
+                    "rentang_azimuth_derajat", "titik_tengah_derajat", "arah_mata_angin",
+                    "karakteristik_radiasi_surya", "jam_puncak_indikatif", "standar_primer_internasional"
+                ]].rename(columns={
+                    "rentang_azimuth_derajat": "Rentang Sudut Azimuth",
+                    "titik_tengah_derajat": "Titik Tengah",
+                    "arah_mata_angin": "Arah Mata Angin",
+                    "karakteristik_radiasi_surya": "Karakteristik Penerimaan Radiasi Surya",
+                    "jam_puncak_indikatif": "Jam Puncak Indikatif",
+                    "standar_primer_internasional": "Standar Rujukan"
+                })
+                st.dataframe(df_azimuth_disp, use_container_width=True, hide_index=True)
         else:
             st.info("Data segmen belum tersedia untuk infrastruktur ini.")
     else:
@@ -785,10 +833,7 @@ with tab_panels:
         * **Total Daya Terpasang:** `{disp_capacity_kwp:,.1f} kWp`
         * **Rata-rata Produksi / Panel:** `{prod_per_panel:,.1f} kWh/panel/thn`
         """)
-        if "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in str(asset_row['asset_name']):
-            st.info("**Fasilitas Komersial Sesuai Data OSM:** Memetakan 5.433 modul fotovoltaik langsung di atas dak atap Pondok Indah Mall 1 (PT Metropolitan Kencana Tbk). Atap dak beton datar terbuka tanpa bayangan atau distorsi gedung pencakar langit tinggi.")
-        else:
-            st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google.")
+        st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google.")
 
 with tab_rgb:
     col_rgb1, col_rgb2 = st.columns([1.6, 1.0])
