@@ -21,7 +21,7 @@ try:
 except AttributeError:
     pass
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 POI_DIR = PROJECT_ROOT / "data" / "raw" / "poi"
 POI_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -215,11 +215,11 @@ targets_100 = [
         "category": "krl",
         "category_display": "KRL Commuter Line",
         "city_regency": "Jakarta Utara",
-        "latitude": -6.110691,
-        "longitude": 106.881498,
-        "radius_meters": 95,
+        "latitude": -6.110941,
+        "longitude": 106.881149,
+        "radius_meters": 100,
         "source_reference": "data/raw/krl/krl_stations.csv",
-        "description": "Stasiun cagar budaya terminus pelabuhan Tanjung Priok"
+        "description": "Stasiun cagar budaya bentang kubah megah pelabuhan Tanjung Priok"
     },
 
     # ── 3. MRT JAKARTA (8 TITIK) ──
@@ -241,9 +241,9 @@ targets_100 = [
         "category": "mrt",
         "category_display": "MRT Jakarta",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.289274,
-        "longitude": 106.774935,
-        "radius_meters": 95,
+        "latitude": -6.289354,
+        "longitude": 106.774716,
+        "radius_meters": 120,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun terminus selatan dan depo MRT Jakarta"
     },
@@ -253,9 +253,9 @@ targets_100 = [
         "category": "mrt",
         "category_display": "MRT Jakarta",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.292451,
-        "longitude": 106.792464,
-        "radius_meters": 95,
+        "latitude": -6.292482,
+        "longitude": 106.792404,
+        "radius_meters": 100,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun elevated layang transit Tol JORR"
     },
@@ -265,9 +265,9 @@ targets_100 = [
         "category": "mrt",
         "category_display": "MRT Jakarta",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.244464,
-        "longitude": 106.798133,
-        "radius_meters": 95,
+        "latitude": -6.244462,
+        "longitude": 106.798132,
+        "radius_meters": 100,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun sentral komersial Blok M terintegrasi transit"
     },
@@ -277,9 +277,9 @@ targets_100 = [
         "category": "mrt",
         "category_display": "MRT Jakarta",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.238774,
-        "longitude": 106.798446,
-        "radius_meters": 90,
+        "latitude": -6.238814,
+        "longitude": 106.798379,
+        "radius_meters": 100,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun integrasi layang dengan Halte CSW"
     },
@@ -289,11 +289,11 @@ targets_100 = [
         "category": "mrt",
         "category_display": "MRT Jakarta",
         "city_regency": "Jakarta Pusat",
-        "latitude": -6.226734,
-        "longitude": 106.802493,
-        "radius_meters": 85,
+        "latitude": -6.226000,
+        "longitude": 106.803500,
+        "radius_meters": 60,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
-        "description": "Stasiun bawah tanah simpul kawasan olahraga GBK"
+        "description": "Stasiun bawah tanah koridor Sudirman (kanopi akses entrance GBK)"
     },
     {
         "asset_id": "MRT-007",
@@ -303,9 +303,9 @@ targets_100 = [
         "city_regency": "Jakarta Pusat",
         "latitude": -6.200796,
         "longitude": 106.822788,
-        "radius_meters": 85,
+        "radius_meters": 60,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
-        "description": "Stasiun bawah tanah simpul 5 moda transportasi Dukuh Atas"
+        "description": "Stasiun bawah tanah simpul 5 moda Dukuh Atas (kanopi akses entrance)"
     },
     {
         "asset_id": "MRT-008",
@@ -315,9 +315,9 @@ targets_100 = [
         "city_regency": "Jakarta Pusat",
         "latitude": -6.191864,
         "longitude": 106.823008,
-        "radius_meters": 85,
+        "radius_meters": 60,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
-        "description": "Stasiun bawah tanah terminus pusat kota koridor 1"
+        "description": "Stasiun bawah tanah Bundaran HI (paviliun kaca akses entrance)"
     },
 
     # ── 4. LRT JABODEBEK & JAKARTA (8 TITIK) ──
@@ -339,8 +339,8 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.221609,
-        "longitude": 106.832237,
+        "latitude": -6.221588,
+        "longitude": 106.832289,
         "radius_meters": 90,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun layang koridor diplomatik Kuningan"
@@ -351,8 +351,8 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.242141,
-        "longitude": 106.838515,
+        "latitude": -6.242099,
+        "longitude": 106.838562,
         "radius_meters": 90,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun layang perempatan strategis Pancoran"
@@ -363,11 +363,11 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.243485,
-        "longitude": 106.857072,
-        "radius_meters": 90,
+        "latitude": -6.244038,
+        "longitude": 106.858026,
+        "radius_meters": 100,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
-        "description": "Stasiun integrasi LRT Jabodebek dengan Stasiun KRL Cawang"
+        "description": "Stasiun integrasi LRT Jabodebek dan KRL Cawang dengan concourse atap terpadu"
     },
     {
         "asset_id": "LRT-004",
@@ -375,9 +375,9 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.245907,
-        "longitude": 106.871230,
-        "radius_meters": 95,
+        "latitude": -6.245892,
+        "longitude": 106.871254,
+        "radius_meters": 120,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Simpul persimpangan jalur Bekasi dan Cibubur"
     },
@@ -387,9 +387,9 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.245866,
-        "longitude": 106.887287,
-        "radius_meters": 95,
+        "latitude": -6.245851,
+        "longitude": 106.887328,
+        "radius_meters": 100,
         "source_reference": "data/raw/osm/stations_jakarta.gpkg",
         "description": "Stasiun koneksi integrasi Kereta Cepat Whoosh"
     },
@@ -399,11 +399,11 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.192132,
-        "longitude": 106.891177,
-        "radius_meters": 90,
+        "latitude": -6.191892,
+        "longitude": 106.891147,
+        "radius_meters": 100,
         "source_reference": "data/raw/mrt_lrt/lrt_jkt_stations.geojson",
-        "description": "Stasiun terminus selatan LRT Jakarta koridor Rawamangun"
+        "description": "Stasiun terminus selatan LRT Jakarta koridor Rawamangun dengan kanopi peron melengkung"
     },
     {
         "asset_id": "LRT-007",
@@ -411,8 +411,8 @@ targets_100 = [
         "category": "lrt",
         "category_display": "LRT",
         "city_regency": "Jakarta Utara",
-        "latitude": -6.157214,
-        "longitude": 106.914209,
+        "latitude": -6.157856,
+        "longitude": 106.915232,
         "radius_meters": 105,
         "source_reference": "data/raw/mrt_lrt/lrt_jkt_stations.geojson",
         "description": "Stasiun depo dan terminus utara LRT Jakarta di Kelapa Gading"
@@ -433,15 +433,15 @@ targets_100 = [
     },
     {
         "asset_id": "TERM-002",
-        "asset_name": "Terminal Terpadu Pulo Gebang",
+        "asset_name": "Terminal Terpadu Rawamangun",
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.211844,
-        "longitude": 106.952563,
-        "radius_meters": 120,
-        "source_reference": "OSM Node / BPTJ",
-        "description": "Terminal bus tipe A terbesar se-Asia Tenggara dengan bentang dak megah"
+        "latitude": -6.196300,
+        "longitude": 106.885600,
+        "radius_meters": 80,
+        "source_reference": "OSM Node / BPTJ / Dishub DKI",
+        "description": "Terminal bus tipe A di Rawamangun Jakarta Timur dengan fasilitas concourse atap modern"
     },
     {
         "asset_id": "TERM-003",
@@ -449,11 +449,11 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.310796,
-        "longitude": 106.883822,
-        "radius_meters": 95,
+        "latitude": -6.312118,
+        "longitude": 106.885193,
+        "radius_meters": 100,
         "source_reference": "OSM Way / Dishub DKI",
-        "description": "Hub terminal bus antarkota AKAP jalur selatan Jawa"
+        "description": "Hub terminal bus antarkota AKAP jalur selatan Jawa (gedung terminal utama)"
     },
     {
         "asset_id": "TERM-004",
@@ -461,8 +461,8 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.154368,
-        "longitude": 106.705758,
+        "latitude": -6.154446,
+        "longitude": 106.705697,
         "radius_meters": 80,
         "source_reference": "OSM Way / Dishub DKI",
         "description": "Terminal bus tipe A gerbang barat lintas Sumatera"
@@ -473,9 +473,9 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Kota Bogor",
-        "latitude": -6.604091,
-        "longitude": 106.805962,
-        "radius_meters": 75,
+        "latitude": -6.604245,
+        "longitude": 106.806041,
+        "radius_meters": 80,
         "source_reference": "OSM Node / BPTJ",
         "description": "Terminal bus utama transit komuter Kota Bogor"
     },
@@ -485,9 +485,9 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Kota Depok",
-        "latitude": -6.426257,
-        "longitude": 106.858695,
-        "radius_meters": 80,
+        "latitude": -6.426272,
+        "longitude": 106.858721,
+        "radius_meters": 100,
         "source_reference": "OSM Node / BPTJ",
         "description": "Terminal bus tipe A terpadu Kota Depok"
     },
@@ -497,9 +497,9 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Kota Tangerang",
-        "latitude": -6.172859,
-        "longitude": 106.665010,
-        "radius_meters": 85,
+        "latitude": -6.173007,
+        "longitude": 106.664461,
+        "radius_meters": 100,
         "source_reference": "OSM Node / Dishub Kota Tangerang",
         "description": "Terminal bus utama antarkota terintegrasi KRL Batu Ceper"
     },
@@ -509,11 +509,11 @@ targets_100 = [
         "category": "terminal",
         "category_display": "Terminal Bus",
         "city_regency": "Kota Bekasi",
-        "latitude": -6.249977,
-        "longitude": 107.013225,
-        "radius_meters": 85,
+        "latitude": -6.249067,
+        "longitude": 107.014729,
+        "radius_meters": 80,
         "source_reference": "OSM Way / Dishub Kota Bekasi",
-        "description": "Terminal bus tipe A pusat mobilitas antarkota Bekasi Timur"
+        "description": "Terminal bus tipe A pusat mobilitas antarkota Bekasi Timur (kanopi terminal peron)"
     },
 
     # ── 6. BANDAR UDARA (4 TITIK) ──
@@ -535,8 +535,8 @@ targets_100 = [
         "category": "airport",
         "category_display": "Bandara",
         "city_regency": "Kota Tangerang",
-        "latitude": -6.126521,
-        "longitude": 106.653456,
+        "latitude": -6.127129,
+        "longitude": 106.652921,
         "radius_meters": 130,
         "source_reference": "OSM Aeroway / PT Angkasa Pura II",
         "description": "Terminal arsitektur Paul Andreu dengan modul atap joglo"
@@ -547,11 +547,11 @@ targets_100 = [
         "category": "airport",
         "category_display": "Bandara",
         "city_regency": "Kota Tangerang",
-        "latitude": -6.129845,
-        "longitude": 106.657021,
+        "latitude": -6.130116,
+        "longitude": 106.656915,
         "radius_meters": 130,
         "source_reference": "OSM Aeroway / PT Angkasa Pura II",
-        "description": "Terminal domestik Paul Andreu bentang melengkung"
+        "description": "Terminal domestik Paul Andreu bentang melengkung (pier keberangkatan)"
     },
     {
         "asset_id": "AIR-004",
@@ -559,11 +559,11 @@ targets_100 = [
         "category": "airport",
         "category_display": "Bandara",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.263021,
-        "longitude": 106.898951,
+        "latitude": -6.260950,
+        "longitude": 106.897272,
         "radius_meters": 120,
         "source_reference": "OSM Aeroway / PT Angkasa Pura II",
-        "description": "Terminal bandara komersial & kenegaraan dalam kota Jakarta"
+        "description": "Terminal bandara komersial & kenegaraan dalam kota Jakarta (kompleks terminal & hanggar utama)"
     },
 
     # ── 7. GEDUNG PARKIR / MSCP (8 TITIK) ──
