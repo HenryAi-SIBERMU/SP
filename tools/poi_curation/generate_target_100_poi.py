@@ -167,9 +167,9 @@ targets_100 = [
         "category": "krl",
         "category_display": "KRL Commuter Line",
         "city_regency": "Jakarta Pusat",
-        "latitude": -6.174423,
-        "longitude": 106.844574,
-        "radius_meters": 90,
+        "latitude": -6.17550,
+        "longitude": 106.84285,
+        "radius_meters": 95,
         "source_reference": "data/raw/krl/krl_stations.csv",
         "description": "Stasiun integrasi antarkota dan komuter Jakarta Pusat"
     },
@@ -203,8 +203,8 @@ targets_100 = [
         "category": "krl",
         "category_display": "KRL Commuter Line",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.255201,
-        "longitude": 106.855167,
+        "latitude": -6.25466,
+        "longitude": 106.85534,
         "radius_meters": 80,
         "source_reference": "data/raw/krl/krl_stations.csv",
         "description": "Stasiun perumahan padat komuter Jakarta Selatan"
