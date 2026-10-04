@@ -161,7 +161,7 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         selected_cat = st.selectbox("Filter Kategori:", options=cat_options, index=0, key="master_cat_filter")
     with f_col2:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        st.caption("Menampilkan 5 titik pilot multi-kategori (MRT, KRL, LRT, Rumah Sakit, Gedung Parkir)")
+        st.caption("Menampilkan 5 titik pilot multi-kategori (MRT, KRL, LRT, Rumah Sakit, Pusat Perbelanjaan / Mall)")
 
     if selected_cat != "Semua Kategori":
         df_display_master = df_master[df_master["category_display"] == selected_cat].copy()
@@ -264,7 +264,8 @@ CAT_COLORS = {
     "krl": "#1E88E5",      # Biru KRL
     "lrt": "#FB8C00",      # Jingga LRT
     "hospital": "#43A047", # Hijau RS
-    "parking": "#8E24AA"   # Ungu Parkir
+    "parking": "#8E24AA",  # Ungu Parkir
+    "mall": "#9C27B0"      # Ungu Mall / Komersial
 }
 
 with col_map:
@@ -484,8 +485,8 @@ with tab_segments:
         segments_img_rel = asset_row.get("preview_segments_png")
         if "Dukuh Atas" in str(asset_row['asset_name']) or "LRT" in str(asset_row['asset_name']):
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Label ①, ②, ④ berpanel; label ③ bertanda merah menunjukkan bidang 8,6 m² yang tidak dipasang panel oleh Google Solar API)"
-        elif "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
-            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Fokus Atap Lippo Mall Puri 2 Sesuai Data OSM Way 625889355, Total {disp_panels_count:,} Panel / {disp_capacity_kwp:,.1f} kWp)"
+        elif "Pondok Indah" in str(asset_row['asset_name']) or "MALL-001" in str(asset_row.get("asset_id", "")):
+            seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']} (Dak Komersial Sesuai Data OSM Way 83489551, Total {disp_panels_count:,} Panel / {disp_capacity_kwp:,.1f} kWp)"
         else:
             seg_caption = f"Visualisasi Grid Poligon Segmen Atap: {asset_row['asset_name']}"
 
@@ -508,10 +509,10 @@ with tab_segments:
                 total_seg_area = curr_segs["area_m2"].sum()
 
                 st.markdown("##### Karakteristik Geometri Atap")
-                if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
+                if "Pondok Indah" in str(asset_row['asset_name']) or "MALL-001" in str(asset_row.get("asset_id", "")):
                     st.markdown(f"""
-                    * **Fokus Fasilitas Fisik:** `Atap Mall Komersial & Teras (Sesuai Entitas OSM Way 625889355)`
-                    * **Total Bidang Segmen Atap:** `{total_segs} bidang (Segmen 1 & Segmen 2)`
+                    * **Fokus Fasilitas Fisik:** `Pusat Perbelanjaan Komersial PIM 1 (OSM Way 83489551)`
+                    * **Total Bidang Segmen Atap:** `{total_segs} bidang segmen`
                     * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
                     * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
                     * **Total Modul di Atap Mall:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
@@ -562,7 +563,7 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
         curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
         if not curr_segs.empty:
             total_segs = len(curr_segs)
-            if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
+            if "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in str(asset_row['asset_name']):
                 st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} (Atap Mall Komersial Sesuai Data OSM — {total_segs} Segmen)")
             else:
                 st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
@@ -689,13 +690,14 @@ Kompleks Stasiun LRT Dukuh Atas memanjang dari barat ke timur:
 - **Sayap Timur (Segmen 1 / S0):** Menampung **38 panel surya (15.2 kWp)**, kini tertangkap 100% utuh pada citra satelit setelah ditarik ulang dengan radius adaptif 115 meter.
 - **Segmen Sempit (Segmen 3 / S2):** Luas bidang hanya 8.6 m² (di bawah ambang batas minimal kelayakan 10 m²), sehingga otomatis dieliminasi oleh Google Solar API (**0 panel**).
                     """)
-                elif "Lippo" in asset_row["asset_name"] or "PKG-020" in str(asset_row.get("asset_id", "")):
+                elif "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in asset_row["asset_name"]:
                     st.markdown(f"""
-Kompleks Lippo Mall Puri 2 (Atap Komersial Sesuai Data Terbuka OSM Way 625889355):
+Kompleks Pondok Indah Mall 1 (Atap Komersial Sesuai Data Terbuka OSM Way 83489551):
 
-- **Sayap Atap Mall 2 (Segmen 1 / S0):** Kemiringan = 25,1°, Azimuth = 229,9° (Barat Daya), Elevasi = 51,2 m → Menampung **147 panel surya (58,8 kWp)** di teras atap barat.
-- **Teras Atap Mall 2 (Segmen 2 / S1):** Kemiringan = 10,7°, Azimuth = 244,4° (Barat Daya), Elevasi = 55,9 m → Menampung **46 panel surya (18,4 kWp)**.
-- **Fokus Fasilitas Fisik Murni:** Citra berpusat langsung pada atap Lippo Mall Puri 2 (radius 95 m, resolusi 0.1 m/px), mencakup sayap mall utara dan fasilitas olahraga/helipad rooftop yang dilingkari pengguna. Total daya terpasang: **{disp_capacity_kwp:,.1f} kWp ({disp_panels_count:,} panel)**.
+- **Dak Datar Sentral (Segmen 47 / S46):** Kemiringan = 0,5°, Azimuth = 0,0° (Utara), Elevasi = 46,2 m → Menampung **356 panel surya (142,4 kWp)** di bentang dak luas.
+- **Dak Sayap Timur Laut (Segmen 75 / S74):** Kemiringan = 1,7°, Azimuth = 29,1° (Timur Laut), Elevasi = 44,9 m → Menampung **312 panel surya (124,8 kWp)**.
+- **Dak Sayap Barat (Segmen 22 / S21):** Kemiringan = 1,6°, Azimuth = 281,3° (Barat), Elevasi = 51,4 m → Menampung **298 panel surya (119,2 kWp)**.
+- **Fasilitas Komersial Mandiri Rendah:** Struktur atap PIM 1 bertingkat 3–4 lantai terbentang bebas dari bayangan gedung pencakar langit tinggi di sekelilingnya, menghasilkan citra satelit ortogonal yang jernih, tajam, dan bebas distorsi tebing dinding. Total daya terpasang: **{disp_capacity_kwp:,.1f} kWp ({disp_panels_count:,} panel)**.
                     """)
                 else:
                     st.markdown(f"""
@@ -751,8 +753,8 @@ with tab_panels:
         * **Total Daya Terpasang:** `{disp_capacity_kwp:,.1f} kWp`
         * **Rata-rata Produksi / Panel:** `{prod_per_panel:,.1f} kWh/panel/thn`
         """)
-        if "Lippo" in str(asset_row['asset_name']) or "PKG-020" in str(asset_row.get("asset_id", "")):
-            st.info("**Fasilitas Komersial Sesuai Data OSM:** Memetakan 193 modul fotovoltaik langsung di atas sayap atap Lippo Mall Puri 2. Menara apartemen St. Moritz dan area parkir selatan sepenuhnya terpisah dari lingkup tapak gedung ini.")
+        if "MALL-001" in str(asset_row.get("asset_id", "")) or "Pondok Indah" in str(asset_row['asset_name']):
+            st.info("**Fasilitas Komersial Sesuai Data OSM:** Memetakan 5.433 modul fotovoltaik langsung di atas dak atap Pondok Indah Mall 1 (PT Metropolitan Kencana Tbk). Atap dak beton datar terbuka tanpa bayangan atau distorsi gedung pencakar langit tinggi.")
         else:
             st.info("**Catatan Metodologi:** Setiap kotak biru mewakili 1 modul fisik dari Google Building Insights API. Posisi dan orientasi ditentukan oleh algoritma segmentasi 3D Google.")
 

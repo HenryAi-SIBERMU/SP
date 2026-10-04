@@ -418,14 +418,14 @@ def process_targets():
             "raw_lon": 106.81025
         },
         {
-            "asset_id": "PKG-020",
-            "asset_name": "Lippo Mall Puri 2",
-            "category": "parking",
-            "category_display": "Gedung Komersial / Parkir",
-            "city_regency": "Jakarta Barat",
-            "source_raw_file": "OpenStreetMap Way 625889355",
-            "raw_lat": -6.1878740,
-            "raw_lon": 106.7391067
+            "asset_id": "MALL-001",
+            "asset_name": "Pondok Indah Mall 1",
+            "category": "mall",
+            "category_display": "Pusat Perbelanjaan / Mall",
+            "city_regency": "Jakarta Selatan",
+            "source_raw_file": "data/raw/osm/commercial_jakarta.geojson",
+            "raw_lat": -6.2653323,
+            "raw_lon": 106.7845842
         }
     ]
 
@@ -454,8 +454,6 @@ def process_targets():
         drift_m = haversine_distance_meters(t["raw_lat"], t["raw_lon"], g_lat, g_lon)
         if drift_m < 30.0:
             drift_status = "VALID (< 30m)"
-        elif aid == "pkg-020" and drift_m < 65.0:
-            drift_status = "VALID (< 60m - Atap Mall Puri 2)"
         else:
             drift_status = "REVIEW (> 30m)"
         print(f"   Spatial Drift: {drift_m:.2f} meters -> {drift_status}")
@@ -504,7 +502,7 @@ def process_targets():
             "KRL-032": "Dominan Landai: Sebagian besar berupa dak baja bentang lebar (1,1° – 2,6°), dengan beberapa atap ventilasi curam.",
             "RS-007": "Campuran: Dominan dak beton datar bertingkat, bersanding dengan atap limasan/pelana teknis.",
             "MRT-003": "Atap Pelana Melengkung: Sisi sayap timur miring 15°, sayap barat miring 18°.",
-            "PKG-020": "Dak Terbuka & Teras Atap Mall: Permukaan atap sayap barat Mall Puri 2 (kemiringan 10,7° – 25,1°), bebas rintangan fasad apartemen."
+            "MALL-001": "Dak Beton Datar & Kanopi Komersial: Struktur atap pusat perbelanjaan bertingkat rendah (Pondok Indah Mall 1) seluas 10.668 m² yang sangat luas, terbuka, dan minim bayangan gedung pencakar langit."
         }
         roof_char = roof_characteristics_dict.get(t["asset_id"], "")
 
@@ -626,7 +624,7 @@ def process_targets():
                         if 0 <= px < r_w and 0 <= py < r_h:
                             pts_in_count += 1
                 if pts_in_count == 0:
-                    spatial_status = "Di Luar Bingkai Citra (>60m)"
+                    spatial_status = "Di Luar Bingkai Citra"
                 else:
                     spatial_status = "Tampil di Citra"
             else:

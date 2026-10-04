@@ -183,7 +183,7 @@ flowchart TD
 | **LRT-014** | LRT | Stasiun LRT Dukuh Atas | $55,0\text{ m} \times 146,9\text{ m}$ | 2.67 | $102,46\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
 | **MRT-003** | MRT | Stasiun MRT Cipete Raya | $154,9\text{ m} \times 56,4\text{ m}$ | 2.75 | $85,74\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
 | **RS-007** | RS | RSUD Tarakan Jakarta | $46,4\text{ m} \times 75,5\text{ m}$ | 1.63 | $46,92\text{ m}$ | Kompak / Blok | **$65\text{ m}$** | Normal Envelope (100% Atap Utuh) |
-| **PKG-020** | Parkir | Lippo Mall Puri Parking | $215,2\text{ m} \times 259,1\text{ m}$ | 1.20 | $153,04\text{ m}$ | Kompak / Mega Deck | **$170\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **MALL-001** | Mall | Pondok Indah Mall 1 | $261,6\text{ m} \times 293,0\text{ m}$ | 1.12 | $190,80\text{ m}$ | Kompak / Mall Sentral | **$175\text{ m}$** | Max API Clamped (99,6% Panel Terlingkup) |
 
 > **File Bukti Audit:** `data/processed/calculations/adaptive_radius_audit_5_titik.csv`.
 
@@ -228,13 +228,13 @@ flowchart TD
 > **Keputusan Metodologis Preprocessing:** Sistem **TIDAK menyediakan dua opsi ambigu** yang membingungkan pemangku kepentingan. Pipeline secara otomatis dan tegas mengekstrak **HANYA fasilitas target fisik yang sesuai dengan entitas data sumber OSM** (`amenity: parking`), dan mendiskualifikasi seluruh superstruktur non-target (seperti menara apartemen St. Moritz 128m).
 
 #### 3. Hasil Audit Empiris Modul Disambiguasi pada 5 Titik Pilot:
-| ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Superblok (kWp) | Hasil Ekstraksi Tunggal Sesuai OSM (kWp) |
+| ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Bangunan (kWp) | Hasil Ekstraksi Tunggal Sesuai OSM (kWp) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | **MRT-003** | Stasiun MRT Cipete Raya | Single Building Entity | $7,5\text{ m}$ ($45,7 - 53,2\text{ m}$) | 1 | $656,8\text{ kWp}$ | **$656,8\text{ kWp}$** (100% Stasiun) |
 | **KRL-032** | Stasiun KRL Manggarai Sentral | Single Building Entity | $16,0\text{ m}$ ($20,1 - 36,2\text{ m}$) | 1 | $1.771,6\text{ kWp}$ | **$1.771,6\text{ kWp}$** (100% Stasiun) |
 | **LRT-014** | Stasiun LRT Dukuh Atas | Single Building Entity | $3,8\text{ m}$ ($3,6 - 7,4\text{ m}$) | 1 | $310,8\text{ kWp}$ | **$310,8\text{ kWp}$** (100% Stasiun) |
 | **RS-007** | RSUD Tarakan Jakarta | Single Building Entity | $19,1\text{ m}$ ($20,2 - 39,3\text{ m}$) | 1 | $158,8\text{ kWp}$ | **$158,8\text{ kWp}$** (100% RSUD) |
-| **PKG-020** | Lippo Mall Puri Parking | **Mixed-Use Superblock** | **$116,8\text{ m}$** ($11,6 - 128,5\text{ m}$) | **4 Klaster** | $1.459,2\text{ kWp}$ | **$349,2\text{ kWp}$** (Fokus Fasilitas Gedung Parkir) |
+| **MALL-001** | Pondok Indah Mall 1 | Single Building Entity (Mall) | $21,95\text{ m}$ ($30,38 - 52,33\text{ m}$) | 1 | $2.173,2\text{ kWp}$ | **$2.173,2\text{ kWp}$** (100% Mall Komersial) |
 
 > **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit.csv`.
 
@@ -376,7 +376,7 @@ flowchart LR
         F2["data/raw/krl/krl_stations.csv (Row 32)"]
         F3["data/raw/mrt_lrt/lrt_jabodebek_stations.geojson (ID 8174072570)"]
         F4["data/raw/osm/hospitals_jakarta.gpkg (Feature 7)"]
-        F5["data/raw/osm/parking_jakarta.gpkg (Feature 20)"]
+        F5["data/raw/osm/commercial_jakarta.geojson (Pondok Indah Mall 1 / Way 83489551)"]
     end
     
     DataRaw --> Runner["tools/solarapi/fetch_pow_5_points.py"]
@@ -391,7 +391,7 @@ flowchart LR
 | **2** | **KRL** | Stasiun KRL Manggarai | `-6.21017, 106.84993` | `data/raw/krl/krl_stations.csv` | Mega-hub stasiun transit perkeretaapian terbesar Jabodetabek. |
 | **3** | **LRT** | Stasiun LRT Dukuh Atas | `-6.20482, 106.82553` | `data/raw/mrt_lrt/lrt_jabodebek_stations.geojson` | Simpul stasiun integrasi LRT Jabodebek terpadat di pusat bisnis. |
 | **4** | **Rumah Sakit** | RSUD Tarakan Jakarta | `-6.17155, 106.81025` | `data/raw/osm/hospitals_jakarta.gpkg` | Rumah Sakit Umum Daerah rujukan vertikal dengan dak beton luas. |
-| **5** | **Gedung Parkir** | Parkir Gedung Lippo Mall Puri | `-6.19028, 106.73937` | `data/raw/osm/parking_jakarta.gpkg` | Multilevel parking deck komersial representatif di Jakarta Barat. |
+| **5** | **Pusat Perbelanjaan** | Pondok Indah Mall 1 | `-6.26533, 106.78458` | `data/raw/osm/commercial_jakarta.geojson` | Pusat perbelanjaan komersial terkemuka dengan tapak dak beton luas mandiri bebas bayangan pencakar langit. |
 
 ### Rincian SKU yang Ditarik untuk Setiap Titik (Sesuai Kesepakatan RAB):
 Sesuai rancangan output RAB yang telah disepakati:
@@ -459,11 +459,11 @@ c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
 │   │   ├── osm/                                 # File sumber poligon fasilitas publik OSM
 │   │   └── solar/                               # [DATA DARI GOOGLE SOLAR API]
 │   │       ├── building_insights/               # SKU: Building Insights (JSON)
-│   │       │   ├── mrt/                         # misal: mrt_cipete_raya_insights.json
-│   │       │   ├── krl/                         # misal: krl_manggarai_insights.json
-│   │       │   ├── lrt/                         # misal: lrt_dukuh_atas_insights.json
-│   │       │   ├── hospital/                    # misal: rs_tarakan_insights.json
-│   │       │   └── parking/                     # misal: parking_lippo_puri_insights.json
+│   │       │   ├── mrt/                         # misal: mrt-003_insights.json
+│   │       │   ├── krl/                         # misal: krl-032_insights.json
+│   │       │   ├── lrt/                         # misal: lrt-014_insights.json
+│   │       │   ├── hospital/                    # misal: rs-007_insights.json
+│   │       │   └── mall/                        # misal: mall-001_insights.json
 │   │       │
 │   │       └── data_layers/                     # SKU: Data Layers (4 Base Layer GeoTIFF)
 │   │           ├── dsm/                         # Peta Ketinggian 3D & Elevasi Atap
@@ -471,25 +471,25 @@ c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
 │   │           │   ├── krl/
 │   │           │   ├── lrt/
 │   │           │   ├── hospital/
-│   │           │   └── parking/
+│   │           │   └── mall/
 │   │           ├── rgb/                         # Citra Satelit Aerial Resolusi Tinggi
 │   │           │   ├── mrt/
 │   │           │   ├── krl/
 │   │           │   ├── lrt/
 │   │           │   ├── hospital/
-│   │           │   └── parking/
+│   │           │   └── mall/
 │   │           ├── mask/                        # Binary Mask Atap vs Non-Atap
 │   │           │   ├── mrt/
 │   │           │   ├── krl/
 │   │           │   ├── lrt/
 │   │           │   ├── hospital/
-│   │           │   └── parking/
+│   │           │   └── mall/
 │   │           └── annual_flux/                 # Heatmap Radiasi Surya Tahunan
 │   │               ├── mrt/
 │   │               ├── krl/
 │   │               ├── lrt/
 │   │               ├── hospital/
-│   │               └── parking/
+│   │               └── mall/
 │   │
 │   └── processed/                               # [PROCESSED ONLY - HASIL ETL SIAP KONSUMSI DASHBOARD]
 │       ├── gis/                                 # Layer spasial bersih untuk peta web
@@ -522,7 +522,7 @@ Tabel berikut mendefinisikan kolom dataset keluaran pada `data/processed/calcula
 | :--- | :--- | :--- | :--- |
 | `asset_id` | String | Identifikator unik aset (misal: `MRT-003`, `KRL-032`) | Master RAW |
 | `asset_name` | String | Nama resmi bangunan / infrastruktur | Master RAW |
-| `category` | String | Kategori aset (`MRT`, `KRL`, `LRT`, `Rumah Sakit`, `Gedung Parkir`) | Master RAW |
+| `category` | String | Kategori aset (`MRT`, `KRL`, `LRT`, `Rumah Sakit`, `Pusat Perbelanjaan / Mall`) | Master RAW |
 | `city_regency` | String | Kota / Kabupaten wilayah administratif | Master RAW |
 | `source_raw_file` | String | Relatif path file sumber di `data/raw/` | Master RAW |
 | `raw_lat` | Float | Latitude asal dari file master dataset | Master RAW |
@@ -577,7 +577,7 @@ flowchart TD
    * Estimasi Produksi Listrik Tahunan: Total energi ($MWh/tahun$).
    * Reduksi Emisi GRK: Total dekarbonisasi ($Ton CO_2/tahun$).
 2. **Peta Interaktif Jabodetabek (Folium):**
-   * Penanda warna berbeda untuk tiap kategori (MRT: Merah, KRL: Biru, LRT: Jingga, RS: Hijau, Parkir: Ungu).
+   * Penanda warna berbeda untuk tiap kategori (MRT: Merah, KRL: Biru, LRT: Jingga, RS: Hijau, Mall: Ungu).
    * Popup detail menampilkan foto preview, luas atap, estimasi panel, dan link ke berkas GeoTIFF.
 3. **Panel Audit Spasial (Quality Control):**
    * Menampilkan metrik pergeseran (*drift distance*) antara koordinat sumber vs poligon atap Google Maps.

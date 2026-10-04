@@ -149,16 +149,23 @@ def load_raw_targets():
         "lon": float(tarakan_pt.x)
     })
 
-    # 5. Lippo Mall Puri 2 (Atap Mall Komersial Sesuai OSM Way 625889355)
+    # 5. Pusat Perbelanjaan / Mall: Pondok Indah Mall 1 (sumber: data/raw/osm/commercial_jakarta.geojson)
+    mall_path = PROJECT_ROOT / "data" / "raw" / "osm" / "commercial_jakarta.geojson"
+    if not mall_path.exists():
+        raise FileNotFoundError(f"File tidak ditemukan: {mall_path}")
+    gdf_mall = gpd.read_file(mall_path)
+    pim = gdf_mall[gdf_mall["name"].astype(str).str.contains("Pondok Indah Mall 1", case=False, na=False)].iloc[0]
+    pim_pt = pim.geometry if pim.geometry.geom_type == "Point" else pim.geometry.centroid
     targets.append({
-        "asset_id": "PKG-020",
-        "asset_name": "Lippo Mall Puri 2",
-        "category": "parking",
-        "category_display": "Gedung Komersial / Parkir",
-        "city_regency": "Jakarta Barat",
-        "source_file": "OpenStreetMap Way 625889355",
-        "lat": -6.1878740,
-        "lon": 106.7391067
+        "asset_id": "MALL-001",
+        "asset_name": "Pondok Indah Mall 1",
+        "category": "mall",
+        "category_display": "Pusat Perbelanjaan / Mall",
+        "city_regency": "Jakarta Selatan",
+        "source_file": "data/raw/osm/commercial_jakarta.geojson",
+        "lat": float(pim_pt.y),
+        "lon": float(pim_pt.x),
+        "radius_meters": 175
     })
 
     return targets
@@ -208,7 +215,7 @@ def fetch_building_insights(target):
     return None, False
 
 
-def fetch_data_layers(target):
+def fetch_data_layers(target, bi_data=None):
     """
     Memanggil Data Layers API (kualitas BASE) dan mengunduh 4 file GeoTIFF:
     - DSM -> data/raw/solar/data_layers/dsm/{kategori}/{asset_id}_dsm.tif
@@ -219,11 +226,22 @@ def fetch_data_layers(target):
     cat = target["category"]
     aid = target["asset_id"].lower()
 
+    # Prioritaskan titik center dari building insights untuk presisi maksimal kanopi atap
+    lat = target["lat"]
+    lon = target["lon"]
+    if bi_data:
+        center = bi_data.get("center", {})
+        if "latitude" in center and "longitude" in center:
+            lat = center["latitude"]
+            lon = center["longitude"]
+
+    radius = target.get("radius_meters", 60)
+
     url = "https://solar.googleapis.com/v1/dataLayers:get"
     params = {
-        "location.latitude": target["lat"],
-        "location.longitude": target["lon"],
-        "radiusMeters": 60,
+        "location.latitude": lat,
+        "location.longitude": lon,
+        "radiusMeters": radius,
         "view": "FULL_LAYERS",
         "requiredQuality": "BASE",
         "pixelSizeMeters": 0.25,
@@ -333,7 +351,7 @@ def main():
         time.sleep(0.5)
 
         # 2. Data Layers (4 GeoTIFF)
-        layers_data, layers_billed = fetch_data_layers(target)
+        layers_data, layers_billed = fetch_data_layers(target, bi_data=bi_data)
         if layers_billed:
             total_cost_usd += 0.100
 
