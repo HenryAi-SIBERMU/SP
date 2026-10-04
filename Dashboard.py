@@ -205,9 +205,9 @@ for idx, item in enumerate(infrastruktur):
         p_row = pilot_by_cat[cat_key]
         p_name = p_row.get("asset_name", "")
         p_kwp = p_row.get("installed_capacity_kwp", 0.0)
-        pilot_text = f"📍 Pilot: {p_name} ({p_kwp:,.1f} kWp)"
+        pilot_text = f"Pilot: {p_name} ({p_kwp:,.1f} kWp)"
     else:
-        pilot_text = f"📍 Pilot: {item['default_pilot']}"
+        pilot_text = f"Pilot: {item['default_pilot']}"
 
     with cols[idx % 4]:
         st.markdown(f"""
