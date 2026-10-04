@@ -23,7 +23,9 @@ st.markdown(get_solar_css(), unsafe_allow_html=True)
 
 # ─── DATA EMPIRIS PILOT YANG SUDAH DI-FETCH ──────────────────────────────────
 CALC_DIR = os.path.join(os.path.dirname(__file__), "data", "processed", "calculations")
-PROCESSED_CALC_PATH = os.path.join(CALC_DIR, "pow_solar_13_titik_summary.csv")
+PROCESSED_CALC_PATH = os.path.join(CALC_DIR, "pow_solar_100_titik_summary.csv")
+if not os.path.exists(PROCESSED_CALC_PATH):
+    PROCESSED_CALC_PATH = os.path.join(CALC_DIR, "pow_solar_13_titik_summary.csv")
 if not os.path.exists(PROCESSED_CALC_PATH):
     PROCESSED_CALC_PATH = os.path.join(CALC_DIR, "pow_solar_5_titik_summary.csv")
 
