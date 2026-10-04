@@ -30,9 +30,9 @@ if os.path.exists(PROCESSED_CALC_PATH):
     fetched_co2 = df_pilot["ghg_reduction_tons_co2"].sum()
     fetched_titik = len(df_pilot)
 else:
-    fetched_kwp = 2975.2
-    fetched_mwh = 3982.3
-    fetched_co2 = 3221.4
+    fetched_kwp = 5071.2
+    fetched_mwh = 6682.7
+    fetched_co2 = 5406.3
     fetched_titik = 5
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
@@ -41,8 +41,8 @@ st.markdown('<div class="page-subtitle">Potensi Instalasi Dual-Use Infrastructur
 
 st.markdown(f"""
 <div class="note-box">
-<strong>Pembaruan Target Titik Riset Jabodetabek (2.260 Titik Target) & Validasi Empiris</strong><br>
-Angka estimasi titik telah disesuaikan menjadi <strong>2.260 titik</strong> se-Jabodetabek (1.800 titik infrastruktur transit + 460 titik fasilitas publik terkonsolidasi). <em>Tahap 1 Pilot {fetched_titik} Titik Multi-Kategori (KRL, MRT, LRT, RS, Gedung Komersial/Parkir) telah selesai di-fetch dan terverifikasi penuh menggunakan Google Solar API ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn)</em>.
+<strong>Catatan Kuota Titik Riset Jabodetabek (2.260 Titik Target Sesuai RAB)</strong><br>
+Angka target riset telah disesuaikan menjadi <strong>2.260 titik</strong> lintas <strong>13 kategori infrastruktur</strong> se-Jabodetabek sesuai kuota resmi dokumen RAB riset. <em>Status saat ini: {fetched_titik} titik pilot multi-kategori (KRL Manggarai, MRT Cipete, LRT Dukuh Atas, RSUD Tarakan, Pondok Indah Mall 1) telah selesai di-fetch dan terverifikasi 100% menggunakan Google Solar API ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn)</em>.
 </div>
 """, unsafe_allow_html=True)
 
@@ -55,7 +55,7 @@ with col1:
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Total Kapasitas</div>
-        <div class="metric-value">~570 MWp</div>
+        <div class="metric-value">~590 MWp</div>
         <div class="metric-desc">Dari 2.260 titik target se-Jabodetabek ({fetched_kwp/1000:.2f} MWp terverifikasi pilot)</div>
     </div>
     """, unsafe_allow_html=True)
@@ -64,7 +64,7 @@ with col2:
     st.markdown("""
     <div class="metric-card">
         <div class="metric-label">Produksi Tahunan</div>
-        <div class="metric-value">~760 GWh</div>
+        <div class="metric-value">~785 GWh</div>
         <div class="metric-desc">Estimasi produksi listrik per tahun (~1.330 kWh/kWp)</div>
     </div>
     """, unsafe_allow_html=True)
@@ -82,22 +82,28 @@ with col4:
     st.markdown("""
     <div class="metric-card">
         <div class="metric-label">Reduksi CO₂</div>
-        <div class="metric-value">~615k ton</div>
+        <div class="metric-value">~635k ton</div>
         <div class="metric-desc">Emisi CO₂eq yang dapat direduksi per tahun (~809 kg/MWh)</div>
     </div>
     """, unsafe_allow_html=True)
 
-# ─── INFRASTRUKTUR ────────────────────────────────────────────────────────────
-st.markdown('<div class="section-header">7 Kategori Infrastruktur Urban Jabodetabek (2.260 Titik)</div>', unsafe_allow_html=True)
+# ─── 13 KATEGORI INFRASTRUKTUR URBAN ──────────────────────────────────────────
+st.markdown('<div class="section-header">13 Kategori Infrastruktur Urban Jabodetabek (2.260 Titik Sesuai RAB)</div>', unsafe_allow_html=True)
 
 infrastruktur = [
     ("Halte BRT & Bus Shelter", "400 shelter (TJ & Bodetabek)", "~12.0 MWp"),
     ("Stasiun KRL Commuter Line", "80 stasiun (Lintas Jabodetabek)", "~64.0 MWp"),
-    ("Stasiun MRT, LRT & Bandara", "60 stasiun & simpul (MRT, LRT, Bandara)", "~30.0 MWp"),
+    ("Stasiun MRT & LRT", "40 stasiun (MRT & LRT Jabodebek)", "~20.0 MWp"),
     ("Jembatan Penyeberangan (JPO)", "300 JPO (Arteri & Nasional)", "~3.0 MWp"),
     ("Parking Lot & Park-and-Ride", "750 lokasi (Komersial & TOD)", "~300.0 MWp"),
-    ("Gedung Parkir & Fasilitas Publik (MSCP)", "620 gedung (Mall, RS, Sekolah, Kampus, Pasar, Stadion)", "~155.0 MWp"),
+    ("Gedung Parkir (MSCP)", "180 gedung (Mall, RS, Kampus)", "~45.0 MWp"),
     ("Koridor Pedestrian Beratap", "50 koridor / titik TOD", "~7.5 MWp"),
+    ("Sekolah Negeri", "200 sekolah (SD, SMP, SMA/SMK)", "~30.0 MWp"),
+    ("Universitas", "50 kampus (PTN / PTS Jabodetabek)", "~25.0 MWp"),
+    ("RS & Puskesmas", "100 faskes (RSUD & Puskesmas)", "~15.0 MWp"),
+    ("Pasar Tradisional", "70 pasar (PD Pasar & Rakyat)", "~21.0 MWp"),
+    ("Bandar Udara", "20 fasilitas (Soetta & Halim)", "~30.0 MWp"),
+    ("Stadion & GOR", "20 fasilitas (Gelanggang Olahraga)", "~20.0 MWp"),
 ]
 
 cols = st.columns(4)
@@ -122,10 +128,10 @@ st.markdown(f"""
 Akuisisi data {fetched_titik} titik pilot multi-kategori (KRL Manggarai Sentral, MRT Cipete Raya, LRT Dukuh Atas, RSUD Tarakan, Pondok Indah Mall 1) via Google Solar API Full SKU ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn). Verifikasi spasial, segmentasi 3D atap, dan visualisasi citra satelit di halaman Pemetaan Potensi.<br><br>
 
 <strong>Sedang Berjalan (Tahap 2):</strong><br>
-Persiapan ekspansi 110 titik ikonik se-Jabodetabek lintas kategori infrastruktur.<br><br>
+Persiapan ekspansi 110 titik ikonik se-Jabodetabek lintas 13 kategori infrastruktur.<br><br>
 
 <strong>Target Akhir (Tahap 3):</strong><br>
-Inventarisasi penuh 2.260 titik infrastruktur urban Jabodetabek, perhitungan agregat kapasitas dan produksi listrik kota, pemodelan reduksi emisi, dan mitigasi Urban Heat Island (UHI).
+Inventarisasi penuh 2.260 titik infrastruktur urban Jabodetabek lintas 13 kategori, perhitungan agregat kapasitas dan produksi listrik kota, pemodelan reduksi emisi, dan mitigasi Urban Heat Island (UHI).
 </div>
 """, unsafe_allow_html=True)
 
