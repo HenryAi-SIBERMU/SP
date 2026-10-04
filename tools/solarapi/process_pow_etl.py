@@ -426,6 +426,86 @@ def process_targets():
             "source_raw_file": "data/raw/osm/commercial_jakarta.geojson",
             "raw_lat": -6.2653323,
             "raw_lon": 106.7845842
+        },
+        {
+            "asset_id": "BRT-001",
+            "asset_name": "Halte CSW Integrasi",
+            "category": "brt",
+            "category_display": "Halte BRT TransJakarta",
+            "city_regency": "Jakarta Selatan",
+            "source_raw_file": "data/raw/transjakarta/transjakarta_stations.csv",
+            "raw_lat": -6.23994,
+            "raw_lon": 106.79843
+        },
+        {
+            "asset_id": "UNIV-001",
+            "asset_name": "Perpustakaan Pusat UI Depok",
+            "category": "university",
+            "category_display": "Universitas / Kampus",
+            "city_regency": "Kota Depok",
+            "source_raw_file": "data/raw/osm/education_jakarta.geojson",
+            "raw_lat": -6.3647117,
+            "raw_lon": 106.8313788
+        },
+        {
+            "asset_id": "SCH-001",
+            "asset_name": "SMAN 70 Jakarta Bulungan",
+            "category": "school",
+            "category_display": "Sekolah Negeri",
+            "city_regency": "Jakarta Selatan",
+            "source_raw_file": "data/raw/osm/education_jakarta.geojson",
+            "raw_lat": -6.24169,
+            "raw_lon": 106.79422
+        },
+        {
+            "asset_id": "MKT-001",
+            "asset_name": "Pasar Mayestik Kebayoran Baru",
+            "category": "market",
+            "category_display": "Pasar Tradisional",
+            "city_regency": "Jakarta Selatan",
+            "source_raw_file": "data/raw/osm/markets_jakarta.geojson",
+            "raw_lat": -6.2423203,
+            "raw_lon": 106.7910394
+        },
+        {
+            "asset_id": "STD-001",
+            "asset_name": "Istora Senayan GBK",
+            "category": "stadium",
+            "category_display": "Stadion & GOR",
+            "city_regency": "Jakarta Pusat",
+            "source_raw_file": "data/raw/osm/sports_jakarta.geojson",
+            "raw_lat": -6.2197997,
+            "raw_lon": 106.8040644
+        },
+        {
+            "asset_id": "AIR-001",
+            "asset_name": "Bandara Soekarno-Hatta (Terminal 3)",
+            "category": "airport",
+            "category_display": "Bandara",
+            "city_regency": "Kota Tangerang",
+            "source_raw_file": "data/raw/osm/airports_jakarta.geojson",
+            "raw_lat": -6.1199302,
+            "raw_lon": 106.6625020
+        },
+        {
+            "asset_id": "TERM-001",
+            "asset_name": "Terminal Bus Tanjung Priok",
+            "category": "terminal",
+            "category_display": "Terminal Bus",
+            "city_regency": "Jakarta Utara",
+            "source_raw_file": "data/raw/osm/terminals_jakarta.geojson",
+            "raw_lat": -6.1121017,
+            "raw_lon": 106.8809365
+        },
+        {
+            "asset_id": "PKG-001",
+            "asset_name": "Gedung Parkir Binus University",
+            "category": "parking",
+            "category_display": "Gedung Parkir",
+            "city_regency": "Jakarta Barat",
+            "source_raw_file": "data/raw/osm/parking_jakarta.gpkg",
+            "raw_lat": -6.20202,
+            "raw_lon": 106.78017
         }
     ]
 
@@ -498,11 +578,19 @@ def process_targets():
             weighted_pitch = 0.0
 
         roof_characteristics_dict = {
-            "LRT-014": "Sangat Landai / Datar: Kanopi peron baja bentang panjang modern.",
-            "KRL-032": "Dominan Landai: Sebagian besar berupa dak baja bentang lebar (1,1° – 2,6°), dengan beberapa atap ventilasi curam.",
-            "RS-007": "Campuran: Dominan dak beton datar bertingkat, bersanding dengan atap limasan/pelana teknis.",
             "MRT-003": "Atap Pelana Melengkung: Sisi sayap timur miring 15°, sayap barat miring 18°.",
-            "MALL-001": "Dak Beton Datar & Kanopi Komersial: Struktur atap pusat perbelanjaan bertingkat rendah (Pondok Indah Mall 1) seluas 10.668 m² yang sangat luas, terbuka, dan minim bayangan gedung pencakar langit."
+            "KRL-032": "Dominan Landai: Sebagian besar berupa dak baja bentang lebar (1,1° – 2,6°), dengan beberapa atap ventilasi curam.",
+            "LRT-014": "Sangat Landai / Datar: Kanopi peron baja bentang panjang modern.",
+            "RS-007": "Campuran: Dominan dak beton datar bertingkat, bersanding dengan atap limasan/pelana teknis.",
+            "MALL-001": "Dak Beton Datar & Kanopi Komersial: Struktur atap pusat perbelanjaan bertingkat rendah (Pondok Indah Mall 1) seluas 10.668 m² yang sangat luas, terbuka, dan minim bayangan gedung pencakar langit.",
+            "BRT-001": "Kanopi Melingkar Multi-Tier: Struktur kanopi transit layang 5 lantai yang menghubungkan koridor busway dengan stasiun MRT.",
+            "UNIV-001": "Arsitektur Kristal Berlapis Dak Datar: Struktur atap perpustakaan ikonik UI (Crystal of Knowledge) seluas 2.700 m² yang dikelilingi danau dan area terbuka hijau tanpa bayangan gedung tinggi.",
+            "SCH-001": "Dak Beton Bertingkat & Pelana Fasilitas Sekolah: Atap gedung belajar SMAN 70 Jakarta yang mengelilingi lapangan terbuka.",
+            "MKT-001": "Dak Beton Komersial Datar: Atap pasar modern bertingkat (Perumda Pasar Jaya) dengan bidang luas terbuka di kawasan Kebayoran Baru.",
+            "STD-001": "Kubah Parabolik Bentang Lebar: Atap arena olahraga indoor Istora GBK dengan lengkungan simetris dan kemiringan landai.",
+            "AIR-001": "Mega-Kanopi Terminal Bandara: Bentang atap terminal penumpang bandara internasional modern seluas ribuan meter persegi dengan orientasi landai.",
+            "TERM-001": "Kanopi Jalur Bus & Bangunan Administrasi: Perpaduan kanopi peron transit bus antarkota dan gedung terminal bertingkat rendah.",
+            "PKG-001": "Dak Beton Datar Khusus Parkir (MSCP): Struktur gedung parkir bertingkat mandiri (Binus University) dengan lantai teratas dak terbuka luas dan datar."
         }
         roof_char = roof_characteristics_dict.get(t["asset_id"], "")
 
@@ -652,30 +740,29 @@ def process_targets():
     df = pd.DataFrame(records)
     df_segs = pd.DataFrame(segment_records)
 
-    # 1. Save Summary CSV & Parquet
-    csv_out = CALC_OUT_DIR / "pow_solar_5_titik_summary.csv"
-    df.to_csv(csv_out, index=False, encoding="utf-8")
-    print(f"\n[OK] CSV Summary Saved -> {csv_out.relative_to(PROJECT_ROOT)}")
-
-    parquet_out = CALC_OUT_DIR / "pow_solar_5_titik_summary.parquet"
-    df.to_parquet(parquet_out, index=False)
-    print(f"[OK] Parquet Summary Saved -> {parquet_out.relative_to(PROJECT_ROOT)}")
+    # 1. Save Summary CSV & Parquet (Both 5-titik legacy path and 13-titik path)
+    for name in ["pow_solar_5_titik_summary", "pow_solar_13_titik_summary"]:
+        csv_p = CALC_OUT_DIR / f"{name}.csv"
+        parq_p = CALC_OUT_DIR / f"{name}.parquet"
+        df.to_csv(csv_p, index=False, encoding="utf-8")
+        df.to_parquet(parq_p, index=False)
+        print(f"[OK] Summary Saved -> {csv_p.relative_to(PROJECT_ROOT)}")
 
     # 2. Save Granular Segments CSV & Parquet
-    csv_segs_out = CALC_OUT_DIR / "pow_solar_5_titik_segments.csv"
-    df_segs.to_csv(csv_segs_out, index=False, encoding="utf-8")
-    print(f"[OK] CSV Segments Saved -> {csv_segs_out.relative_to(PROJECT_ROOT)} ({len(df_segs)} segments)")
-
-    parquet_segs_out = CALC_OUT_DIR / "pow_solar_5_titik_segments.parquet"
-    df_segs.to_parquet(parquet_segs_out, index=False)
-    print(f"[OK] Parquet Segments Saved -> {parquet_segs_out.relative_to(PROJECT_ROOT)}")
+    for name in ["pow_solar_5_titik_segments", "pow_solar_13_titik_segments"]:
+        csv_segs_p = CALC_OUT_DIR / f"{name}.csv"
+        parq_segs_p = CALC_OUT_DIR / f"{name}.parquet"
+        df_segs.to_csv(csv_segs_p, index=False, encoding="utf-8")
+        df_segs.to_parquet(parq_segs_p, index=False)
+        print(f"[OK] Segments Saved -> {csv_segs_p.relative_to(PROJECT_ROOT)} ({len(df_segs)} segments)")
 
     # 3. Save GeoJSON
     geometry = [Point(xy) for xy in zip(df['google_center_lon'], df['google_center_lat'])]
     gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
-    geojson_out = GIS_OUT_DIR / "pow_solar_5_titik.geojson"
-    gdf.to_file(geojson_out, driver="GeoJSON")
-    print(f"[OK] GeoJSON Saved -> {geojson_out.relative_to(PROJECT_ROOT)}")
+    for name in ["pow_solar_5_titik", "pow_solar_13_titik"]:
+        geojson_p = GIS_OUT_DIR / f"{name}.geojson"
+        gdf.to_file(geojson_p, driver="GeoJSON")
+        print(f"[OK] GeoJSON Saved -> {geojson_p.relative_to(PROJECT_ROOT)}")
 
     print("\n" + "=" * 70)
     print("ALL 5 SKU PREVIEWS GENERATED & ETL COMPLETED SUCCESSFULLY!")

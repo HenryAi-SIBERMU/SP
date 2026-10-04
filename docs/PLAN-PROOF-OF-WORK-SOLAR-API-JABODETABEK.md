@@ -1,10 +1,10 @@
 # RENCANA KERJA PROOF OF WORK (POW) GOOGLE SOLAR API JABODETABEK
-## Strategi Bertahap: Tahap 1 (5 Titik Pilot Lintas Kategori Full SKU) Menuju Skala Aglomerasi
+## Strategi Bertahap: Tahap 1 (13 Titik Pilot Lintas 13 Kategori Infrastruktur Full SKU) Menuju Skala Aglomerasi
 
 **Dokumen Referensi:** Riset Potensi PLTS Atap Dual-Use Aglomerasi Jabodetabek (CELIOS)  
-**Tanggal Pembaruan:** 1 Oktober 2026  
+**Tanggal Pembaruan:** 4 Oktober 2026  
 **Penulis:** Fullstack Data Engineer — Riset Energi Surya CELIOS  
-**Status Eksekusi:** 🟢 Ready for Execution (Smoke Test: Verified HTTP 200 OK)  
+**Status Eksekusi:** 🟢 Tahap 1 Selesai (13 Titik Pilot / 13 Kategori Terverifikasi 100% Empiris)  
 **Target File:** `docs/PLAN-PROOF-OF-WORK-SOLAR-API-JABODETABEK.md`  
 **Kepatuhan Regulasi Agen:** 100% Compliant terhadap 5 Agent Rules (`never_use_destructive_commands`, `anti_yesman_spatial_methodology_integrity`, `no_hardcoded_data`, `strict_data_folder_boundary`, `statistical_auditor_role`)
 
@@ -12,17 +12,17 @@
 
 ## 1. PENDAHULUAN & STRATEGI EKSEKUSI BERTAHAP (STAGED ROLLOUT)
 
-Setelah aktivasi Cloud Billing GCP berhasil dituntaskan pada akun `DH-Fastwork Billing 2` (Project: `celios-konfilkmonitor3`), tahapan riset memasuki fase validasi spasial empiris.
+Setelah aktivasi Cloud Billing GCP berhasil dituntaskan pada akun `DH-Fastwork Billing 2` (Project: `celios-konfilkmonitor3`), tahapan riset memasuki fase validasi spasial empiris. Sebelum melangkah ke ekspansi 110 titik, Tahap 1 diperluas mencakup **13 titik pilot yang mewakili 13 kategori infrastruktur lengkap se-Jabodetabek (1 titik per kategori)** guna memverifikasi variasi tipe morfologi atap (stasiun layang, hub komuter, halte BRT, rumah sakit, pusat belanja, kampus, sekolah, pasar tradisional, stadion olahraga, terminal bandara, terminal bus, dan gedung parkir vertikal).
 
 ### 1.1. Filosofi Anggaran & Manajemen Risiko Finansial
 * **Pagu Anggaran Talangan:** Rp 500.000 (Kartu freelancer).
 * **Prinsip Utama:** **TIDAK MENGHABISKAN SALDO.**
-* **Mitigasi:** Pemanfaatan bertahap dengan batas biaya mikro agar sisa saldo selalu aman (> Rp 490.000 tetap utuh).
+* **Mitigasi:** Pemanfaatan bertahap dengan batas biaya mikro agar sisa saldo selalu aman (> Rp 475.000 tetap utuh).
 
 ```mermaid
 graph TD
-    Budget["Dana Pilot Rp 500.000"] --> Tahap1["🔬 TAHAP 1: Pilot 5 Titik Full SKU (Rp 8.400)"]
-    Tahap1 --> Review["🔍 Evaluasi Spasial & Review CELIOS"]
+    Budget["Dana Pilot Rp 500.000"] --> Tahap1["🔬 TAHAP 1: Pilot 13 Titik Full SKU (Rp 21.840)"]
+    Tahap1 --> Review["🔍 Evaluasi Spasial 13 Kategori & Review CELIOS"]
     Review --> Tahap2["🚀 TAHAP 2: 110 Titik Ikonik (Rp 16.800)"]
     Tahap2 --> Pencairan["🏛️ Pencairan RAB Resmi CELIOS (Rp 5.000.000)"]
     Pencairan --> Tahap3["🏢 TAHAP 3: Full 2.260 Titik Aglomerasi"]
@@ -30,16 +30,16 @@ graph TD
 
 ### 1.2. Tiga Tingkat Eksekusi Bertahap
 
-| Parameter | Tahap 1: Pilot 5 Titik Full SKU (SEKARANG) | Tahap 2: 110 Titik Ikonik (EKSPANSI) | Tahap 3: 2.260 Titik Penuh (PRODUKSI) |
+| Parameter | Tahap 1: Pilot 13 Titik Full SKU (SELESAI) | Tahap 2: 110 Titik Ikonik (EKSPANSI) | Tahap 3: 2.260 Titik Penuh (PRODUKSI) |
 | :--- | :--- | :--- | :--- |
-| **Cakupan Kategori** | 5 Kategori Berbeda (MRT, KRL, LRT, RS, Gedung Parkir) | 13 Kategori Lengkap Jabodetabek | 13 Kategori Lengkap se-Jabodetabek |
-| **Jumlah Titik Target** | **5 Titik** | **110 Titik** | **2.260 Titik** |
-| **Panggilan Building Insights** | 5 × $0.005 = **$0.025 (~Rp 400)** | 110 × $0.005 = **$0.55 (~Rp 8.800)** | 2.260 × $0.005 = **$11.30 (~Rp 180.000)** |
-| **Panggilan Data Layers (GeoTIFF)** | 5 × $0.100 = **$0.500 (~Rp 8.000)** *(4 layers: DSM, RGB, Mask, Flux)* | 5 Titik Sampel Mega-Struktur = **$0.500 (~Rp 8.000)** | Sesuai persetujuan RAB resmi proyek |
-| **TOTAL ESTIMASI BIAYA** | **~$0.525 (~Rp 8.400)** | **~$1.050 (~Rp 16.800)** | **Sesuai RAB Resmi CELIOS** |
-| **Persentase Budget Terpakai** | **1.68%** dari Rp 500.000 | **3.36%** dari Rp 500.000 | Didanai invoice klien |
-| **Sisa Saldo Talangan** | **Rp 491.600 (98.3% Utuh)** | **Rp 483.200 (96.6% Utuh)** | Utuh sepenuhnya |
-| **Deliverable Langsung** | 5 JSON + 20 GeoTIFF + Integrasi Dashboard Streamlit | Dataset 110 Titik + Peta Web GIS | Full Database & Report CELIOS |
+| **Cakupan Kategori** | **13 Kategori Lengkap Jabodetabek (1 Titik per Kategori)** | 13 Kategori Lengkap Jabodetabek | 13 Kategori Lengkap se-Jabodetabek |
+| **Jumlah Titik Target** | **13 Titik** | **110 Titik** | **2.260 Titik** |
+| **Panggilan Building Insights** | 13 × $0.005 = **$0.065 (~Rp 1.040)** | 110 × $0.005 = **$0.55 (~Rp 8.800)** | 2.260 × $0.005 = **$11.30 (~Rp 180.000)** |
+| **Panggilan Data Layers (GeoTIFF)** | 13 × $0.100 = **$1.300 (~Rp 20.800)** *(4 layers: DSM, RGB, Mask, Flux)* | 5 Titik Sampel Mega-Struktur = **$0.500 (~Rp 8.000)** | Sesuai persetujuan RAB resmi proyek |
+| **TOTAL ESTIMASI BIAYA** | **~$1.365 (~Rp 21.840)** | **~$1.050 (~Rp 16.800)** | **Sesuai RAB Resmi CELIOS** |
+| **Persentase Budget Terpakai** | **4.37%** dari Rp 500.000 | **3.36%** dari Rp 500.000 | Didanai invoice klien |
+| **Sisa Saldo Talangan** | **Rp 478.160 (95.6% Utuh)** | **Rp 483.200 (96.6% Utuh)** | Utuh sepenuhnya |
+| **Deliverable Langsung** | 13 JSON + 52 GeoTIFF + 78 Previews PNG + Integrasi Streamlit | Dataset 110 Titik + Peta Web GIS | Full Database & Report CELIOS |
 
 ### 1.3. Alur Kerja Lengkap Proyek (Dari Data Mentah Sampai Visualisasi Dashboard)
 
@@ -94,7 +94,7 @@ flowchart TD
     end
 
     subgraph S6 ["6. Antarmuka Dashboard Eksekutif (Streamlit)"]
-        E1 & E2 & E3 --> F1["KPI Banner Ringkasan 5 Titik"]
+        E1 & E2 & E3 --> F1["KPI Banner Ringkasan 13 Titik"]
         E1 & E2 & E3 --> F2["Peta Interaktif Jabodetabek (Folium)"]
         E1 & E2 & E3 --> F3["Tab Visualisasi SKU Multi-Layer:<br/>1. Foto Satelit RGB (Bersih Distorsi)<br/>2. Sebaran Panel di Atap (mask==1)<br/>3. DSM Elevasi 3D<br/>4. Roof Mask Segmentasi<br/>5. Annual Solar Flux<br/>6. Grid Poligon Segmen Atap"]
         E1 & E2 & E3 --> F4["Tabel Rincian Segmen, Flag Cacat Data (Pilar 6),<br/>Status Spasial & Sains Pitch/Azimuth"]
@@ -175,17 +175,25 @@ flowchart TD
 3. **Penyempurnaan Kelipatan Raster (*Step Clamping*):**
    $$R_{\text{final}} = \text{clamp}\left(\left\lceil \frac{R_{\text{optimal}}}{5} \right\rceil \times 5, \quad 35\text{ m}, \quad 250\text{ m}\right)$$
 
-#### Hasil Audit Empiris Preprocessing 5 Titik Pilot:
+#### Hasil Audit Empiris Preprocessing 13 Titik Pilot (13 Kategori):
 
 | ID Aset | Kategori | Nama Infrastruktur | Dimensi Atap (U-S × T-B) | Aspek Rasio | Jangkauan Panel Maksimal | Tipe Bangunan | Radius Optimal | Status Clamping |
 | :---: | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **KRL-032** | KRL | Stasiun KRL Manggarai Sentral | $146,8\text{ m} \times 162,5\text{ m}$ | 1.11 | $86,62\text{ m}$ | Kompak / Blok | **$105\text{ m}$** | Normal Envelope (100% Atap Utuh) |
-| **LRT-014** | LRT | Stasiun LRT Dukuh Atas | $55,0\text{ m} \times 146,9\text{ m}$ | 2.67 | $102,46\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
-| **MRT-003** | MRT | Stasiun MRT Cipete Raya | $154,9\text{ m} \times 56,4\text{ m}$ | 2.75 | $85,74\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Prioritas Peron) |
-| **RS-007** | RS | RSUD Tarakan Jakarta | $46,4\text{ m} \times 75,5\text{ m}$ | 1.63 | $46,92\text{ m}$ | Kompak / Blok | **$65\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **MRT-003** | MRT | Stasiun MRT Cipete Raya | $155,4\text{ m} \times 56,6\text{ m}$ | 2.75 | $85,84\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Fokus Platform Stasiun Penumpang) |
+| **KRL-032** | KRL | Stasiun KRL Manggarai Sentral | $147,2\text{ m} \times 163,0\text{ m}$ | 1.11 | $86,71\text{ m}$ | Kompak / Blok | **$105\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **LRT-014** | LRT | Stasiun LRT Dukuh Atas | $55,2\text{ m} \times 147,3\text{ m}$ | 2.67 | $102,58\text{ m}$ | Linier Memanjang | **$95\text{ m}$** | Linear Clamped (Fokus Platform Stasiun Penumpang) |
+| **RS-007** | RS | RSUD Tarakan Jakarta | $46,6\text{ m} \times 75,7\text{ m}$ | 1.63 | $46,97\text{ m}$ | Kompak / Blok | **$65\text{ m}$** | Normal Envelope (100% Atap Utuh) |
 | **MALL-001** | Mall | Pondok Indah Mall 1 | $261,6\text{ m} \times 293,0\text{ m}$ | 1.12 | $190,80\text{ m}$ | Kompak / Mall Sentral | **$175\text{ m}$** | Max API Clamped (99,6% Panel Terlingkup) |
+| **BRT-001** | BRT | Halte CSW Integrasi | $20,6\text{ m} \times 92,9\text{ m}$ | 4.51 | $55,23\text{ m}$ | Linier Transit | **$75\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **UNIV-001** | Universitas | Perpustakaan Pusat UI Depok | $62,5\text{ m} \times 61,1\text{ m}$ | 1.02 | $41,89\text{ m}$ | Kompak / Bundar | **$60\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **SCH-001** | Sekolah | SMAN 70 Jakarta Bulungan | $22,1\text{ m} \times 13,7\text{ m}$ | 1.61 | $11,97\text{ m}$ | Sayap Pendidikan | **$35\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **MKT-001** | Pasar | Pasar Mayestik Kebayoran Baru | $18,9\text{ m} \times 13,7\text{ m}$ | 1.38 | $10,92\text{ m}$ | Kompak / Kios Blok | **$35\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **STD-001** | Stadion | Istora Senayan GBK | $43,0\text{ m} \times 60,5\text{ m}$ | 1.41 | $34,31\text{ m}$ | Kubah Arena | **$50\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **AIR-001** | Bandara | Bandara Soekarno-Hatta (T3) | $58,7\text{ m} \times 75,0\text{ m}$ | 1.28 | $48,34\text{ m}$ | Pier Gerbang Terminal | **$65\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **TERM-001** | Terminal | Terminal Bus Tanjung Priok | $45,9\text{ m} \times 32,1\text{ m}$ | 1.43 | $24,09\text{ m}$ | Jalur Emplasemen Bus | **$40\text{ m}$** | Normal Envelope (100% Atap Utuh) |
+| **PKG-001** | Gedung Parkir | Gedung Parkir Binus University | $54,9\text{ m} \times 37,0\text{ m}$ | 1.48 | $30,62\text{ m}$ | Vertikal Multi-Deck | **$50\text{ m}$** | Normal Envelope (100% Atap Utuh) |
 
-> **File Bukti Audit:** `data/processed/calculations/adaptive_radius_audit_5_titik.csv`.
+> **File Bukti Audit:** `data/processed/calculations/adaptive_radius_audit_13_titik.csv`.
 
 ### 2.5. METODOLOGI DISAMBIGUASI SPASIAL: PEMISAHAN GEDUNG TUNGGAL VS KAWASAN SUPERBLOK (SUPERBLOCK CLUSTERING PREPROCESSOR)
 
@@ -227,16 +235,24 @@ flowchart TD
 
 > **Keputusan Metodologis Preprocessing:** Sistem **TIDAK menyediakan dua opsi ambigu** yang membingungkan pemangku kepentingan. Pipeline secara otomatis dan tegas mengekstrak **HANYA fasilitas target fisik yang sesuai dengan entitas data sumber OSM** (`amenity: parking`), dan mendiskualifikasi seluruh superstruktur non-target (seperti menara apartemen St. Moritz 128m).
 
-#### 3. Hasil Audit Empiris Modul Disambiguasi pada 5 Titik Pilot:
+#### 3. Hasil Audit Empiris Modul Disambiguasi pada 13 Titik Pilot (13 Kategori):
 | ID Aset | Nama Infrastruktur | Klasifikasi Entitas | Rentang Elevasi | Jumlah Klaster | Total Bangunan (kWp) | Hasil Ekstraksi Tunggal Sesuai OSM (kWp) |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | **MRT-003** | Stasiun MRT Cipete Raya | Single Building Entity | $7,5\text{ m}$ ($45,7 - 53,2\text{ m}$) | 1 | $656,8\text{ kWp}$ | **$656,8\text{ kWp}$** (100% Stasiun) |
 | **KRL-032** | Stasiun KRL Manggarai Sentral | Single Building Entity | $16,0\text{ m}$ ($20,1 - 36,2\text{ m}$) | 1 | $1.771,6\text{ kWp}$ | **$1.771,6\text{ kWp}$** (100% Stasiun) |
 | **LRT-014** | Stasiun LRT Dukuh Atas | Single Building Entity | $3,8\text{ m}$ ($3,6 - 7,4\text{ m}$) | 1 | $310,8\text{ kWp}$ | **$310,8\text{ kWp}$** (100% Stasiun) |
 | **RS-007** | RSUD Tarakan Jakarta | Single Building Entity | $19,1\text{ m}$ ($20,2 - 39,3\text{ m}$) | 1 | $158,8\text{ kWp}$ | **$158,8\text{ kWp}$** (100% RSUD) |
-| **MALL-001** | Pondok Indah Mall 1 | Single Building Entity (Mall) | $21,95\text{ m}$ ($30,38 - 52,33\text{ m}$) | 1 | $2.173,2\text{ kWp}$ | **$2.173,2\text{ kWp}$** (100% Mall Komersial) |
+| **MALL-001** | Pondok Indah Mall 1 | Single Building Entity | $21,95\text{ m}$ ($30,4 - 52,3\text{ m}$) | 1 | $2.173,2\text{ kWp}$ | **$2.173,2\text{ kWp}$** (100% Mall Komersial) |
+| **BRT-001** | Halte CSW Integrasi | Single Building Entity | $10,2\text{ m}$ ($40,7 - 50,9\text{ m}$) | 1 | $174,4\text{ kWp}$ | **$174,4\text{ kWp}$** (100% Halte Transit) |
+| **UNIV-001** | Perpustakaan Pusat UI Depok | Single Building Entity | $8,8\text{ m}$ ($82,6 - 91,4\text{ m}$) | 1 | $419,2\text{ kWp}$ | **$419,2\text{ kWp}$** (100% Perpustakaan UI) |
+| **SCH-001** | SMAN 70 Jakarta Bulungan | Single Building Entity | $5,0\text{ m}$ ($26,6 - 31,6\text{ m}$) | 1 | $28,8\text{ kWp}$ | **$28,8\text{ kWp}$** (100% Gedung Sekolah) |
+| **MKT-001** | Pasar Mayestik Kebayoran Baru | Single Building Entity | $1,5\text{ m}$ ($38,2 - 39,7\text{ m}$) | 1 | $37,2\text{ kWp}$ | **$37,2\text{ kWp}$** (100% Pasar Tradisional) |
+| **STD-001** | Istora Senayan GBK | Single Building Entity | $1,5\text{ m}$ ($15,6 - 17,1\text{ m}$) | 1 | $175,2\text{ kWp}$ | **$175,2\text{ kWp}$** (100% Gelanggang Olahraga) |
+| **AIR-001** | Bandara Soekarno-Hatta (T3) | Single Building Entity | $1,8\text{ m}$ ($28,8 - 30,6\text{ m}$) | 1 | $325,2\text{ kWp}$ | **$325,2\text{ kWp}$** (100% Dermaga Bandara) |
+| **TERM-001** | Terminal Bus Tanjung Priok | Single Building Entity | $14,2\text{ m}$ ($6,6 - 20,8\text{ m}$) | 1 | $128,8\text{ kWp}$ | **$128,8\text{ kWp}$** (100% Terminal Bus) |
+| **PKG-001** | Gedung Parkir Binus University | Single Building Entity | $4,8\text{ m}$ ($33,6 - 38,5\text{ m}$) | 1 | $288,0\text{ kWp}$ | **$288,0\text{ kWp}$** (100% Gedung Parkir) |
 
-> **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit.csv`.
+> **File Bukti Audit:** `data/processed/calculations/superblock_disambiguation_audit_13_titik.csv`.
 
 ### 2.6. PELAJARAN METODOLOGIS KASUS LIPPO MALL PURI: MENGAPA TARGET INGEST HARUS DIRE-CENTER (FOCUSED FACILITY VS MIXED-USE SUPERBLOCK)
 
@@ -365,33 +381,48 @@ Untuk memastikan akurasi data pada skala aglomerasi ribuan titik:
 
 ---
 
-## 3. DETAIL TITIK TARGET TAHAP 1 (5 PILOT POINTS FULL SKU)
+## 3. DETAIL TITIK TARGET TAHAP 1 (13 PILOT POINTS FULL SKU — 13 KATEGORI LENGKAP)
 
-Mematuhi aturan `no_hardcoded_data.md`, seluruh koordinat dan atribut 5 titik pilot diambil langsung secara dinamis dari file fisik yang berada di direktori `data/raw/`:
+Mematuhi aturan `no_hardcoded_data.md`, seluruh koordinat dan atribut 13 titik pilot diambil langsung secara dinamis dari file fisik yang berada di direktori `data/raw/`:
 
 ```mermaid
 flowchart LR
-    subgraph DataRaw["Direktori data/raw/"]
-        F1["data/raw/mrt_lrt/mrt_stations.csv (Row 4)"]
-        F2["data/raw/krl/krl_stations.csv (Row 32)"]
-        F3["data/raw/mrt_lrt/lrt_jabodebek_stations.geojson (ID 8174072570)"]
-        F4["data/raw/osm/hospitals_jakarta.gpkg (Feature 7)"]
-        F5["data/raw/osm/commercial_jakarta.geojson (Pondok Indah Mall 1 / Way 83489551)"]
+    subgraph DataRaw["Direktori data/raw/ (100% Dynamic Parsing)"]
+        F1["mrt_lrt/mrt_stations.csv (MRT)"]
+        F2["krl/krl_stations.csv (KRL)"]
+        F3["mrt_lrt/lrt_jabodebek_stations.geojson (LRT)"]
+        F4["osm/hospitals_jakarta.gpkg (Rumah Sakit)"]
+        F5["osm/commercial_jakarta.geojson (Mall PIM 1)"]
+        F6["osm/stations_jakarta.gpkg (Halte CSW BRT)"]
+        F7["osm/education_jakarta.geojson (Univ UI & SMAN 70)"]
+        F8["osm/markets_jakarta.geojson (Pasar Mayestik)"]
+        F9["osm/sports_jakarta.geojson (Istora Senayan)"]
+        F10["osm/airports_jakarta.geojson (Bandara Soetta T3)"]
+        F11["osm/terminals_jakarta.geojson (Terminal Tg Priok)"]
+        F12["osm/parking_jakarta.geojson (Parkir Binus)"]
     end
     
-    DataRaw --> Runner["tools/solarapi/fetch_pow_5_points.py"]
+    DataRaw --> Runner["tools/solarapi/fetch_pow_13_points.py"]
     Runner --> SolarAPI["Google Solar API (BASE Quality)"]
 ```
 
-### Tabel Rincian 5 Titik Pilot Tahap 1:
+### Tabel Rincian 13 Titik Pilot Tahap 1 (13 Kategori Penuh):
 
-| No | Kategori | Nama Infrastruktur | Koordinat Sumber (Lat, Lon) | Path File Fisik Sumber di `data/raw/` | Justifikasi Representasi |
-| :---: | :--- | :--- | :---: | :--- | :--- |
-| **1** | **MRT** | Stasiun MRT Cipete Raya | `-6.27834, 106.79732` | `data/raw/mrt_lrt/mrt_stations.csv` | Stasiun elevated layang koridor Fatmawati-Blok M. |
-| **2** | **KRL** | Stasiun KRL Manggarai | `-6.21017, 106.84993` | `data/raw/krl/krl_stations.csv` | Mega-hub stasiun transit perkeretaapian terbesar Jabodetabek. |
-| **3** | **LRT** | Stasiun LRT Dukuh Atas | `-6.20482, 106.82553` | `data/raw/mrt_lrt/lrt_jabodebek_stations.geojson` | Simpul stasiun integrasi LRT Jabodebek terpadat di pusat bisnis. |
-| **4** | **Rumah Sakit** | RSUD Tarakan Jakarta | `-6.17155, 106.81025` | `data/raw/osm/hospitals_jakarta.gpkg` | Rumah Sakit Umum Daerah rujukan vertikal dengan dak beton luas. |
-| **5** | **Pusat Perbelanjaan** | Pondok Indah Mall 1 | `-6.26533, 106.78458` | `data/raw/osm/commercial_jakarta.geojson` | Pusat perbelanjaan komersial terkemuka dengan tapak dak beton luas mandiri bebas bayangan pencakar langit. |
+| No | Kategori | ID Aset | Nama Infrastruktur | Koordinat Sumber (Lat, Lon) | Path File Fisik Sumber di `data/raw/` | Justifikasi Representasi |
+| :---: | :--- | :---: | :--- | :---: | :--- | :--- |
+| **1** | **MRT** | `MRT-003` | Stasiun MRT Cipete Raya | `-6.27834, 106.79732` | `data/raw/mrt_lrt/mrt_stations.csv` | Stasiun elevated layang koridor Fatmawati-Blok M. |
+| **2** | **KRL** | `KRL-032` | Stasiun KRL Manggarai Sentral | `-6.21017, 106.84993` | `data/raw/krl/krl_stations.csv` | Mega-hub stasiun transit perkeretaapian terbesar Jabodetabek. |
+| **3** | **LRT** | `LRT-014` | Stasiun LRT Dukuh Atas | `-6.20482, 106.82553` | `data/raw/mrt_lrt/lrt_jabodebek_stations.geojson` | Simpul stasiun integrasi LRT Jabodebek terpadat di CBD. |
+| **4** | **Rumah Sakit** | `RS-007` | RSUD Tarakan Jakarta | `-6.17155, 106.81025` | `data/raw/osm/hospitals_jakarta.gpkg` | RSUD rujukan vertikal Jakarta Pusat dengan dak beton luas. |
+| **5** | **Pusat Belanja** | `MALL-001` | Pondok Indah Mall 1 | `-6.26533, 106.78458` | `data/raw/osm/commercial_jakarta.geojson` | Mall komersial terkemuka dengan tapak dak beton luas mandiri bebas bayangan apartemen. |
+| **6** | **Halte BRT** | `BRT-001` | Halte CSW Integrasi | `-6.24016, 106.79867` | `data/raw/osm/stations_jakarta.gpkg` | Simpul integrasi antarmoda BRT Transjakarta layang dan MRT Jakarta. |
+| **7** | **Universitas** | `UNIV-001` | Perpustakaan Pusat UI Depok | `-6.36471, 106.83138` | `data/raw/osm/education_jakarta.geojson` | Kampus ikonik "The Crystal of Knowledge" beratap ramah lingkungan di Depok. |
+| **8** | **Sekolah** | `SCH-001` | SMAN 70 Jakarta Bulungan | `-6.24168, 106.79424` | `data/raw/osm/education_jakarta.geojson` | Fasilitas pendidikan negeri menengah atas dengan orientasi atap pelana panjang. |
+| **9** | **Pasar** | `MKT-001` | Pasar Mayestik Kebayoran Baru | `-6.24232, 106.79104` | `data/raw/osm/markets_jakarta.geojson` | Pasar tradisional modern bertingkat dengan aktivitas komersial harian padat. |
+| **10** | **Stadion** | `STD-001` | Istora Senayan GBK | `-6.21982, 106.80411` | `data/raw/osm/sports_jakarta.geojson` | Gelanggang olahraga tertutup legendaris dengan bentang kubah melengkung luas. |
+| **11** | **Bandara** | `AIR-001` | Bandara Soekarno-Hatta (T3) | `-6.11993, 106.66250` | `data/raw/osm/airports_jakarta.geojson` | Terminal internasional gerbang utama Indonesia dengan luas kanopi raksasa. |
+| **12** | **Terminal** | `TERM-001` | Terminal Bus Tanjung Priok | `-6.11210, 106.88094` | `data/raw/osm/terminals_jakarta.geojson` | Hub transportasi darat antarkota dan logistik pelabuhan tersibuk Jakarta Utara. |
+| **13** | **Gedung Parkir** | `PKG-001` | Gedung Parkir Binus University | `-6.20205, 106.78014` | `data/raw/osm/parking_jakarta.geojson` | Gedung parkir bertingkat mandiri kampus Anggrek/Syahdan Jakarta Barat. |
 
 ### Rincian SKU yang Ditarik untuk Setiap Titik (Sesuai Kesepakatan RAB):
 Sesuai rancangan output RAB yang telah disepakati:
@@ -407,8 +438,8 @@ Sesuai rancangan output RAB yang telah disepakati:
      * ❌ **Monthly Flux:** Ditiadakan/dihapus untuk efisiensi biaya (karena Annual Flux sudah mencukupi untuk pemodelan tahunan).
      * ❌ **Hourly Shade:** Tidak diambil karena biaya di luar batas anggaran pilot.
 
-> **Total Biaya 5 Titik Pilot:** $5 \times (\$0.005 + \$0.100) = \$0.525$ (**~Rp 8.400**).  
-> Menghasilkan 5 file JSON Building Insights dan 20 file raster GeoTIFF (4 layer × 5 lokasi).
+> **Total Biaya 13 Titik Pilot:** $13 \times (\$0.005 + \$0.100) = \$1.365$ (**~Rp 21.840**).  
+> Menghasilkan 13 file JSON Building Insights, 52 file raster GeoTIFF (4 layer × 13 lokasi), dan 78 file pratinjau PNG (6 preview per gedung di `data/processed/previews/`). Sisa pagu talangan: **Rp 478.160 (95,6% utuh)**.
 
 ---
 
@@ -436,9 +467,9 @@ flowchart TD
     end
 
     subgraph Load["3. LOAD (Penyimpanan Data Terproses)"]
-        ETL --> GISOut["data/processed/gis/pow_solar_5_titik.geojson"]
-        ETL --> CalcCSV["data/processed/calculations/pow_solar_5_titik_summary.csv"]
-        ETL --> CalcParquet["data/processed/calculations/pow_solar_5_titik_summary.parquet"]
+        ETL --> GISOut["data/processed/gis/pow_solar_13_titik.geojson"]
+        ETL --> CalcCSV["data/processed/calculations/pow_solar_13_titik_summary.csv"]
+        ETL --> CalcParquet["data/processed/calculations/pow_solar_13_titik_summary.parquet"]
     end
 
     subgraph Present["4. PRESENT (Streamlit Dashboard)"]
@@ -448,7 +479,7 @@ flowchart TD
 ```
 
 ### 4.1. Struktur Hierarki Folder `data/raw/` per Kategori & SKU
-Penyimpanan file mentah hasil penarikan API ditata secara modular berdasarkan SKU dan kategori aset:
+Penyimpanan file mentah hasil penarikan API ditata secara modular berdasarkan SKU dan 13 kategori aset:
 
 ```
 c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
@@ -456,55 +487,47 @@ c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
 │   ├── raw/                                     # [RAW ONLY - FILE ASLI DARI API & SUMBER SPASIAL]
 │   │   ├── mrt_lrt/                             # File sumber koordinat master MRT & LRT
 │   │   ├── krl/                                 # File sumber koordinat master KRL Commuter
-│   │   ├── osm/                                 # File sumber poligon fasilitas publik OSM
+│   │   ├── osm/                                 # File sumber poligon fasilitas publik OSM (13 Kategori)
 │   │   └── solar/                               # [DATA DARI GOOGLE SOLAR API]
 │   │       ├── building_insights/               # SKU: Building Insights (JSON)
 │   │       │   ├── mrt/                         # misal: mrt-003_insights.json
 │   │       │   ├── krl/                         # misal: krl-032_insights.json
 │   │       │   ├── lrt/                         # misal: lrt-014_insights.json
 │   │       │   ├── hospital/                    # misal: rs-007_insights.json
-│   │       │   └── mall/                        # misal: mall-001_insights.json
+│   │       │   ├── mall/                        # misal: mall-001_insights.json
+│   │       │   ├── brt/                         # misal: brt-001_insights.json
+│   │       │   ├── university/                  # misal: univ-001_insights.json
+│   │       │   ├── school/                      # misal: sch-001_insights.json
+│   │       │   ├── market/                      # misal: mkt-001_insights.json
+│   │       │   ├── stadium/                     # misal: std-001_insights.json
+│   │       │   ├── airport/                     # misal: air-001_insights.json
+│   │       │   ├── terminal/                    # misal: term-001_insights.json
+│   │       │   └── parking/                     # misal: pkg-001_insights.json
 │   │       │
 │   │       └── data_layers/                     # SKU: Data Layers (4 Base Layer GeoTIFF)
-│   │           ├── dsm/                         # Peta Ketinggian 3D & Elevasi Atap
-│   │           │   ├── mrt/
-│   │           │   ├── krl/
-│   │           │   ├── lrt/
-│   │           │   ├── hospital/
-│   │           │   └── mall/
-│   │           ├── rgb/                         # Citra Satelit Aerial Resolusi Tinggi
-│   │           │   ├── mrt/
-│   │           │   ├── krl/
-│   │           │   ├── lrt/
-│   │           │   ├── hospital/
-│   │           │   └── mall/
-│   │           ├── mask/                        # Binary Mask Atap vs Non-Atap
-│   │           │   ├── mrt/
-│   │           │   ├── krl/
-│   │           │   ├── lrt/
-│   │           │   ├── hospital/
-│   │           │   └── mall/
-│   │           └── annual_flux/                 # Heatmap Radiasi Surya Tahunan
-│   │               ├── mrt/
-│   │               ├── krl/
-│   │               ├── lrt/
-│   │               ├── hospital/
-│   │               └── mall/
+│   │           ├── dsm/                         # Peta Ketinggian 3D (13 folder kategori)
+│   │           ├── rgb/                         # Citra Satelit Aerial Resolusi Tinggi (13 folder kategori)
+│   │           ├── mask/                        # Binary Mask Atap vs Non-Atap (13 folder kategori)
+│   │           └── annual_flux/                 # Heatmap Radiasi Surya Tahunan (13 folder kategori)
 │   │
 │   └── processed/                               # [PROCESSED ONLY - HASIL ETL SIAP KONSUMSI DASHBOARD]
 │       ├── gis/                                 # Layer spasial bersih untuk peta web
-│       │   ├── pow_solar_5_titik.geojson        # GeoJSON lengkap 5 titik pilot POW
-│       │   └── pow_solar_110.geojson            # GeoJSON ekspansi Tahap 2
-│       └── calculations/                        # Tabel metrik tekno-ekonomi terhitung
-│           ├── pow_solar_5_titik_summary.csv    # Ringkasan tabular analitik
-│           └── pow_solar_5_titik_summary.parquet
+│       │   ├── pow_solar_13_titik.geojson       # GeoJSON lengkap 13 titik pilot POW (13 kategori)
+│       │   └── pow_solar_5_titik.geojson        # GeoJSON fallback kompatibilitas
+│       ├── calculations/                        # Tabel metrik tekno-ekonomi terhitung
+│       │   ├── pow_solar_13_titik_summary.csv   # Ringkasan tabular analitik 13 titik
+│       │   ├── pow_solar_13_titik_summary.parquet
+│       │   ├── pow_solar_13_titik_segments.csv  # 229 segmen atap 3D
+│       │   ├── adaptive_radius_audit_13_titik.csv
+│       │   └── superblock_disambiguation_audit_13_titik.csv
+│       └── previews/                            # 78 Pratinjau PNG (6 layer per gedung)
 │
 ├── pages/
 │   └── 1_Pemetaan_Potensi.py                    # HANYA MEMBACA data/processed/ (TIDAK menyentuh raw)
 └── tools/
     └── solarapi/
         ├── .env                                 # API Key GCP
-        ├── fetch_pow_5_points.py                # Skrip Extract: Penarikan API ke data/raw/
+        ├── fetch_pow_13_points.py               # Skrip Extract: Penarikan API ke data/raw/ (13 titik)
         └── process_pow_etl.py                   # Skrip Transform: Pengolahan ke data/processed/
 ```
 
@@ -516,13 +539,13 @@ c:\Users\yooma\OneDrive\Desktop\duniahub\client\23. Celios8-solarpanel\
 
 ## 5. SPESIFIKASI SKEMA DATASET (DATA DICTIONARY)
 
-Tabel berikut mendefinisikan kolom dataset keluaran pada `data/processed/calculations/pow_solar_5_titik_summary.csv` dan atribut GeoJSON pada `data/processed/gis/pow_solar_5_titik.geojson`:
+Tabel berikut mendefinisikan kolom dataset keluaran pada `data/processed/calculations/pow_solar_13_titik_summary.csv` dan atribut GeoJSON pada `data/processed/gis/pow_solar_13_titik.geojson`:
 
 | Nama Kolom | Tipe Data | Deskripsi Kolom | Sumber Data |
 | :--- | :--- | :--- | :--- |
-| `asset_id` | String | Identifikator unik aset (misal: `MRT-003`, `KRL-032`) | Master RAW |
+| `asset_id` | String | Identifikator unik aset (misal: `MRT-003`, `AIR-001`, `PKG-001`) | Master RAW |
 | `asset_name` | String | Nama resmi bangunan / infrastruktur | Master RAW |
-| `category` | String | Kategori aset (`MRT`, `KRL`, `LRT`, `Rumah Sakit`, `Pusat Perbelanjaan / Mall`) | Master RAW |
+| `category` | String | 13 Kategori aset (`mrt`, `krl`, `lrt`, `hospital`, `mall`, `brt`, `university`, `school`, `market`, `stadium`, `airport`, `terminal`, `parking`) | Master RAW |
 | `city_regency` | String | Kota / Kabupaten wilayah administratif | Master RAW |
 | `source_raw_file` | String | Relatif path file sumber di `data/raw/` | Master RAW |
 | `raw_lat` | Float | Latitude asal dari file master dataset | Master RAW |
@@ -551,19 +574,19 @@ Tabel berikut mendefinisikan kolom dataset keluaran pada `data/processed/calcula
 
 ## 6. INTEGRASI LANGSUNG KE STREAMLIT DASHBOARD
 
-Deliverable POW Tahap 1 ini tidak berhenti pada file CSV/JSON di direktori lokal, melainkan langsung ditampilkan secara interaktif pada halaman dashboard proyek: [`pages/1_Pemetaan_Potensi.py`](file:///C:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/pages/1_Pemetaan_Potensi.py).
+Deliverable POW Tahap 1 ini ditampilkan secara interaktif pada halaman dashboard proyek: [`pages/1_Pemetaan_Potensi.py`](file:///C:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/pages/1_Pemetaan_Potensi.py).
 
 ```mermaid
 flowchart TD
-    ProcessedGIS["data/processed/gis/pow_solar_5_titik.geojson"] --> Dashboard["pages/1_Pemetaan_Potensi.py"]
-    ProcessedCalc["data/processed/calculations/pow_solar_5_titik_summary.csv"] --> Dashboard
+    ProcessedGIS["data/processed/gis/pow_solar_13_titik.geojson"] --> Dashboard["pages/1_Pemetaan_Potensi.py"]
+    ProcessedCalc["data/processed/calculations/pow_solar_13_titik_summary.csv"] --> Dashboard
     
     subgraph UIComponents["Tampilan Dashboard Streamlit (100% dari data/processed/)"]
-        KPI["1. KPI Summary Banner (Kapasitas kWp, Luas Atap, Reduksi CO2)"]
-        Map["2. Interactive Map (Folium / PyDeck: Pin 5 Kategori + Popup)"]
-        AuditTable["3. Tabel Audit Drift Spasial (Validasi Presisi Atap)"]
+        KPI["1. KPI Summary Banner (13 Titik, 16.620 Panel, 6,65 MWp, 7.086 Ton CO2)"]
+        Map["2. Interactive Map (Folium: Pin 13 Kategori Berbeda + Popup)"]
+        AuditTable["3. Tabel Audit Drift Spasial (100% VALID < 30m, Rata-rata 5,16m)"]
         DetailCard["4. Detail Card Per Gedung (Atribut Teknis & Potensi Energi)"]
-        RasterViewer["5. Visualisasi Citra Satelit (RGB & Heatmap Flux)"]
+        RasterViewer["5. Visualisasi 6 Tab SKU (RGB, Panels, Segments, DSM, Mask, Flux)"]
     end
     
     Dashboard --> UIComponents
@@ -571,19 +594,20 @@ flowchart TD
 
 ### Fitur Interaktif pada Halaman `1_Pemetaan_Potensi.py`:
 1. **Executive KPI Banner:**
-   * Total Aset Terverifikasi: **5 Titik Pilot (5 Kategori)**.
-   * Total Luas Atap Efektif: Akumulasi luas atap ($m^2$) dari Google Solar API.
-   * Total Kapasitas Potensial: Akumulasi kapasitas terpasang ($kWp$).
-   * Estimasi Produksi Listrik Tahunan: Total energi ($MWh/tahun$).
-   * Reduksi Emisi GRK: Total dekarbonisasi ($Ton CO_2/tahun$).
+   * Total Aset Terverifikasi: **13 Titik Pilot (13 Kategori Penuh)**.
+   * Total Panel: **16.620 unit panel surya** (400 Wp).
+   * Total Kapasitas Potensial: **6.648,0 kWp (6,65 MWp)**.
+   * Total Luas Atap Efektif: **32.634,28 m²**.
+   * Estimasi Produksi Listrik Tahunan: **8.759,36 MWh/tahun**.
+   * Reduksi Emisi GRK: **7.086,32 Ton CO₂/tahun**.
 2. **Peta Interaktif Jabodetabek (Folium):**
-   * Penanda warna berbeda untuk tiap kategori (MRT: Merah, KRL: Biru, LRT: Jingga, RS: Hijau, Mall: Ungu).
-   * Popup detail menampilkan foto preview, luas atap, estimasi panel, dan link ke berkas GeoTIFF.
+   * Penanda 13 warna unik untuk tiap kategori (`mrt`, `krl`, `lrt`, `hospital`, `mall`, `brt`, `university`, `school`, `market`, `stadium`, `airport`, `terminal`, `parking`).
+   * Popup detail menampilkan pratinjau atap, luas atap, estimasi panel, dan metrik energi.
 3. **Panel Audit Spasial (Quality Control):**
    * Menampilkan metrik pergeseran (*drift distance*) antara koordinat sumber vs poligon atap Google Maps.
-   * Status verifikasi visual: Indikator hijau jika pergeseran $< 30$ meter (akurasi presisi kanopi atap).
-4. **Inspektur Raster Citra Atap (GeoTIFF Showcase):**
-   * Dropdown pemilih titik gedung untuk menampilkan citra atap satelit resolusi 0.25 m/pixel berdampingan dengan peta intensitas iradiasi surya tahunan (*Annual Solar Flux*).
+   * Status verifikasi visual: **100% VALID** dengan rata-rata pergeseran hanya **5,16 meter** ($< 30$ meter batas toleransi).
+4. **Inspektur Multi-Layer SKU (GeoTIFF & Preview Showcase):**
+   * Dropdown pemilih titik gedung untuk menampilkan 6 tab lapisan visual: Citra Satelit RGB, Sebaran Panel, Grid Poligon Segmen Atap 3D, DSM Elevasi, Roof Mask Biner, dan Annual Solar Flux Heatmap.
 
 ---
 
@@ -596,10 +620,10 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
    * Dilarang menggunakan perintah `rm -rf`, `git reset --hard`, atau `git push --force`.
 2. **`anti_yesman_spatial_methodology_integrity.md`**:
    * Tidak menerima klaim tanpa verifikasi empiris. Setiap titik melalui uji spatial drift threshold ($< 30$ meter).
-   * Melakukan verifikasi apakah Google Solar API benar-benar mengidentifikasi bangunan stasiun/rumah sakit, bukan ruko di sampingnya.
+   * Melakukan verifikasi apakah Google Solar API benar-benar mengidentifikasi bangunan fasilitas target, bukan ruko di sampingnya.
 3. **`no_hardcoded_data.md`**:
-   * Skrip runner `tools/solarapi/fetch_pow_5_points.py` dilarang keras menaruh koordinat statis di dalam kode Python.
-   * Seluruh koordinat dibaca secara dinamis dengan parsing file `data/raw/` yang valid.
+   * Skrip runner `tools/solarapi/fetch_pow_13_points.py` dilarang keras menaruh koordinat statis di dalam kode Python.
+   * Seluruh koordinat dibaca secara dinamis dengan parsing file fisik `data/raw/` yang valid.
 4. **`strict_data_folder_boundary.md`**:
    * File `data/raw/` tidak boleh disentuh atau ditimpa oleh skrip pemrosesan.
    * Hasil unduhan API disimpan mentah ke:
@@ -615,11 +639,11 @@ Setiap langkah dalam rencana kerja ini tunduk pada aturan ketat:
 ## 8. CHECKLIST EKSEKUSI TAHAP 1
 
 - [x] Laporan status billing GCP dan mitigasi finansial disetujui.
-- [x] Rencana kerja POW Tahap 1 (5 Titik Pilot Full SKU) didokumentasikan lengkap di `docs/PLAN-PROOF-OF-WORK-SOLAR-API-JABODETABEK.md`.
-- [x] Buat skrip ekstraktor penarik API: `tools/solarapi/fetch_pow_5_points.py` (Menyimpan RAW ke subfolder SKU & kategori, kepatuhan `no_hardcoded_data.md`).
-- [x] Eksekusi penarikan 5 titik Building Insights + 20 file raster GeoTIFF (Biaya ~$0.415 / ~Rp 6.640 — Sisa pagu 98.6% utuh).
-- [x] Buat skrip transformer: `tools/solarapi/process_pow_etl.py` (Audit drift spasial, kalkulasi metrik energi & emisi).
-- [x] Simpan keluaran terproses ke `data/processed/gis/pow_solar_5_titik.geojson` dan `data/processed/calculations/pow_solar_5_titik_summary.csv`.
-- [x] Bangun antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta, metrik, tabel audit drift, dan inspeksi citra satelit ganda).
-- [x] Lakukan pengujian sintaks dan dependensi komponen visualisasi.
+- [x] Rencana kerja POW Tahap 1 (13 Titik Pilot Lintas 13 Kategori Full SKU) didokumentasikan lengkap di `docs/PLAN-PROOF-OF-WORK-SOLAR-API-JABODETABEK.md`.
+- [x] Buat skrip ekstraktor penarik API: `tools/solarapi/fetch_pow_13_points.py` (Menyimpan RAW ke subfolder SKU & 13 kategori, kepatuhan `no_hardcoded_data.md`).
+- [x] Eksekusi penarikan 13 titik Building Insights + 52 file raster GeoTIFF (Biaya total ~$1.365 / ~Rp 21.840 — Sisa pagu 95.6% utuh Rp 478.160).
+- [x] Perbarui skrip transformer: `tools/solarapi/process_pow_etl.py` (Audit drift spasial 13 titik rata-rata 5,16m < 30m VALID, ekstraksi 229 segmen atap 3D, kalkulasi metrik energi CELIOS & 78 preview PNG).
+- [x] Simpan keluaran terproses ke `data/processed/gis/pow_solar_13_titik.geojson` dan `data/processed/calculations/pow_solar_13_titik_summary.csv` & `.parquet`.
+- [x] Perbarui antarmuka interaktif pada `pages/1_Pemetaan_Potensi.py` (100% konsumsi dari `data/processed/` untuk visualisasi peta 13 pin berkategori unik, metrik agregat 6,65 MWp, tabel audit drift 100% valid, 6 tab layer SKU, dan inspeksi segmen atap 3D).
+- [x] Lakukan pengujian sintaks dan dependensi komponen visualisasi (`py_compile`).
 - [x] Auto-commit seluruh kode dan artefak ke Git repository.

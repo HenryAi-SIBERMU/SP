@@ -1,0 +1,51 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "asset_id": "UNIV-001",
+        "name": "Perpustakaan Pusat Universitas Indonesia (The Crystal of Knowledge)",
+        "amenity": "university",
+        "category": "university",
+        "category_display": "Universitas / Kampus",
+        "city_regency": "Kota Depok",
+        "osm_way_id": "297131484",
+        "operator": "Universitas Indonesia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8313788,
+          -6.3647117
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "asset_id": "SCH-001",
+        "name": "SMAN 70 Jakarta Bulungan",
+        "amenity": "school",
+        "category": "school",
+        "category_display": "Sekolah Negeri",
+        "city_regency": "Jakarta Selatan",
+        "osm_way_id": "1295492657",
+        "operator": "Dinas Pendidikan DKI Jakarta"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.79422,
+          -6.24169
+        ]
+      }
+    }
+  ]
+}

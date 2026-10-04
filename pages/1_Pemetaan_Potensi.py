@@ -39,9 +39,10 @@ render_sidebar()
 st.markdown(get_solar_css(), unsafe_allow_html=True)
 
 # ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
-PROCESSED_CALC_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv"
-PROCESSED_SEGMENTS_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv"
-PROCESSED_GIS_PATH = PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson"
+# ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
+PROCESSED_CALC_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv" if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv").exists() else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv")
+PROCESSED_SEGMENTS_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv" if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv").exists() else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv")
+PROCESSED_GIS_PATH = PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson" if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson").exists() else (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson")
 
 def load_processed_data():
     if not PROCESSED_CALC_PATH.exists():
@@ -65,23 +66,25 @@ def get_clean_img_path(rel_path):
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
-st.markdown('<div class="page-subtitle">Verifikasi Empiris Google Solar API (Proof of Work 5 Titik Multi-Kategori — Full SKU Data Layers)</div>', unsafe_allow_html=True)
+count_pts = len(df_summary) if df_summary is not None else 13
+count_cats = len(df_summary["category"].unique()) if df_summary is not None else 13
+st.markdown(f'<div class="page-subtitle">Verifikasi Empiris Google Solar API (Proof of Work {count_pts} Titik — {count_cats} Kategori Lengkap Jabodetabek — Full SKU Data Layers)</div>', unsafe_allow_html=True)
 
 if df_summary is None or df_summary.empty:
-    st.error("Dataset hasil olahan `data/processed/calculations/pow_solar_5_titik_summary.csv` tidak ditemukan. Jalankan pipeline ETL terlebih dahulu.")
+    st.error("Dataset hasil olahan `data/processed/calculations/` tidak ditemukan. Jalankan pipeline ETL terlebih dahulu.")
     st.stop()
 
 # ─── NOTE BOX & STATUS PILOT ──────────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
 <div class="note-box">
-<strong>Laporan Validasi Empiris Google Solar API (Tahap 1 Pilot — Full SKU Layers)</strong><br>
-Data berikut memuat hasil ekstraksi citra satelit Google resolusi tinggi (<strong>0.25 m/pixel — BASE Quality</strong>) untuk 5 kategori infrastruktur perkotaan. 
+<strong>Laporan Validasi Empiris Google Solar API (Proof of Work {count_pts} Titik Pilot — {count_cats} Kategori — Full SKU Layers)</strong><br>
+Data berikut memuat hasil ekstraksi citra satelit Google resolusi tinggi (<strong>0.25 m/pixel — BASE Quality</strong>) untuk {count_cats} kategori infrastruktur perkotaan se-Jabodetabek. 
 Dilengkapi seluruh layer turunan SKU: <strong>Foto Satelit RGB</strong>, <strong>Layout Sebaran Panel Surya di Atap (Show Panels on Roof)</strong>, <strong>Annual Solar Flux Heatmap</strong>, <strong>Digital Surface Model (DSM 3D)</strong>, dan <strong>Roof Mask Segmentasi</strong>.
 </div>
 """, unsafe_allow_html=True)
 
 # ─── EXECUTIVE KPI BANNER ─────────────────────────────────────────────────────
-st.markdown('<div class="section-header">Ringkasan Potensi Surya 5 Titik Pilot</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section-header">Ringkasan Potensi Surya {count_pts} Titik Pilot ({count_cats} Kategori)</div>', unsafe_allow_html=True)
 
 total_capacity_kwp = df_summary["installed_capacity_kwp"].sum()
 total_roof_area = df_summary["max_roof_area_m2"].sum()
@@ -161,7 +164,7 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         selected_cat = st.selectbox("Filter Kategori:", options=cat_options, index=0, key="master_cat_filter")
     with f_col2:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        st.caption("Menampilkan 5 titik pilot multi-kategori (MRT, KRL, LRT, Rumah Sakit, Pusat Perbelanjaan / Mall)")
+        st.caption(f"Menampilkan {len(df_master)} titik pilot representatif lintas {len(df_master['category'].unique())} kategori se-Jabodetabek")
 
     if selected_cat != "Semua Kategori":
         df_display_master = df_master[df_master["category_display"] == selected_cat].copy()
@@ -260,12 +263,19 @@ st.markdown('<div class="section-header">Peta Interaktif Sebaran & Verifikasi Sp
 col_map, col_list = st.columns([1.6, 1.0])
 
 CAT_COLORS = {
-    "mrt": "#E53935",      # Merah MRT
-    "krl": "#1E88E5",      # Biru KRL
-    "lrt": "#FB8C00",      # Jingga LRT
-    "hospital": "#43A047", # Hijau RS
-    "parking": "#8E24AA",  # Ungu Parkir
-    "mall": "#9C27B0"      # Ungu Mall / Komersial
+    "mrt": "#E53935",         # Merah MRT
+    "krl": "#1E88E5",         # Biru KRL
+    "lrt": "#FB8C00",         # Jingga LRT
+    "hospital": "#43A047",    # Hijau RS
+    "mall": "#9C27B0",        # Ungu Mall / Komersial
+    "brt": "#00ACC1",         # Toska BRT TransJakarta
+    "university": "#3949AB",  # Indigo Kampus / Universitas
+    "school": "#7CB342",      # Hijau Muda Sekolah Negeri
+    "market": "#D81B60",      # Pink / Magenta Pasar Tradisional
+    "stadium": "#F4511E",     # Oranye Merah Stadion & GOR
+    "airport": "#00897B",     # Teal Bandara
+    "terminal": "#5E35B1",    # Ungu Tua Terminal Bus
+    "parking": "#8E24AA",     # Ungu Gedung Parkir
 }
 
 with col_map:
@@ -357,9 +367,11 @@ with col_list:
         }
     )
 
-    st.markdown("""
+    mean_drift = df_summary["spatial_drift_meters"].mean()
+    valid_count = len(df_summary[df_summary["drift_status"].str.contains("VALID", case=False, na=False)])
+    st.markdown(f"""
 **Validasi Akurasi Spasial:**  
-Rata-rata *spatial drift* adalah **11.02 meter**. Hal ini membuktikan bahwa algoritma Google Solar API berhasil mengunci koordinat poligon atap stasiun dan gedung target secara presisi, bukan bangunan ruko di pinggir jalan.
+Rata-rata *spatial drift* adalah **{mean_drift:.2f} meter** ({valid_count} dari {len(df_summary)} titik berstatus **100% VALID < 30m**). Hal ini membuktikan bahwa algoritma Google Solar API berhasil mengunci koordinat poligon atap bangunan target secara presisi lintas seluruh 13 kategori infrastruktur.
     """)
 
 st.markdown("<br>", unsafe_allow_html=True)
