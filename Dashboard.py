@@ -41,8 +41,8 @@ st.markdown('<div class="page-subtitle">Potensi Instalasi Dual-Use Infrastructur
 
 st.markdown(f"""
 <div class="note-box">
-<strong>Catatan Kuota Titik Riset Jabodetabek (2.260 Titik Target Sesuai RAB)</strong><br>
-Angka target riset telah disesuaikan menjadi <strong>2.260 titik</strong> lintas <strong>13 kategori infrastruktur</strong> se-Jabodetabek sesuai kuota resmi dokumen RAB riset. <em>Status saat ini: {fetched_titik} titik pilot multi-kategori (KRL Manggarai, MRT Cipete, LRT Dukuh Atas, RSUD Tarakan, Pondok Indah Mall 1) telah selesai di-fetch dan terverifikasi 100% menggunakan Google Solar API ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn)</em>.
+<strong>Catatan Titik Target Riset Jabodetabek (2.260 Titik)</strong><br>
+Angka target riset mencakup <strong>2.260 titik</strong> lintas <strong>13 kategori infrastruktur</strong> se-Jabodetabek. <em>Status saat ini: {fetched_titik} titik pilot multi-kategori (KRL Manggarai Sentral, MRT Cipete Raya, LRT Dukuh Atas, RSUD Tarakan, Pondok Indah Mall 1) telah selesai di-fetch dan terverifikasi 100% menggunakan Google Solar API ({fetched_kwp:,.1f} kWp / {fetched_mwh:,.1f} MWh/thn)</em>.
 </div>
 """, unsafe_allow_html=True)
 
@@ -88,7 +88,7 @@ with col4:
     """, unsafe_allow_html=True)
 
 # ─── 13 KATEGORI INFRASTRUKTUR URBAN ──────────────────────────────────────────
-st.markdown('<div class="section-header">13 Kategori Infrastruktur Urban Jabodetabek (2.260 Titik Sesuai RAB)</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header">13 Kategori Infrastruktur Urban Jabodetabek (2.260 Titik)</div>', unsafe_allow_html=True)
 
 infrastruktur = [
     ("Halte BRT & Bus Shelter", "400 shelter (TJ & Bodetabek)", "~12.0 MWp"),
