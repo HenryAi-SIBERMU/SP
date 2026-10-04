@@ -88,7 +88,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 rgb_arr = np.transpose(rgb_raw, (1, 2, 0))
                 im = Image.fromarray(rgb_arr)
                 im.save(rgb_png_path, "PNG")
-                out_paths["preview_rgb_png"] = str(rgb_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_rgb_png"] = rgb_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate RGB PNG: {e}")
 
@@ -156,7 +156,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 fig.patch.set_facecolor("#0E1117")
                 fig.savefig(str(panels_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0)
                 plt.close(fig)
-                out_paths["preview_panels_png"] = str(panels_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_panels_png"] = panels_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate Panels Overlay PNG: {e}")
 
@@ -175,7 +175,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 fig.tight_layout()
                 fig.savefig(str(dsm_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
-                out_paths["preview_dsm_png"] = str(dsm_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_dsm_png"] = dsm_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate DSM PNG: {e}")
 
@@ -192,7 +192,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 fig.tight_layout()
                 fig.savefig(str(mask_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
-                out_paths["preview_mask_png"] = str(mask_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_mask_png"] = mask_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate Mask PNG: {e}")
 
@@ -213,7 +213,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 fig.tight_layout()
                 fig.savefig(str(flux_png_path.resolve()), bbox_inches="tight")
                 plt.close(fig)
-                out_paths["preview_flux_png"] = str(flux_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_flux_png"] = flux_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate Flux Heatmap PNG: {e}")
 
@@ -363,7 +363,7 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
                 fig.patch.set_facecolor("#0E1117")
                 fig.savefig(str(segments_png_path.resolve()), facecolor=fig.get_facecolor(), bbox_inches="tight", pad_inches=0)
                 plt.close(fig)
-                out_paths["preview_segments_png"] = str(segments_png_path.relative_to(PROJECT_ROOT))
+                out_paths["preview_segments_png"] = segments_png_path.relative_to(PROJECT_ROOT).as_posix()
         except Exception as e:
             print(f"      [WARN] Gagal generate Segments Overlay PNG: {e}")
 
@@ -648,10 +648,10 @@ def process_targets():
             "annual_generation_mwh": round(annual_gen_mwh, 2),
             "carbon_offset_factor": round(co2_factor, 2),
             "ghg_reduction_tons_co2": round(ghg_reduc_tons, 2),
-            "path_dsm_geotiff": str(dsm_tif.relative_to(PROJECT_ROOT)) if dsm_tif.exists() else None,
-            "path_rgb_geotiff": str(rgb_tif.relative_to(PROJECT_ROOT)) if rgb_tif.exists() else None,
-            "path_mask_geotiff": str(mask_tif.relative_to(PROJECT_ROOT)) if mask_tif.exists() else None,
-            "path_flux_geotiff": str(flux_tif.relative_to(PROJECT_ROOT)) if flux_tif.exists() else None,
+            "path_dsm_geotiff": dsm_tif.relative_to(PROJECT_ROOT).as_posix() if dsm_tif.exists() else None,
+            "path_rgb_geotiff": rgb_tif.relative_to(PROJECT_ROOT).as_posix() if rgb_tif.exists() else None,
+            "path_mask_geotiff": mask_tif.relative_to(PROJECT_ROOT).as_posix() if mask_tif.exists() else None,
+            "path_flux_geotiff": flux_tif.relative_to(PROJECT_ROOT).as_posix() if flux_tif.exists() else None,
             "preview_rgb_png": preview_paths.get("preview_rgb_png"),
             "preview_panels_png": preview_paths.get("preview_panels_png"),
             "preview_segments_png": preview_paths.get("preview_segments_png"),

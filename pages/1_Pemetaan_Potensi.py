@@ -54,15 +54,35 @@ def load_processed_data():
 
 df_summary, gdf_points, df_segments = load_processed_data()
 
-def is_valid_img_path(rel_path):
+def normalize_img_path(rel_path):
     if not pd.notna(rel_path) or not isinstance(rel_path, str) or len(rel_path.strip()) == 0:
-        return False
-    return (PROJECT_ROOT / Path(rel_path)).resolve().exists()
+        return None
+    # Normalize Windows backslashes to forward slashes for Linux/Streamlit Cloud compatibility
+    clean = rel_path.strip().replace("\\", "/").lstrip("/")
+    
+    # Check 1: PROJECT_ROOT / clean
+    cand1 = (PROJECT_ROOT / clean).resolve()
+    if cand1.exists():
+        return str(cand1)
+        
+    # Check 2: Relative to current working directory
+    cand2 = Path(clean).resolve()
+    if cand2.exists():
+        return str(cand2)
+        
+    # Check 3: Fallback check in data/processed/previews by filename
+    filename = Path(clean).name
+    cand3 = (PROJECT_ROOT / "data" / "processed" / "previews" / filename).resolve()
+    if cand3.exists():
+        return str(cand3)
+        
+    return None
+
+def is_valid_img_path(rel_path):
+    return normalize_img_path(rel_path) is not None
 
 def get_clean_img_path(rel_path):
-    if is_valid_img_path(rel_path):
-        return str((PROJECT_ROOT / Path(rel_path)).resolve())
-    return None
+    return normalize_img_path(rel_path)
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
