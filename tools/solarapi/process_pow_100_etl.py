@@ -473,7 +473,7 @@ def main():
             "raw_lat": raw_lat,
             "raw_lon": raw_lon,
             "google_building_id": bi_data.get("name", ""),
-            "google_maps_url": f"https://www.google.com/maps/place/?q=place_id:{bi_data.get('name', '').replace('buildings/', '')}" if bi_data.get("name") else "",
+            "google_maps_url": f"https://www.google.com/maps/search/?api=1&query={g_lat:.6f},{g_lon:.6f}" if g_lat and g_lon else "",
             "google_center_lat": g_lat,
             "google_center_lon": g_lon,
             "spatial_drift_meters": round(drift_m, 2),

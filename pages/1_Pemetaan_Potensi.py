@@ -203,8 +203,9 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
     df_master["res_tier"] = "0.25 m/px (" + df_master["quality_tier"] + ")"
 
     if "google_maps_url" not in df_master.columns:
-        df_master["google_maps_url"] = df_master["google_building_id"].apply(
-            lambda x: f"https://www.google.com/maps/place/?q=place_id:{str(x).replace('buildings/', '')}" if pd.notna(x) and x else ""
+        df_master["google_maps_url"] = df_master.apply(
+            lambda r: f"https://www.google.com/maps/search/?api=1&query={r.get('google_center_lat', r.get('raw_lat', 0)):.6f},{r.get('google_center_lon', r.get('raw_lon', 0)):.6f}",
+            axis=1,
         )
 
     f_col1, f_col2 = st.columns([1.2, 1.8])
@@ -436,9 +437,10 @@ selected_asset_name = st.selectbox(
 
 asset_row = df_summary[df_summary["asset_name"] == selected_asset_name].iloc[0]
 maps_url = asset_row.get("google_maps_url", "")
-if not maps_url:
-    b_id = str(asset_row.get("google_building_id", "")).replace("buildings/", "")
-    maps_url = f"https://www.google.com/maps/place/?q=place_id:{b_id}"
+if not maps_url or "place_id:" in str(maps_url):
+    c_lat = asset_row.get("google_center_lat", asset_row.get("raw_lat", 0))
+    c_lon = asset_row.get("google_center_lon", asset_row.get("raw_lon", 0))
+    maps_url = f"https://www.google.com/maps/search/?api=1&query={c_lat:.6f},{c_lon:.6f}"
 
 # Metrik Fasilitas
 disp_capacity_kwp = float(asset_row['installed_capacity_kwp'])
