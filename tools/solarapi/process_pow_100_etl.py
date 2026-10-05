@@ -83,6 +83,16 @@ def generate_all_sku_previews(aid, cat, asset_name, bi_data, rgb_tif_path, dsm_t
     mask_png_path = PREVIEW_OUT_DIR / f"{aid}_roof_mask.png"
     flux_png_path = PREVIEW_OUT_DIR / f"{aid}_flux_heatmap.png"
 
+    if all(p.exists() for p in [rgb_png_path, panels_png_path, segments_png_path, dsm_png_path, mask_png_path, flux_png_path]):
+        return {
+            "preview_rgb_png": rgb_png_path.relative_to(PROJECT_ROOT).as_posix(),
+            "preview_panels_png": panels_png_path.relative_to(PROJECT_ROOT).as_posix(),
+            "preview_segments_png": segments_png_path.relative_to(PROJECT_ROOT).as_posix(),
+            "preview_dsm_png": dsm_png_path.relative_to(PROJECT_ROOT).as_posix(),
+            "preview_mask_png": mask_png_path.relative_to(PROJECT_ROOT).as_posix(),
+            "preview_flux_png": flux_png_path.relative_to(PROJECT_ROOT).as_posix(),
+        }
+
     # 1. RGB Image
     rgb_arr = None
     if rgb_tif_path and rgb_tif_path.exists():

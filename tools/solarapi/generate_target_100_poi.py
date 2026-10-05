@@ -585,9 +585,9 @@ targets_100 = [
         "category": "parking",
         "category_display": "Gedung Parkir",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.189537,
-        "longitude": 106.739331,
-        "radius_meters": 65,
+        "latitude": -6.190303,
+        "longitude": 106.739152,
+        "radius_meters": 75,
         "source_reference": "data/raw/osm/parking_jakarta.gpkg",
         "description": "Dek parkir bertingkat terisolasi kawasan Puri Indah"
     },
@@ -609,8 +609,8 @@ targets_100 = [
         "category": "parking",
         "category_display": "Gedung Parkir",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.175044,
-        "longitude": 106.790831,
+        "latitude": -6.174033,
+        "longitude": 106.791709,
         "radius_meters": 65,
         "source_reference": "data/raw/osm/parking_jakarta.gpkg",
         "description": "Gedung parkir mandiri kawasan terpadu Podomoro City"
@@ -633,9 +633,9 @@ targets_100 = [
         "category": "parking",
         "category_display": "Gedung Parkir",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.202951,
-        "longitude": 106.801387,
-        "radius_meters": 55,
+        "latitude": -6.202536,
+        "longitude": 106.800984,
+        "radius_meters": 65,
         "source_reference": "data/raw/osm/parking_jakarta.gpkg",
         "description": "Struktur dak parkir bertingkat perkantoran Slipi"
     },
@@ -657,8 +657,8 @@ targets_100 = [
         "category": "parking",
         "category_display": "Gedung Parkir",
         "city_regency": "Jakarta Utara",
-        "latitude": -6.116340,
-        "longitude": 106.786869,
+        "latitude": -6.115520,
+        "longitude": 106.786193,
         "radius_meters": 65,
         "source_reference": "data/raw/osm/parking_jakarta.gpkg",
         "description": "Dek parkir bertingkat kawasan komersial Pluit Village"
@@ -683,11 +683,11 @@ targets_100 = [
         "category": "mall",
         "category_display": "Pusat Perbelanjaan / Mall",
         "city_regency": "Jakarta Pusat",
-        "latitude": -6.194883,
-        "longitude": 106.821644,
+        "latitude": -6.195288,
+        "longitude": 106.820549,
         "radius_meters": 160,
         "source_reference": "OSM Way / Djarum Group",
-        "description": "Mega-mall sentral Jakarta di Bundaran HI dengan atap podium luas"
+        "description": "Mega-mall sentral Jakarta di Bundaran HI dengan atap podium luas (West Mall)"
     },
     {
         "asset_id": "MALL-003",
@@ -719,11 +719,11 @@ targets_100 = [
         "category": "mall",
         "category_display": "Pusat Perbelanjaan / Mall",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.177318,
-        "longitude": 106.791497,
+        "latitude": -6.177620,
+        "longitude": 106.790668,
         "radius_meters": 150,
         "source_reference": "OSM Way / Agung Podomoro Land",
-        "description": "Pusat komersial terkemuka Jakarta Barat dengan taman atap"
+        "description": "Pusat komersial terkemuka Jakarta Barat dengan taman atap & dak podium masif"
     },
     {
         "asset_id": "MALL-006",
@@ -751,15 +751,15 @@ targets_100 = [
     },
     {
         "asset_id": "MALL-008",
-        "asset_name": "Summarecon Mall Bekasi",
+        "asset_name": "Gandaria City Mall",
         "category": "mall",
         "category_display": "Pusat Perbelanjaan / Mall",
-        "city_regency": "Kota Bekasi",
-        "latitude": -6.226011,
-        "longitude": 107.001061,
-        "radius_meters": 150,
-        "source_reference": "OSM Way / Summarecon Agung",
-        "description": "Mall ikonik komersial kawasan Kota Summarecon Bekasi"
+        "city_regency": "Jakarta Selatan",
+        "latitude": -6.244332,
+        "longitude": 106.783551,
+        "radius_meters": 160,
+        "source_reference": "OSM Way / Pakuwon Jati",
+        "description": "Mega-mall superblok terkemuka Jakarta Selatan dengan bentang atap podium masif"
     },
 
     # ── 9. RUMAH SAKIT & FASKES (8 TITIK) ──
@@ -781,11 +781,11 @@ targets_100 = [
         "category": "hospital",
         "category_display": "Rumah Sakit",
         "city_regency": "Jakarta Pusat",
-        "latitude": -6.197009,
-        "longitude": 106.846855,
+        "latitude": -6.197071,
+        "longitude": 106.847492,
         "radius_meters": 100,
         "source_reference": "data/raw/osm/hospitals_jakarta.gpkg",
-        "description": "Rumah sakit rujukan nasional utama (RSCM) dengan kompleks dak luas"
+        "description": "Rumah sakit rujukan nasional utama (RSCM) dengan kompleks dak luas (Gedung Kirana / Kanari)"
     },
     {
         "asset_id": "RS-002",
@@ -793,9 +793,9 @@ targets_100 = [
         "category": "hospital",
         "category_display": "Rumah Sakit",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.184786,
-        "longitude": 106.799012,
-        "radius_meters": 85,
+        "latitude": -6.184767,
+        "longitude": 106.798546,
+        "radius_meters": 95,
         "source_reference": "data/raw/osm/hospitals_jakarta.gpkg",
         "description": "Pusat rujukan kesehatan anak dan bunda terkemuka Slipi"
     },
@@ -805,11 +805,11 @@ targets_100 = [
         "category": "hospital",
         "category_display": "Rumah Sakit",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.295111,
-        "longitude": 106.796194,
+        "latitude": -6.295996,
+        "longitude": 106.796709,
         "radius_meters": 90,
         "source_reference": "data/raw/osm/hospitals_jakarta.gpkg",
-        "description": "Rumah sakit umum pusat rujukan Jakarta Selatan"
+        "description": "Rumah sakit umum pusat rujukan Jakarta Selatan (Gedung Teratai)"
     },
     {
         "asset_id": "RS-004",
@@ -829,11 +829,11 @@ targets_100 = [
         "category": "hospital",
         "category_display": "Rumah Sakit",
         "city_regency": "Jakarta Utara",
-        "latitude": -6.108932,
-        "longitude": 106.899668,
+        "latitude": -6.108769,
+        "longitude": 106.900075,
         "radius_meters": 80,
         "source_reference": "data/raw/osm/hospitals_jakarta.gpkg",
-        "description": "RSUD rujukan utama kawasan pelabuhan pesisir Jakarta Utara"
+        "description": "RSUD rujukan utama kawasan pelabuhan pesisir Jakarta Utara (Gedung Blok B)"
     },
     {
         "asset_id": "RS-006",
@@ -891,11 +891,11 @@ targets_100 = [
         "category": "market",
         "category_display": "Pasar Tradisional",
         "city_regency": "Jakarta Timur",
-        "latitude": -6.294222,
-        "longitude": 106.872048,
+        "latitude": -6.294296,
+        "longitude": 106.871321,
         "radius_meters": 110,
         "source_reference": "OSM Way / Perumda Pasar Jaya",
-        "description": "Pasar induk komoditas pangan utama Jakarta seluas puluhan hektar"
+        "description": "Pasar induk komoditas pangan utama Jakarta seluas puluhan hektar (hanggar utama sayur/buah)"
     },
     {
         "asset_id": "MKT-004",
@@ -903,11 +903,11 @@ targets_100 = [
         "category": "market",
         "category_display": "Pasar Tradisional",
         "city_regency": "Jakarta Pusat",
-        "latitude": -6.174423,
-        "longitude": 106.844574,
+        "latitude": -6.174303,
+        "longitude": 106.844168,
         "radius_meters": 80,
         "source_reference": "OSM Way / Perumda Pasar Jaya",
-        "description": "Gedung pasar modern berkanopi luas di simpul transit Senen"
+        "description": "Gedung pasar modern berkanopi luas di simpul transit Senen (Gedung Utama Blok III)"
     },
     {
         "asset_id": "MKT-005",
@@ -989,11 +989,11 @@ targets_100 = [
         "category": "university",
         "category_display": "Universitas / Kampus",
         "city_regency": "Jakarta Barat",
-        "latitude": -6.167845,
-        "longitude": 106.790257,
+        "latitude": -6.168517,
+        "longitude": 106.790388,
         "radius_meters": 85,
         "source_reference": "OSM Way / Universitas Trisakti",
-        "description": "Kampus reformasi Trisakti Kyai Tapa dengan blok gedung bertingkat"
+        "description": "Kampus reformasi Trisakti Kyai Tapa dengan blok gedung perkuliahan utama"
     },
     {
         "asset_id": "UNIV-004",
@@ -1049,8 +1049,8 @@ targets_100 = [
         "category": "university",
         "category_display": "Universitas / Kampus",
         "city_regency": "Kab. Tangerang",
-        "latitude": -6.257742,
-        "longitude": 106.618159,
+        "latitude": -6.256870,
+        "longitude": 106.618310,
         "radius_meters": 80,
         "source_reference": "OSM Way / Kompas Gramedia",
         "description": "Gedung ikonik New Media Tower hemat energi berarsitektur futuristik"
@@ -1221,8 +1221,8 @@ targets_100 = [
         "category": "stadium",
         "category_display": "Stadion & GOR",
         "city_regency": "Jakarta Selatan",
-        "latitude": -6.242368,
-        "longitude": 106.797104,
+        "latitude": -6.242763,
+        "longitude": 106.797342,
         "radius_meters": 55,
         "source_reference": "OSM Way / Dispora DKI",
         "description": "GOR olahraga dan kepemudaan sentral Blok M"
@@ -1233,23 +1233,23 @@ targets_100 = [
         "category": "stadium",
         "category_display": "Stadion & GOR",
         "city_regency": "Kab. Bogor",
-        "latitude": -6.494989,
-        "longitude": 106.833433,
+        "latitude": -6.495967,
+        "longitude": 106.833084,
         "radius_meters": 130,
         "source_reference": "OSM Way / Dispora Kab. Bogor",
         "description": "Stadion olimpiade megah kapasitas 30.000 penonton di Cibinong"
     },
     {
         "asset_id": "STD-008",
-        "asset_name": "Stadion Patriot Candrabhaga",
+        "asset_name": "Stadion Soemantri Brodjonegoro",
         "category": "stadium",
         "category_display": "Stadion & GOR",
-        "city_regency": "Kota Bekasi",
-        "latitude": -6.238491,
-        "longitude": 106.991885,
-        "radius_meters": 130,
-        "source_reference": "OSM Way / Dispora Kota Bekasi",
-        "description": "Stadion internasional megah pusat olahraga Kota Bekasi"
+        "city_regency": "Jakarta Selatan",
+        "latitude": -6.221108,
+        "longitude": 106.833243,
+        "radius_meters": 120,
+        "source_reference": "OSM Way / Dispora DKI",
+        "description": "Stadion olahraga bersejarah terpadu di koridor bisnis Rasuna Said Kuningan"
     }
 ]
 
