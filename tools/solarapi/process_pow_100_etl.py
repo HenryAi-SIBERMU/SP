@@ -431,6 +431,11 @@ def main():
         co2_factor = sp.get("carbonOffsetFactorKgPerMwh", 808.999)
 
         suitability_ratio = round((max_roof_area / whole_roof_area) * 100, 1) if whole_roof_area > 0 else 0.0
+        gap_unsegmented_m2 = round(max(0.0, building_footprint - whole_roof_area), 2)
+        gap_unpanelled_m2 = round(max(0.0, whole_roof_area - max_roof_area), 2)
+        total_gap_m2 = round(max(0.0, building_footprint - max_roof_area), 2)
+        roof_coverage_ratio_pct = round((whole_roof_area / building_footprint) * 100.0, 1) if building_footprint > 0 else 100.0
+        gap_unsegmented_pct = round(100.0 - roof_coverage_ratio_pct, 1)
 
         solar_configs = sp.get("solarPanelConfigs", [])
         google_dc_mwh = 0.0
@@ -494,6 +499,11 @@ def main():
             "max_roof_area_m2": round(max_roof_area, 2),
             "roof_suitability_ratio_pct": suitability_ratio,
             "building_footprint_m2": round(building_footprint, 2),
+            "roof_coverage_ratio_pct": roof_coverage_ratio_pct,
+            "gap_unsegmented_pct": gap_unsegmented_pct,
+            "gap_unsegmented_m2": gap_unsegmented_m2,
+            "gap_unpanelled_m2": gap_unpanelled_m2,
+            "total_gap_m2": total_gap_m2,
             "total_segments_count": len(segs),
             "pitch_range": pitch_range,
             "weighted_pitch_deg": weighted_pitch,
@@ -582,6 +592,12 @@ def main():
         return
 
     df = pd.DataFrame(records)
+    # Dynamic empirical tertiles for gap_category without hardcoding
+    df["gap_category"] = pd.qcut(
+        df["gap_unsegmented_pct"].rank(method="first"),
+        q=3,
+        labels=["Gap Sedikit", "Gap Sedang", "Gap Besar"]
+    )
     df_segs = pd.DataFrame(segment_records)
 
     # 1. Save Summary CSV & Parquet

@@ -208,29 +208,40 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
             axis=1,
         )
 
-    f_col1, f_col2 = st.columns([1.2, 1.8])
+    f_col1, f_col2, f_col3 = st.columns([1.2, 1.2, 1.6])
     with f_col1:
         cat_options = ["Semua Kategori"] + sorted(df_master["category_display"].unique().tolist())
         selected_cat = st.selectbox("Filter Kategori:", options=cat_options, index=0, key="master_cat_filter")
     with f_col2:
+        gap_options = ["Semua Kondisi Atap", "Gap Sedikit", "Gap Sedang", "Gap Besar"]
+        selected_gap = st.selectbox("Filter Celah Atap:", options=gap_options, index=0, key="master_gap_filter")
+    with f_col3:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        st.caption(f"Menampilkan {len(df_master)} titik pilot representatif lintas {len(df_master['category'].unique())} kategori se-Jabodetabek")
+        st.caption(f"Menampilkan data dari {len(df_master)} titik pilot representatif se-Jabodetabek")
 
+    df_display_master = df_master.copy()
     if selected_cat != "Semua Kategori":
-        df_display_master = df_master[df_master["category_display"] == selected_cat].copy()
-    else:
-        df_display_master = df_master.copy()
+        df_display_master = df_display_master[df_display_master["category_display"] == selected_cat]
+    if selected_gap != "Semua Kondisi Atap" and "gap_category" in df_display_master.columns:
+        df_display_master = df_display_master[df_display_master["gap_category"] == selected_gap]
 
-    master_table = df_display_master[[
+    master_cols = [
         "category_display", "asset_name", "city_regency", "postal_code",
-        "whole_roof_area_m2", "max_roof_area_m2", "roof_suitability_ratio_pct", "building_footprint_m2",
+        "whole_roof_area_m2", "max_roof_area_m2", "roof_suitability_ratio_pct", "building_footprint_m2"
+    ]
+    if "roof_coverage_ratio_pct" in df_display_master.columns:
+        master_cols.extend(["roof_coverage_ratio_pct", "gap_unsegmented_m2", "total_gap_m2", "gap_category"])
+
+    master_cols.extend([
         "total_segments", "active_segments",
         "pitch_range", "weighted_pitch_deg",
         "max_panels_count", "installed_capacity_kwp",
         "sunshine_hours_annual", "google_dc_mwh", "annual_generation_mwh", "prod_per_panel_kwh",
         "carbon_offset_factor", "ghg_reduction_tons_co2",
         "spatial_drift_meters", "drift_status", "imagery_date", "res_tier", "google_building_id", "google_maps_url"
-    ]].rename(columns={
+    ])
+
+    rename_dict = {
         "category_display": "Kategori",
         "asset_name": "Infrastruktur",
         "city_regency": "Wilayah",
@@ -239,6 +250,10 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "max_roof_area_m2": "Atap Layak PLTS (m²)",
         "roof_suitability_ratio_pct": "Rasio Kelayakan (%)",
         "building_footprint_m2": "Tapak Bangunan (m²)",
+        "roof_coverage_ratio_pct": "Cakupan Atap (%)",
+        "gap_unsegmented_m2": "Celah Non-Segmen (m²)",
+        "total_gap_m2": "Total Celah (m²)",
+        "gap_category": "Kondisi Celah",
         "total_segments": "Total Segmen",
         "active_segments": "Segmen Terisi",
         "pitch_range": "Rentang Kemiringan (Min – Max)",
@@ -257,7 +272,10 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         "res_tier": "Kualitas Citra",
         "google_building_id": "Google Building ID",
         "google_maps_url": "URL Verifikasi Google Maps"
-    })
+    }
+
+    avail_cols = [c for c in master_cols if c in df_display_master.columns]
+    master_table = df_display_master[avail_cols].rename(columns=rename_dict)
 
     st.dataframe(
         master_table,
@@ -269,6 +287,10 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
             "Atap Layak PLTS (m²)": st.column_config.NumberColumn(format="%.1f m²"),
             "Rasio Kelayakan (%)": st.column_config.NumberColumn(format="%.1f%%"),
             "Tapak Bangunan (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+            "Cakupan Atap (%)": st.column_config.NumberColumn(format="%.1f%%"),
+            "Celah Non-Segmen (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+            "Total Celah (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+            "Kondisi Celah": st.column_config.TextColumn(),
             "Total Segmen": st.column_config.NumberColumn(format="%d"),
             "Segmen Terisi": st.column_config.NumberColumn(format="%d"),
             "Rentang Kemiringan (Min – Max)": st.column_config.TextColumn(width="medium"),
@@ -565,11 +587,19 @@ with tab_segments:
                 active_segs = len(curr_segs[curr_segs["panels_count"] > 0])
                 total_seg_area = curr_segs["area_m2"].sum()
 
+                gap_cat_val = asset_row.get("gap_category", "Gap Sedang")
+                roof_cov_val = float(asset_row.get("roof_coverage_ratio_pct", 100.0))
+                gap_unseg_val = float(asset_row.get("gap_unsegmented_m2", 0.0))
+                total_gap_val = float(asset_row.get("total_gap_m2", 0.0))
+
                 st.markdown("##### Karakteristik Geometri Atap")
                 st.markdown(f"""
+                * **Kondisi Celah Atap:** `{gap_cat_val}` (Cakupan Deteksi Bidang: `{roof_cov_val:.1f}%`)
                 * **Total Bidang Segmen Terdeteksi:** `{total_segs} bidang`
                 * **Segmen Layak PLTS Terisi:** `{active_segs} bidang ({active_segs/total_segs*100:.0f}% utilisasi)`
                 * **Total Luas Bidang Segmen:** `{total_seg_area:,.1f} m²`
+                * **Celah Non-Segmen (Gap Fisik Strip/Talang):** `{gap_unseg_val:,.1f} m²`
+                * **Total Area Celah Tanpa Panel:** `{total_gap_val:,.1f} m²`
                 * **Total Modul di Seluruh Segmen:** `{curr_segs['panels_count'].sum():,} unit ({curr_segs['capacity_kwp'].sum():,.1f} kWp)`
                 """)
 
@@ -611,11 +641,12 @@ Google Solar API tidak menempatkan modul fotovoltaik pada segmen di atas karena:
 
         st.markdown("##### Mengapa Muncul Celah (Gap) pada Visualisasi Atap Bangunan Besar?")
         st.markdown("""
-Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terjadi karena tiga faktor rekayasa:
+Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblok, celah penempatan modul terbagi menjadi dua faktor fisik:
 
-1. **Multi-Segmen & Perbedaan Ketinggian:** Atap terpecah menjadi puluhan bidang dengan elevasi berbeda. Celah antara bidang (misalnya lembah talang air atau sambungan ekspansi) tidak memenuhi syarat bidang datar planar RANSAC.
-2. **Bukaan Pencahayaan Alami (Skylight):** Kanopi kaca atau membran transparan memanjang (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas) sengaja dikecualikan oleh model AI Google dari pemasangan modul fotovoltaik.
-3. **Batas Bingkai Citra Satelit:** Kompleks bangunan besar (seperti Stasiun Manggarai bentang 163 m) melampaui jendela radius citra standar jika tidak ditarik dengan radius adaptif.
+1. **Celah Non-Segmen (Gap 1 - Area Fisik Tanpa Poligon 3D):**  
+   Atap memiliki bukaan pencahayaan alami (*skylight* kaca/polikarbonat transparan) atau lembah talang air curam (seperti pada jalur peron Stasiun Manggarai dan Stasiun Dukuh Atas). Google RANSAC mengecualikan area non-solid/transparan ini agar modul surya tidak memblokir cahaya alami ke peron atau menutupi drainase air hujan.
+2. **Celah Segmen Tanpa Panel (Gap 2 - Poligon Terdeteksi Tapi 0 Panel):**  
+   Segmen atap terdeteksi, tetapi luas bersihnya tidak memenuhi batas formasi minimal (4 modul berjejer), terkena bayangan berat (*solar flux cut-off*), atau terpotong batas aman koridor evakuasi kebakaran (*edge setback*).
         """)
 
     st.markdown("<br>", unsafe_allow_html=True)
