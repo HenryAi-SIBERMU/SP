@@ -451,13 +451,34 @@ st.markdown("<br>", unsafe_allow_html=True)
 st.markdown('<div class="section-header">Inspeksi Lengkap SKU Data Layers & Layout Panel Surya</div>', unsafe_allow_html=True)
 st.caption("Eksplorasi seluruh layer citra resolusi 0.25 m/pixel Google Maps Platform serta simulasi posisi panel surya di atap:")
 
+col_filter_cat, col_filter_gap = st.columns([1.2, 1.2])
+with col_filter_cat:
+    insp_cat_options = ["Semua Kategori"] + sorted(df_summary["category_display"].unique().tolist())
+    insp_selected_cat = st.selectbox("Saring Berdasarkan Kategori:", options=insp_cat_options, index=0, key="insp_cat_filter")
+with col_filter_gap:
+    insp_gap_options = ["Semua Kondisi Atap", "Gap Sedikit", "Gap Sedang", "Gap Besar"]
+    insp_selected_gap = st.selectbox("Saring Berdasarkan Celah Atap:", options=insp_gap_options, index=0, key="insp_gap_filter")
+
+df_filtered_insp = df_summary.copy()
+if insp_selected_cat != "Semua Kategori":
+    df_filtered_insp = df_filtered_insp[df_filtered_insp["category_display"] == insp_selected_cat]
+if insp_selected_gap != "Semua Kondisi Atap" and "gap_category" in df_filtered_insp.columns:
+    df_filtered_insp = df_filtered_insp[df_filtered_insp["gap_category"] == insp_selected_gap]
+
+if df_filtered_insp.empty:
+    st.info(f"Tidak ada fasilitas dengan kombinasi '{insp_selected_cat}' dan '{insp_selected_gap}'. Menampilkan seluruh daftar.")
+    df_filtered_insp = df_summary.copy()
+
+insp_asset_options = df_filtered_insp["asset_name"].tolist()
+
 selected_asset_name = st.selectbox(
-    "Pilih Infrastruktur untuk Inspeksi Detail:",
-    options=df_summary["asset_name"].tolist(),
-    index=0
+    f"Pilih Infrastruktur untuk Inspeksi Detail ({len(insp_asset_options)} fasilitas tersedia):",
+    options=insp_asset_options,
+    index=0,
+    key="insp_asset_select"
 )
 
-asset_row = df_summary[df_summary["asset_name"] == selected_asset_name].iloc[0]
+asset_row = df_filtered_insp[df_filtered_insp["asset_name"] == selected_asset_name].iloc[0]
 maps_url = asset_row.get("google_maps_url", "")
 if not maps_url or "place_id:" in str(maps_url):
     c_lat = asset_row.get("google_center_lat", asset_row.get("raw_lat", 0))
@@ -471,6 +492,7 @@ disp_roof_area_m2 = float(asset_row['max_roof_area_m2'])
 disp_annual_gen_mwh = float(asset_row['annual_generation_mwh'])
 disp_ghg_co2 = float(asset_row['ghg_reduction_tons_co2'])
 disp_category_badge = str(asset_row['category_display']).upper()
+disp_gap_badge = str(asset_row.get('gap_category', 'GAP SEDANG')).upper()
 
 # Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
@@ -478,6 +500,7 @@ st.markdown(f"""
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div>
             <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{disp_category_badge}</span>
+            <span style="background: #1E2530; color: #38BDF8; border: 1px solid #334155; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; margin-left: 6px;">{disp_gap_badge}</span>
             <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
             <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code> | <a href="{maps_url}" target="_blank" style="color: #38BDF8; text-decoration: underline;">Buka di Google Maps</a></p>
         </div>
