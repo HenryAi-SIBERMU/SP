@@ -275,13 +275,15 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
     }
 
     avail_cols = [c for c in master_cols if c in df_display_master.columns]
-    master_table = df_display_master[avail_cols].rename(columns=rename_dict)
+    master_table = df_display_master[avail_cols].rename(columns=rename_dict).copy()
+    master_table.insert(0, "No", range(1, len(master_table) + 1))
 
     st.dataframe(
         master_table,
         use_container_width=True,
         hide_index=True,
         column_config={
+            "No": st.column_config.NumberColumn("No", format="%d", width="small"),
             "Kode Pos": st.column_config.TextColumn(),
             "Total Fisik Atap (m²)": st.column_config.NumberColumn(format="%.1f m²"),
             "Atap Layak PLTS (m²)": st.column_config.NumberColumn(format="%.1f m²"),
@@ -426,13 +428,15 @@ with col_list:
         "category_display": "Kategori",
         "spatial_drift_meters": "Drift (m)",
         "drift_status": "Status Audit"
-    })
+    }).copy()
+    audit_display.insert(0, "No", range(1, len(audit_display) + 1))
 
     st.dataframe(
         audit_display,
         use_container_width=True,
         hide_index=True,
         column_config={
+            "No": st.column_config.NumberColumn("No", format="%d", width="small"),
             "Drift (m)": st.column_config.NumberColumn(format="%.2f m"),
             "Status Audit": st.column_config.TextColumn(help="Drift < 30m menandakan akurasi tepat pada kanopi atap")
         }
