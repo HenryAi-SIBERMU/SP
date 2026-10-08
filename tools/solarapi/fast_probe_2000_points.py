@@ -102,6 +102,43 @@ def probe_single_point(session, lat: float, lon: float, api_key: str):
         return 0, None, str(e)
 
 
+def determine_city(lat: float, lon: float) -> str:
+    """Estimasi wilayah administratif berbasis koordinat lintang/bujur Jabodetabek."""
+    if lat > -6.40:
+        if lon < 106.75:
+            if lat < -6.25:
+                return "Kota Tangerang Selatan"
+            return "Kota Tangerang"
+        elif lon > 106.96:
+            if lat < -6.26:
+                return "Kab. Bekasi"
+            return "Kota Bekasi"
+        else:
+            if lat > -6.16:
+                return "Jakarta Utara"
+            elif lat > -6.22:
+                if lon < 106.81:
+                    return "Jakarta Barat"
+                elif lon < 106.86:
+                    return "Jakarta Pusat"
+                else:
+                    return "Jakarta Timur"
+            elif lat > -6.32:
+                if lon < 106.83:
+                    return "Jakarta Selatan"
+                else:
+                    return "Jakarta Timur"
+            else:
+                return "Kota Depok"
+    else:
+        if lat > -6.45:
+            return "Kota Depok"
+        elif lon < 106.85:
+            return "Kota Bogor"
+        else:
+            return "Kab. Bogor"
+
+
 def run_fast_probe(batch_target=None, limit=None):
     print("=" * 80)
     print("  FAST-PROBE ANTI-404 & BUILDING INSIGHTS HARVESTER (2.000 TITIK)")
@@ -112,16 +149,38 @@ def run_fast_probe(batch_target=None, limit=None):
     print(f"[*] Limit Titik   : {limit if limit else 'Tidak Terbatas'}")
     print("-" * 80)
 
+    target_csv = POI_DIR / "target_2000_titik.csv"
     cand_file = POI_DIR / "candidates_2200_titik.csv"
-    if not cand_file.exists():
-        raise FileNotFoundError(f"File kandidat tidak ditemukan: {cand_file}")
 
-    df_cand = pd.read_csv(cand_file)
-    df_main = df_cand[~df_cand["is_buffer"]].copy().reset_index(drop=True)
-    df_buffer = df_cand[df_cand["is_buffer"]].copy().reset_index(drop=True)
+    if target_csv.exists():
+        df_main = pd.read_csv(target_csv)
+    elif cand_file.exists():
+        df_cand = pd.read_csv(cand_file)
+        df_main = df_cand[~df_cand["is_buffer"]].copy().reset_index(drop=True)
+    else:
+        raise FileNotFoundError(f"File target tidak ditemukan di {target_csv}")
+
+    if "notes" not in df_main.columns:
+        df_main["notes"] = ""
+
+    # Load candidate buffers
+    if cand_file.exists():
+        df_cand = pd.read_csv(cand_file)
+        df_buffer = df_cand[df_cand["is_buffer"]].copy().reset_index(drop=True)
+    else:
+        df_buffer = pd.DataFrame()
+
+    # Track already used names and coordinates
+    used_names = set(df_main["asset_name"].str.strip().str.lower())
+    used_coords = set(zip(df_main["latitude"].round(5), df_main["longitude"].round(5)))
+
+    # Exclude buffers that are already in df_main
+    if not df_buffer.empty:
+        is_unused = ~df_buffer["asset_name"].str.strip().str.lower().isin(used_names)
+        df_buffer = df_buffer[is_unused].copy().reset_index(drop=True)
 
     print(f"[i] Total Target Utama   : {len(df_main)} titik")
-    print(f"[i] Total Pool Cadangan : {len(df_buffer)} titik")
+    print(f"[i] Total Pool Cadangan : {len(df_buffer)} titik tersedia")
 
     # Filter batch jika ditentukan
     if batch_target is not None and batch_target != "all":
@@ -150,6 +209,40 @@ def run_fast_probe(batch_target=None, limit=None):
     buffer_by_cat = {}
     for cat in df_buffer["category"].unique():
         buffer_by_cat[cat] = df_buffer[df_buffer["category"] == cat].copy()
+
+    def fetch_extra_brt():
+        tj_file = PROJECT_ROOT / "data" / "raw" / "transjakarta" / "transjakarta_stations.csv"
+        if not tj_file.exists():
+            return []
+        df_tj = pd.read_csv(tj_file).dropna(subset=["Latitude", "Longitude", "Nama_Halte"])
+        extras = []
+        for _, r in df_tj.iterrows():
+            lat_c = float(r["Latitude"])
+            lon_c = float(r["Longitude"])
+            if not (-6.65 <= lat_c <= -6.05 and 106.55 <= lon_c <= 107.15):
+                continue
+            name_c = str(r["Nama_Halte"]).strip()
+            if not name_c.lower().startswith("halte ") and not name_c.lower().startswith("shelter "):
+                name_c = f"Halte {name_c}"
+            if name_c.lower() in used_names:
+                continue
+            coord_c = (round(lat_c, 5), round(lon_c, 5))
+            if coord_c in used_coords:
+                continue
+            extras.append({
+                "asset_id": f"BRT-DYN-{len(extras)+1:03d}",
+                "asset_name": name_c,
+                "category": "brt",
+                "category_display": "Halte TransJakarta & Shelter",
+                "city_regency": determine_city(lat_c, lon_c),
+                "latitude": round(lat_c, 6),
+                "longitude": round(lon_c, 6),
+                "source_reference": "transjakarta_stations.csv:dynamic",
+                "is_buffer": True
+            })
+            if len(extras) >= 150:
+                break
+        return extras
 
     start_time = time.time()
 
@@ -187,59 +280,62 @@ def run_fast_probe(batch_target=None, limit=None):
             # 3. Hot-Swap dengan Cadangan Buffer Kategori Sama
             swapped = False
             cat_buf = buffer_by_cat.get(cat, pd.DataFrame())
+            candidates_to_try = cat_buf.to_dict(orient="records") if not cat_buf.empty else []
 
-            if not cat_buf.empty:
-                for b_idx, b_row in cat_buf.iterrows():
-                    buf_id = str(b_row["asset_id"])
-                    if buf_id in used_buffer_ids:
-                        continue
+            if cat == "brt" and len([c for c in candidates_to_try if c["asset_id"] not in used_buffer_ids]) < 5:
+                # Tambah dynamic BRT jika cadangan menipis
+                candidates_to_try.extend(fetch_extra_brt())
 
-                    b_lat = float(b_row["latitude"])
-                    b_lon = float(b_row["longitude"])
-                    b_nm = str(b_row["asset_name"]).strip()
+            for b_row in candidates_to_try:
+                buf_id = str(b_row["asset_id"])
+                if buf_id in used_buffer_ids:
+                    continue
+                b_nm = str(b_row["asset_name"]).strip()
+                if b_nm.lower() in used_names:
+                    continue
 
-                    # Probe kandidat buffer
-                    b_code, b_data, b_err = probe_single_point(session, b_lat, b_lon, API_KEY)
-                    time.sleep(0.3)
+                b_lat = float(b_row["latitude"])
+                b_lon = float(b_row["longitude"])
 
-                    if b_code == 200 and b_data:
-                        # Kandidat buffer valid! Lakukan swap
-                        used_buffer_ids.add(buf_id)
-                        swapped = True
-                        swapped_404_cnt += 1
+                # Probe kandidat buffer
+                b_code, b_data, b_err = probe_single_point(session, b_lat, b_lon, API_KEY)
+                time.sleep(0.3)
 
-                        # Simpan JSON menggunakan ID asli target agar konsisten
-                        with open(out_json, "w", encoding="utf-8") as f:
-                            json.dump(b_data, f, indent=2, ensure_ascii=False)
+                if b_code == 200 and b_data:
+                    # Kandidat buffer valid! Lakukan swap
+                    used_buffer_ids.add(buf_id)
+                    used_names.add(b_nm.lower())
+                    used_coords.add((round(b_lat, 5), round(b_lon, 5)))
+                    swapped = True
+                    swapped_404_cnt += 1
 
-                        # Update data di df_main
-                        replacement_dict = dict(b_row)
-                        replacement_dict["asset_id"] = aid  # Tetap pertahankan ID utama
-                        replacement_dict["batch_no"] = b_no
-                        replacement_dict["is_buffer"] = False
-                        replacement_dict["notes"] = f"Hot-Swapped dari buffer {buf_id} (pengganti {nm} 404)"
+                    # Simpan JSON menggunakan ID asli target agar konsisten
+                    with open(out_json, "w", encoding="utf-8") as f:
+                        json.dump(b_data, f, indent=2, ensure_ascii=False)
 
-                        for k, v in replacement_dict.items():
-                            if k in df_main.columns:
-                                df_main.at[target_idx, k] = v
+                    # Update data di df_main
+                    for col in ["asset_name", "category_display", "city_regency", "latitude", "longitude", "source_reference"]:
+                        if col in b_row and col in df_main.columns:
+                            df_main.at[target_idx, col] = b_row[col]
+                    df_main.at[target_idx, "notes"] = f"Hot-Swapped dari buffer {buf_id} (pengganti {nm} 404)"
 
-                        swap_log.append({
-                            "original_asset_id": aid,
-                            "original_name": nm,
-                            "original_lat": lat,
-                            "original_lon": lon,
-                            "replacement_buffer_id": buf_id,
-                            "replacement_name": b_nm,
-                            "replacement_lat": b_lat,
-                            "replacement_lon": b_lon,
-                            "category": cat
-                        })
+                    swap_log.append({
+                        "original_asset_id": aid,
+                        "original_name": nm,
+                        "original_lat": lat,
+                        "original_lon": lon,
+                        "replacement_buffer_id": buf_id,
+                        "replacement_name": b_nm,
+                        "replacement_lat": b_lat,
+                        "replacement_lon": b_lon,
+                        "category": cat
+                    })
 
-                        print(f"         [SWAP OK] Berhasil digantikan oleh: {b_nm} ({buf_id})")
-                        break
-                    else:
-                        used_buffer_ids.add(buf_id)
-                        print(f"         [BUF 404] Cadangan {buf_id} ({b_nm[:25]}) juga 404, mencari berikutnya...")
+                    print(f"         [SWAP OK] Berhasil digantikan oleh: {b_nm} ({buf_id})")
+                    break
+                else:
+                    used_buffer_ids.add(buf_id)
+                    print(f"         [BUF 404] Cadangan {buf_id} ({b_nm[:25]}) juga 404, mencari berikutnya...")
 
             if not swapped:
                 failed_cnt += 1
@@ -265,9 +361,31 @@ def run_fast_probe(batch_target=None, limit=None):
         gdf_main.to_file(out_target_geojson, driver="GeoJSON")
         print(f"[+] Master target {out_target_csv.name} & GeoJSON berhasil diperbarui dengan hasil swap!")
 
-    # 5. Simpan Laporan Audit Probe
-    report = {
+        # Sync candidates file as well
+        if cand_file.exists():
+            df_cand = pd.read_csv(cand_file)
+            df_cand_nonbuf = df_main.copy()
+            df_cand_nonbuf["is_buffer"] = False
+            df_cand_buf = df_cand[df_cand["is_buffer"]].copy()
+            df_cand_buf = df_cand_buf[~df_cand_buf["asset_id"].isin(used_buffer_ids)]
+            df_cand_updated = pd.concat([df_cand_nonbuf, df_cand_buf], ignore_index=True)
+            df_cand_updated.to_csv(cand_file, index=False, encoding="utf-8")
+            print(f"[+] Candidate pool {cand_file.name} tersinkronisasi!")
+
+    # 5. Simpan Laporan Audit Probe (akumulatif per batch)
+    report_path = POI_DIR / "probe_report_2000.json"
+    existing_reports = {}
+    if report_path.exists():
+        try:
+            with open(report_path, "r", encoding="utf-8") as f:
+                existing_reports = json.load(f)
+        except Exception:
+            existing_reports = {}
+
+    batch_key = f"batch_{batch_target}" if batch_target else "batch_all"
+    batch_report = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "batch": batch_target,
         "total_evaluated": len(df_target_work),
         "valid_cached": valid_cached_cnt,
         "valid_probed_200": valid_probed_cnt,
@@ -276,10 +394,15 @@ def run_fast_probe(batch_target=None, limit=None):
         "elapsed_seconds": round(elapsed, 1),
         "swaps_detail": swap_log
     }
+    
+    if "batches" not in existing_reports or not isinstance(existing_reports.get("batches"), dict):
+        existing_reports = {"batches": {}, "history": []}
+    
+    existing_reports["batches"][batch_key] = batch_report
+    existing_reports["last_run"] = batch_report
 
-    report_path = POI_DIR / "probe_report_2000.json"
     with open(report_path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, ensure_ascii=False)
+        json.dump(existing_reports, f, indent=2, ensure_ascii=False)
 
     print("=" * 80)
     print("RINGKASAN EKSEKUTIF FAST-PROBE & HARVESTING:")

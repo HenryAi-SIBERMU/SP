@@ -1,110 +1,370 @@
 {
-  "timestamp": "2026-10-08 16:00:24",
-  "total_evaluated": 250,
-  "valid_cached": 0,
-  "valid_probed_200": 236,
-  "swapped_404": 9,
-  "failed_unresolved": 5,
-  "elapsed_seconds": 280.2,
-  "swaps_detail": [
-    {
-      "original_asset_id": "BRT-0006",
-      "original_name": "Halte Simpang Radin Inten II Kalimalang",
-      "original_lat": -6.247574,
-      "original_lon": 106.92049,
-      "replacement_buffer_id": "BRT-BUF-001",
-      "replacement_name": "Halte Simpang Danau Sunter Utara Barat",
-      "replacement_lat": -6.139853,
-      "replacement_lon": 106.85663,
-      "category": "brt"
+  "batches": {
+    "batch_1": {
+      "timestamp": "2026-10-08 16:09:34",
+      "batch": "1",
+      "total_evaluated": 5,
+      "valid_cached": 5,
+      "valid_probed_200": 0,
+      "swapped_404": 0,
+      "failed_unresolved": 0,
+      "elapsed_seconds": 0.0,
+      "swaps_detail": []
     },
-    {
-      "original_asset_id": "BRT-0015",
-      "original_name": "Halte Simpang Rawa Kuning Raya Bekasi",
-      "original_lat": -6.19067,
-      "original_lon": 106.9671,
-      "replacement_buffer_id": "BRT-BUF-002",
-      "replacement_name": "Halte Simpang Darmawangsa XI Prapanca",
-      "replacement_lat": -6.256381,
-      "replacement_lon": 106.80051,
-      "category": "brt"
-    },
-    {
-      "original_asset_id": "BRT-0047",
-      "original_name": "Halte Simpang Sawo Raya Rawa Kuning",
-      "original_lat": -6.211064,
-      "original_lon": 106.95786,
-      "replacement_buffer_id": "BRT-BUF-003",
-      "replacement_name": "Halte Simpang DDN Pondok Labu",
-      "replacement_lat": -6.312668,
-      "replacement_lon": 106.79687,
-      "category": "brt"
-    },
-    {
-      "original_asset_id": "BRT-0049",
-      "original_name": "Halte Simpang Selat Makasar Bali",
-      "original_lat": -6.23997,
-      "original_lon": 106.91493,
-      "replacement_buffer_id": "BRT-BUF-004",
-      "replacement_name": "Halte Simpang Demi Serong Jatibaru",
-      "replacement_lat": -6.181147,
-      "replacement_lon": 106.81714,
-      "category": "brt"
-    },
-    {
-      "original_asset_id": "BRT-0054",
-      "original_name": "Halte Simpang Serdang Kel. I",
-      "original_lat": -6.227192,
-      "original_lon": 106.91484,
-      "replacement_buffer_id": "BRT-BUF-005",
-      "replacement_name": "Halte Simpang Deplu Raya",
-      "replacement_lat": -6.27231,
-      "replacement_lon": 106.7649,
-      "category": "brt"
-    },
-    {
-      "original_asset_id": "BRT-0055",
-      "original_name": "Halte Simpang Serdang Swadaya Raya 2",
-      "original_lat": -6.227633,
-      "original_lon": 106.91484,
-      "replacement_buffer_id": "BRT-BUF-006",
-      "replacement_name": "Halte Simpang Betet Camar 2",
-      "replacement_lat": -6.115382,
-      "replacement_lon": 106.92322,
-      "category": "brt"
-    },
-    {
-      "original_asset_id": "KRL-0004",
-      "original_name": "Stasiun Buaran",
-      "original_lat": -6.215606,
-      "original_lon": 106.92316,
-      "replacement_buffer_id": "KRL-BUF-001",
-      "replacement_name": "Stasiun KRL Dukuh Atas Bank Syariah Indonesia",
-      "replacement_lat": -6.204828,
-      "replacement_lon": 106.82553,
-      "category": "krl"
-    },
-    {
-      "original_asset_id": "KRL-0005",
-      "original_name": "Stasiun Cakung",
-      "original_lat": -6.219081,
-      "original_lon": 106.952479,
-      "replacement_buffer_id": "KRL-BUF-002",
-      "replacement_name": "Stasiun KRL Ciliwung",
-      "replacement_lat": -6.243446,
-      "replacement_lon": 106.86397,
-      "category": "krl"
-    },
-    {
-      "original_asset_id": "TERM-0008",
-      "original_name": "Trans Galaxi",
-      "original_lat": -6.269075,
-      "original_lon": 106.971625,
-      "replacement_buffer_id": "TERM-BUF-001",
-      "replacement_name": "Pramuka Sari",
-      "replacement_lat": -6.192235,
-      "replacement_lon": 106.868567,
-      "category": "terminal"
+    "batch_2": {
+      "timestamp": "2026-10-08 16:15:02",
+      "batch": "2",
+      "total_evaluated": 250,
+      "valid_cached": 3,
+      "valid_probed_200": 232,
+      "swapped_404": 15,
+      "failed_unresolved": 0,
+      "elapsed_seconds": 300.8,
+      "swaps_detail": [
+        {
+          "original_asset_id": "BRT-0086",
+          "original_name": "Halte Simpang Mawar Merah",
+          "original_lat": -6.223833,
+          "original_lon": 106.93886,
+          "replacement_buffer_id": "BRT-BUF-007",
+          "replacement_name": "Halte Simpang Gotong Royong 2",
+          "replacement_lat": -6.125482,
+          "replacement_lon": 106.89331,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0100",
+          "original_name": "Halte Simpang Nusa Indah Teratai Putih",
+          "original_lat": -6.217936,
+          "original_lon": 106.93129,
+          "replacement_buffer_id": "BRT-BUF-008",
+          "replacement_name": "Halte Simpang Rawa Belong Kemanggisan",
+          "replacement_lat": -6.198872,
+          "replacement_lon": 106.78212,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0101",
+          "original_name": "Halte Simpang Nusa Indah VI",
+          "original_lat": -6.21821,
+          "original_lon": 106.93627,
+          "replacement_buffer_id": "BRT-BUF-009",
+          "replacement_name": "Halte Taman Simpang Jatinegara",
+          "replacement_lat": -6.217541,
+          "replacement_lon": 106.87352,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0109",
+          "original_name": "Halte Simpang Jln. Bunga Rampai Raya",
+          "original_lat": -6.22454,
+          "original_lon": 106.93248,
+          "replacement_buffer_id": "BRT-BUF-010",
+          "replacement_name": "Halte Ruko Mall Mangga Dua",
+          "replacement_lat": -6.136684,
+          "replacement_lon": 106.82372,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0183",
+          "original_name": "Halte Mall Metropolitan",
+          "original_lat": -6.247861,
+          "original_lon": 106.99215,
+          "replacement_buffer_id": "BRT-BUF-011",
+          "replacement_name": "Halte Simpang Raya Ciracas Pengantin Ali",
+          "replacement_lat": -6.328009,
+          "replacement_lon": 106.88245,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0213",
+          "original_name": "Halte Stasiun Cakung 1",
+          "original_lat": -6.218956,
+          "original_lon": 106.952637,
+          "replacement_buffer_id": "BRT-BUF-012",
+          "replacement_name": "Halte Maspion Plaza",
+          "replacement_lat": -6.141539,
+          "replacement_lon": 106.83352,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0215",
+          "original_name": "Halte Simpang Banjir Kanal Timur",
+          "original_lat": -6.212364,
+          "original_lon": 106.955977,
+          "replacement_buffer_id": "BRT-BUF-013",
+          "replacement_name": "Halte Pondok Indah Mall 1",
+          "replacement_lat": -6.263197,
+          "replacement_lon": 106.78479,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0221",
+          "original_name": "Halte Simpang Tiga Pulo Gebang Raya 2",
+          "original_lat": -6.207045,
+          "original_lon": 106.95427,
+          "replacement_buffer_id": "BRT-BUF-014",
+          "replacement_name": "Halte Pondok Indah Mall 2",
+          "replacement_lat": -6.264403,
+          "replacement_lon": 106.782455,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0241",
+          "original_name": "Halte Simpang Jln. Komarudin Lama",
+          "original_lat": -6.193574,
+          "original_lon": 106.943338,
+          "replacement_buffer_id": "BRT-BUF-015",
+          "replacement_name": "Halte Sbr. Mall Daan Mogot",
+          "replacement_lat": -6.151116,
+          "replacement_lon": 106.715032,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0255",
+          "original_name": "Halte Simpang Teratai Putih Nusa Indah",
+          "original_lat": -6.218319,
+          "original_lon": 106.93118,
+          "replacement_buffer_id": "BRT-BUF-017",
+          "replacement_name": "Halte Simpang Latumeten",
+          "replacement_lat": -6.162982,
+          "replacement_lon": 106.79024,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0256",
+          "original_name": "Halte Simpang Tiga 1",
+          "original_lat": -6.210708,
+          "original_lon": 106.93903,
+          "replacement_buffer_id": "BRT-BUF-018",
+          "replacement_name": "Halte Simpang RP Soeroso",
+          "replacement_lat": -6.191676,
+          "replacement_lon": 106.836118,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0257",
+          "original_name": "Halte Simpang Tiga 2",
+          "original_lat": -6.210983,
+          "original_lon": 106.93935,
+          "replacement_buffer_id": "BRT-BUF-019",
+          "replacement_name": "Halte Arion Mall",
+          "replacement_lat": -6.193631,
+          "replacement_lon": 106.89068,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0258",
+          "original_name": "Halte Simpang Tiga Pulo Gebang Raya",
+          "original_lat": -6.206982,
+          "original_lon": 106.95468,
+          "replacement_buffer_id": "BRT-BUF-020",
+          "replacement_name": "Halte Flyover Jatinegara 1",
+          "replacement_lat": -6.215301,
+          "replacement_lon": 106.87356,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0273",
+          "original_name": "Halte Simpang Taman Malaka Barat Utara",
+          "original_lat": -6.230627,
+          "original_lon": 106.92835,
+          "replacement_buffer_id": "BRT-BUF-021",
+          "replacement_name": "Halte Simpang Daan Mogot I",
+          "replacement_lat": -6.166507,
+          "replacement_lon": 106.7843,
+          "category": "brt"
+        },
+        {
+          "original_asset_id": "BRT-0294",
+          "original_name": "Halte Flyover Pondok Kopi",
+          "original_lat": -6.216689,
+          "original_lon": 106.93054,
+          "replacement_buffer_id": "BRT-BUF-022",
+          "replacement_name": "Halte Manggarai Temporer 2",
+          "replacement_lat": -6.209383,
+          "replacement_lon": 106.847603,
+          "category": "brt"
+        }
+      ]
     }
-  ]
+  },
+  "history": [],
+  "last_run": {
+    "timestamp": "2026-10-08 16:15:02",
+    "batch": "2",
+    "total_evaluated": 250,
+    "valid_cached": 3,
+    "valid_probed_200": 232,
+    "swapped_404": 15,
+    "failed_unresolved": 0,
+    "elapsed_seconds": 300.8,
+    "swaps_detail": [
+      {
+        "original_asset_id": "BRT-0086",
+        "original_name": "Halte Simpang Mawar Merah",
+        "original_lat": -6.223833,
+        "original_lon": 106.93886,
+        "replacement_buffer_id": "BRT-BUF-007",
+        "replacement_name": "Halte Simpang Gotong Royong 2",
+        "replacement_lat": -6.125482,
+        "replacement_lon": 106.89331,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0100",
+        "original_name": "Halte Simpang Nusa Indah Teratai Putih",
+        "original_lat": -6.217936,
+        "original_lon": 106.93129,
+        "replacement_buffer_id": "BRT-BUF-008",
+        "replacement_name": "Halte Simpang Rawa Belong Kemanggisan",
+        "replacement_lat": -6.198872,
+        "replacement_lon": 106.78212,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0101",
+        "original_name": "Halte Simpang Nusa Indah VI",
+        "original_lat": -6.21821,
+        "original_lon": 106.93627,
+        "replacement_buffer_id": "BRT-BUF-009",
+        "replacement_name": "Halte Taman Simpang Jatinegara",
+        "replacement_lat": -6.217541,
+        "replacement_lon": 106.87352,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0109",
+        "original_name": "Halte Simpang Jln. Bunga Rampai Raya",
+        "original_lat": -6.22454,
+        "original_lon": 106.93248,
+        "replacement_buffer_id": "BRT-BUF-010",
+        "replacement_name": "Halte Ruko Mall Mangga Dua",
+        "replacement_lat": -6.136684,
+        "replacement_lon": 106.82372,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0183",
+        "original_name": "Halte Mall Metropolitan",
+        "original_lat": -6.247861,
+        "original_lon": 106.99215,
+        "replacement_buffer_id": "BRT-BUF-011",
+        "replacement_name": "Halte Simpang Raya Ciracas Pengantin Ali",
+        "replacement_lat": -6.328009,
+        "replacement_lon": 106.88245,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0213",
+        "original_name": "Halte Stasiun Cakung 1",
+        "original_lat": -6.218956,
+        "original_lon": 106.952637,
+        "replacement_buffer_id": "BRT-BUF-012",
+        "replacement_name": "Halte Maspion Plaza",
+        "replacement_lat": -6.141539,
+        "replacement_lon": 106.83352,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0215",
+        "original_name": "Halte Simpang Banjir Kanal Timur",
+        "original_lat": -6.212364,
+        "original_lon": 106.955977,
+        "replacement_buffer_id": "BRT-BUF-013",
+        "replacement_name": "Halte Pondok Indah Mall 1",
+        "replacement_lat": -6.263197,
+        "replacement_lon": 106.78479,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0221",
+        "original_name": "Halte Simpang Tiga Pulo Gebang Raya 2",
+        "original_lat": -6.207045,
+        "original_lon": 106.95427,
+        "replacement_buffer_id": "BRT-BUF-014",
+        "replacement_name": "Halte Pondok Indah Mall 2",
+        "replacement_lat": -6.264403,
+        "replacement_lon": 106.782455,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0241",
+        "original_name": "Halte Simpang Jln. Komarudin Lama",
+        "original_lat": -6.193574,
+        "original_lon": 106.943338,
+        "replacement_buffer_id": "BRT-BUF-015",
+        "replacement_name": "Halte Sbr. Mall Daan Mogot",
+        "replacement_lat": -6.151116,
+        "replacement_lon": 106.715032,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0255",
+        "original_name": "Halte Simpang Teratai Putih Nusa Indah",
+        "original_lat": -6.218319,
+        "original_lon": 106.93118,
+        "replacement_buffer_id": "BRT-BUF-017",
+        "replacement_name": "Halte Simpang Latumeten",
+        "replacement_lat": -6.162982,
+        "replacement_lon": 106.79024,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0256",
+        "original_name": "Halte Simpang Tiga 1",
+        "original_lat": -6.210708,
+        "original_lon": 106.93903,
+        "replacement_buffer_id": "BRT-BUF-018",
+        "replacement_name": "Halte Simpang RP Soeroso",
+        "replacement_lat": -6.191676,
+        "replacement_lon": 106.836118,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0257",
+        "original_name": "Halte Simpang Tiga 2",
+        "original_lat": -6.210983,
+        "original_lon": 106.93935,
+        "replacement_buffer_id": "BRT-BUF-019",
+        "replacement_name": "Halte Arion Mall",
+        "replacement_lat": -6.193631,
+        "replacement_lon": 106.89068,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0258",
+        "original_name": "Halte Simpang Tiga Pulo Gebang Raya",
+        "original_lat": -6.206982,
+        "original_lon": 106.95468,
+        "replacement_buffer_id": "BRT-BUF-020",
+        "replacement_name": "Halte Flyover Jatinegara 1",
+        "replacement_lat": -6.215301,
+        "replacement_lon": 106.87356,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0273",
+        "original_name": "Halte Simpang Taman Malaka Barat Utara",
+        "original_lat": -6.230627,
+        "original_lon": 106.92835,
+        "replacement_buffer_id": "BRT-BUF-021",
+        "replacement_name": "Halte Simpang Daan Mogot I",
+        "replacement_lat": -6.166507,
+        "replacement_lon": 106.7843,
+        "category": "brt"
+      },
+      {
+        "original_asset_id": "BRT-0294",
+        "original_name": "Halte Flyover Pondok Kopi",
+        "original_lat": -6.216689,
+        "original_lon": 106.93054,
+        "replacement_buffer_id": "BRT-BUF-022",
+        "replacement_name": "Halte Manggarai Temporer 2",
+        "replacement_lat": -6.209383,
+        "replacement_lon": 106.847603,
+        "category": "brt"
+      }
+    ]
+  }
 }
