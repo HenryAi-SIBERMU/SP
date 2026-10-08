@@ -113,17 +113,17 @@ def classify_gap_category(coverage_pct, thr_sedikit=80.0, thr_sedang=65.0):
 
 
 def load_original_100_pilot():
-    """Mengambil 100 titik pilot asli dari git history atau file awal."""
-    try:
-        cmd = ["git", "show", "HEAD~1:data/processed/calculations/pow_solar_100_titik_summary.csv"]
+    """Mengambil 100 titik pilot asli dari file baseline permanen."""
+    baseline_csv = CALC_OUT_DIR / "pow_solar_pilot_100_baseline.csv"
+    if baseline_csv.exists():
+        df_100 = pd.read_csv(baseline_csv)
+        print(f"[i] Berhasil memuat 100 titik pilot dari {baseline_csv.name}.")
+    else:
+        cmd = ["git", "show", "410a055:data/processed/calculations/pow_solar_100_titik_summary.csv"]
         res = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, check=True)
         from io import StringIO
         df_100 = pd.read_csv(StringIO(res.stdout))
-        print(f"[i] Berhasil mengambil 100 titik pilot asli dari commit sebelumnya.")
-    except Exception as e:
-        print(f"[!] Menggunakan file lokal untuk 100 pilot: {e}")
-        p100_csv = CALC_OUT_DIR / "pow_solar_100_titik_summary.csv"
-        df_100 = pd.read_csv(p100_csv).head(100)
+        print(f"[i] Berhasil mengambil 100 titik pilot dari git commit 410a055.")
 
     # Harmonisasi Kategori ke 13 Kategori Resmi
     df_100["category"] = df_100["category"].map(lambda c: CATEGORY_MAP.get(str(c).strip().lower(), str(c).strip().lower()))
