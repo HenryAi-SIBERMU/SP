@@ -592,12 +592,30 @@ def main():
         return
 
     df = pd.DataFrame(records)
-    # Dynamic empirical tertiles for gap_category without hardcoding
-    df["gap_category"] = pd.qcut(
-        df["gap_unsegmented_pct"].rank(method="first"),
-        q=3,
-        labels=["Gap Sedikit", "Gap Sedang", "Gap Besar"]
-    )
+
+    # Data-driven classification based directly on roof_coverage_ratio_pct from configuration
+    rules_cfg_path = PROJECT_ROOT / "configs" / "roof_gap_infill_rules.json"
+    thr_sedikit = 80.0
+    thr_sedang = 65.0
+    if rules_cfg_path.exists():
+        try:
+            with open(rules_cfg_path, "r", encoding="utf-8") as f:
+                r_json = json.load(f)
+                thr_cfg = r_json.get("gap_classification_thresholds", {})
+                thr_sedikit = float(thr_cfg.get("gap_sedikit_min_coverage_pct", 80.0))
+                thr_sedang = float(thr_cfg.get("gap_sedang_min_coverage_pct", 65.0))
+        except Exception as e:
+            print(f"[WARN] Gagal membaca gap_classification_thresholds: {e}")
+
+    def classify_by_coverage(cov):
+        if cov >= thr_sedikit:
+            return "Gap Sedikit"
+        elif cov >= thr_sedang:
+            return "Gap Sedang"
+        else:
+            return "Gap Besar"
+
+    df["gap_category"] = df["roof_coverage_ratio_pct"].apply(classify_by_coverage)
     df_segs = pd.DataFrame(segment_records)
 
     # 1. Save Summary CSV & Parquet

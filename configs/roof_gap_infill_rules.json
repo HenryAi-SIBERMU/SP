@@ -30,6 +30,12 @@
     "minimum_contiguous_area_m2": 15.0,
     "minimum_panel_cluster": 6
   },
+  "gap_classification_thresholds": {
+    "metric": "roof_coverage_ratio_pct",
+    "description": "Ambang batas klasifikasi celah fisik berbasis data murni Cakupan Atap (roof_coverage_ratio_pct) tanpa kuota populasi artifisial",
+    "gap_sedikit_min_coverage_pct": 80.0,
+    "gap_sedang_min_coverage_pct": 65.0
+  },
   "category_specific_rules": {
     "krl": {
       "usable_gap_fraction": 0.65,

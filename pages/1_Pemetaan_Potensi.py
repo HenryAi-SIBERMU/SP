@@ -220,8 +220,18 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master D
         cat_options = ["Semua Kategori"] + sorted(df_master["category_display"].unique().tolist())
         selected_cat = st.selectbox("Filter Kategori:", options=cat_options, index=0, key="master_cat_filter")
     with f_col2:
-        gap_options = ["Semua Kondisi Atap", "Gap Sedikit", "Gap Sedang", "Gap Besar"]
-        selected_gap = st.selectbox("Filter Celah Atap:", options=gap_options, index=0, key="master_gap_filter")
+        cnt_sedikit = int((df_master["gap_category"] == "Gap Sedikit").sum()) if "gap_category" in df_master.columns else 0
+        cnt_sedang = int((df_master["gap_category"] == "Gap Sedang").sum()) if "gap_category" in df_master.columns else 0
+        cnt_besar = int((df_master["gap_category"] == "Gap Besar").sum()) if "gap_category" in df_master.columns else 0
+
+        gap_map = {
+            "Semua Kondisi Atap": None,
+            f"Gap Sedikit (Cakupan ≥ 80% • {cnt_sedikit} Titik)": "Gap Sedikit",
+            f"Gap Sedang (Cakupan 65%–80% • {cnt_sedang} Titik)": "Gap Sedang",
+            f"Gap Besar (Cakupan < 65% • {cnt_besar} Titik)": "Gap Besar",
+        }
+        selected_gap_label = st.selectbox("Filter Celah Atap:", options=list(gap_map.keys()), index=0, key="master_gap_filter")
+        selected_gap_val = gap_map[selected_gap_label]
     with f_col3:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
         st.caption(f"Menampilkan data dari {len(df_master)} titik pilot representatif se-Jabodetabek")
@@ -229,8 +239,8 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master D
     df_display_master = df_master.copy()
     if selected_cat != "Semua Kategori":
         df_display_master = df_display_master[df_display_master["category_display"] == selected_cat]
-    if selected_gap != "Semua Kondisi Atap" and "gap_category" in df_display_master.columns:
-        df_display_master = df_display_master[df_display_master["gap_category"] == selected_gap]
+    if selected_gap_val is not None and "gap_category" in df_display_master.columns:
+        df_display_master = df_display_master[df_display_master["gap_category"] == selected_gap_val]
 
     master_cols = [
         "category_display", "asset_name", "city_regency", "postal_code",
@@ -532,17 +542,27 @@ with col_filter_cat:
     insp_cat_options = ["Semua Kategori"] + sorted(df_summary["category_display"].unique().tolist())
     insp_selected_cat = st.selectbox("Saring Berdasarkan Kategori:", options=insp_cat_options, index=0, key="insp_cat_filter")
 with col_filter_gap:
-    insp_gap_options = ["Semua Kondisi Atap", "Gap Sedikit", "Gap Sedang", "Gap Besar"]
-    insp_selected_gap = st.selectbox("Saring Berdasarkan Celah Atap:", options=insp_gap_options, index=0, key="insp_gap_filter")
+    cnt_insp_sedikit = int((df_summary["gap_category"] == "Gap Sedikit").sum()) if "gap_category" in df_summary.columns else 0
+    cnt_insp_sedang = int((df_summary["gap_category"] == "Gap Sedang").sum()) if "gap_category" in df_summary.columns else 0
+    cnt_insp_besar = int((df_summary["gap_category"] == "Gap Besar").sum()) if "gap_category" in df_summary.columns else 0
+
+    insp_gap_map = {
+        "Semua Kondisi Atap": None,
+        f"Gap Sedikit (Cakupan ≥ 80% • {cnt_insp_sedikit} Titik)": "Gap Sedikit",
+        f"Gap Sedang (Cakupan 65%–80% • {cnt_insp_sedang} Titik)": "Gap Sedang",
+        f"Gap Besar (Cakupan < 65% • {cnt_insp_besar} Titik)": "Gap Besar",
+    }
+    insp_selected_gap_label = st.selectbox("Saring Berdasarkan Celah Atap:", options=list(insp_gap_map.keys()), index=0, key="insp_gap_filter")
+    insp_selected_gap_val = insp_gap_map[insp_selected_gap_label]
 
 df_filtered_insp = df_summary.copy()
 if insp_selected_cat != "Semua Kategori":
     df_filtered_insp = df_filtered_insp[df_filtered_insp["category_display"] == insp_selected_cat]
-if insp_selected_gap != "Semua Kondisi Atap" and "gap_category" in df_filtered_insp.columns:
-    df_filtered_insp = df_filtered_insp[df_filtered_insp["gap_category"] == insp_selected_gap]
+if insp_selected_gap_val is not None and "gap_category" in df_filtered_insp.columns:
+    df_filtered_insp = df_filtered_insp[df_filtered_insp["gap_category"] == insp_selected_gap_val]
 
 if df_filtered_insp.empty:
-    st.info(f"Tidak ada fasilitas dengan kombinasi '{insp_selected_cat}' dan '{insp_selected_gap}'. Menampilkan seluruh daftar.")
+    st.info(f"Tidak ada fasilitas dengan kombinasi '{insp_selected_cat}' dan '{insp_selected_gap_label}'. Menampilkan seluruh daftar.")
     df_filtered_insp = df_summary.copy()
 
 insp_asset_options = df_filtered_insp["asset_name"].tolist()
@@ -568,7 +588,15 @@ disp_roof_area_m2 = float(asset_row['max_roof_area_m2'])
 disp_annual_gen_mwh = float(asset_row['annual_generation_mwh'])
 disp_ghg_co2 = float(asset_row['ghg_reduction_tons_co2'])
 disp_category_badge = str(asset_row['category_display']).upper()
-disp_gap_badge = str(asset_row.get('gap_category', 'GAP SEDANG')).upper()
+disp_gap_badge = str(asset_row.get('gap_category', 'GAP SEDIKIT')).upper()
+
+gap_raw_str = str(asset_row.get('gap_category', 'Gap Sedikit')).lower()
+if "sedikit" in gap_raw_str:
+    gap_badge_css = "background: #064E3B; color: #6EE7B7; border: 1px solid #059669;"
+elif "sedang" in gap_raw_str:
+    gap_badge_css = "background: #451A03; color: #FCD34D; border: 1px solid #D97706;"
+else:
+    gap_badge_css = "background: #3B0764; color: #D8B4FE; border: 1px solid #9333EA;"
 
 # Google Solar UI Card Header (Consistent CELIOS Green Theme)
 st.markdown(f"""
@@ -576,7 +604,7 @@ st.markdown(f"""
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div>
             <span style="background: #1B2E1E; color: #81C784; border: 1px solid #2E5A36; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">{disp_category_badge}</span>
-            <span style="background: #1E2530; color: #38BDF8; border: 1px solid #334155; font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; margin-left: 6px;">{disp_gap_badge}</span>
+            <span style="{gap_badge_css} font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; margin-left: 6px;">{disp_gap_badge}</span>
             <h2 style="margin: 6px 0 2px 0; color: #ECEFF1; font-size: 1.5rem;">{asset_row['asset_name']}</h2>
             <p style="color: #94A3B8; font-size: 0.85rem; margin: 0;">Wilayah: {asset_row['city_regency']} | Google Building ID: <code style="color: #94A3B8;">{asset_row['google_building_id']}</code> | <a href="{maps_url}" target="_blank" style="color: #38BDF8; text-decoration: underline;">Buka di Google Maps</a></p>
         </div>
