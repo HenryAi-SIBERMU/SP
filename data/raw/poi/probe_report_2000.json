@@ -1,10 +1,110 @@
 {
-  "timestamp": "2026-10-08 15:49:05",
-  "total_evaluated": 10,
-  "valid_cached": 10,
-  "valid_probed_200": 0,
-  "swapped_404": 0,
-  "failed_unresolved": 0,
-  "elapsed_seconds": 0.0,
-  "swaps_detail": []
+  "timestamp": "2026-10-08 16:00:24",
+  "total_evaluated": 250,
+  "valid_cached": 0,
+  "valid_probed_200": 236,
+  "swapped_404": 9,
+  "failed_unresolved": 5,
+  "elapsed_seconds": 280.2,
+  "swaps_detail": [
+    {
+      "original_asset_id": "BRT-0006",
+      "original_name": "Halte Simpang Radin Inten II Kalimalang",
+      "original_lat": -6.247574,
+      "original_lon": 106.92049,
+      "replacement_buffer_id": "BRT-BUF-001",
+      "replacement_name": "Halte Simpang Danau Sunter Utara Barat",
+      "replacement_lat": -6.139853,
+      "replacement_lon": 106.85663,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "BRT-0015",
+      "original_name": "Halte Simpang Rawa Kuning Raya Bekasi",
+      "original_lat": -6.19067,
+      "original_lon": 106.9671,
+      "replacement_buffer_id": "BRT-BUF-002",
+      "replacement_name": "Halte Simpang Darmawangsa XI Prapanca",
+      "replacement_lat": -6.256381,
+      "replacement_lon": 106.80051,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "BRT-0047",
+      "original_name": "Halte Simpang Sawo Raya Rawa Kuning",
+      "original_lat": -6.211064,
+      "original_lon": 106.95786,
+      "replacement_buffer_id": "BRT-BUF-003",
+      "replacement_name": "Halte Simpang DDN Pondok Labu",
+      "replacement_lat": -6.312668,
+      "replacement_lon": 106.79687,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "BRT-0049",
+      "original_name": "Halte Simpang Selat Makasar Bali",
+      "original_lat": -6.23997,
+      "original_lon": 106.91493,
+      "replacement_buffer_id": "BRT-BUF-004",
+      "replacement_name": "Halte Simpang Demi Serong Jatibaru",
+      "replacement_lat": -6.181147,
+      "replacement_lon": 106.81714,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "BRT-0054",
+      "original_name": "Halte Simpang Serdang Kel. I",
+      "original_lat": -6.227192,
+      "original_lon": 106.91484,
+      "replacement_buffer_id": "BRT-BUF-005",
+      "replacement_name": "Halte Simpang Deplu Raya",
+      "replacement_lat": -6.27231,
+      "replacement_lon": 106.7649,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "BRT-0055",
+      "original_name": "Halte Simpang Serdang Swadaya Raya 2",
+      "original_lat": -6.227633,
+      "original_lon": 106.91484,
+      "replacement_buffer_id": "BRT-BUF-006",
+      "replacement_name": "Halte Simpang Betet Camar 2",
+      "replacement_lat": -6.115382,
+      "replacement_lon": 106.92322,
+      "category": "brt"
+    },
+    {
+      "original_asset_id": "KRL-0004",
+      "original_name": "Stasiun Buaran",
+      "original_lat": -6.215606,
+      "original_lon": 106.92316,
+      "replacement_buffer_id": "KRL-BUF-001",
+      "replacement_name": "Stasiun KRL Dukuh Atas Bank Syariah Indonesia",
+      "replacement_lat": -6.204828,
+      "replacement_lon": 106.82553,
+      "category": "krl"
+    },
+    {
+      "original_asset_id": "KRL-0005",
+      "original_name": "Stasiun Cakung",
+      "original_lat": -6.219081,
+      "original_lon": 106.952479,
+      "replacement_buffer_id": "KRL-BUF-002",
+      "replacement_name": "Stasiun KRL Ciliwung",
+      "replacement_lat": -6.243446,
+      "replacement_lon": 106.86397,
+      "category": "krl"
+    },
+    {
+      "original_asset_id": "TERM-0008",
+      "original_name": "Trans Galaxi",
+      "original_lat": -6.269075,
+      "original_lon": 106.971625,
+      "replacement_buffer_id": "TERM-BUF-001",
+      "replacement_name": "Pramuka Sari",
+      "replacement_lat": -6.192235,
+      "replacement_lon": 106.868567,
+      "category": "terminal"
+    }
+  ]
 }
