@@ -244,6 +244,39 @@ def run_fast_probe(batch_target=None, limit=None):
                 break
         return extras
 
+    def fetch_extra_parking():
+        p_gpkg = PROJECT_ROOT / "data" / "raw" / "osm" / "parking_jakarta.gpkg"
+        if not p_gpkg.exists():
+            return []
+        gdf_p = gpd.read_file(p_gpkg)
+        gdf_p["centroid"] = gdf_p.geometry.centroid
+        extras = []
+        for _, r in gdf_p.iterrows():
+            lat_c = float(r["centroid"].y)
+            lon_c = float(r["centroid"].x)
+            if not (-6.65 <= lat_c <= -6.05 and 106.55 <= lon_c <= 107.15):
+                continue
+            name_c = str(r["name"]).strip() if pd.notna(r.get("name")) and str(r["name"]).strip() != "" and str(r["name"]).strip().lower() != "nan" else f"Gedung Parkir {determine_city(lat_c, lon_c)} #{r['id']}"
+            if name_c.lower() in used_names:
+                continue
+            coord_c = (round(lat_c, 5), round(lon_c, 5))
+            if coord_c in used_coords:
+                continue
+            extras.append({
+                "asset_id": f"PKG-DYN-{len(extras)+1:03d}",
+                "asset_name": name_c,
+                "category": "parking",
+                "category_display": "Gedung & Area Parkir (MSCP)",
+                "city_regency": determine_city(lat_c, lon_c),
+                "latitude": round(lat_c, 6),
+                "longitude": round(lon_c, 6),
+                "source_reference": f"parking_jakarta.gpkg:dynamic:{r['id']}",
+                "is_buffer": True
+            })
+            if len(extras) >= 150:
+                break
+        return extras
+
     start_time = time.time()
 
     for idx, (target_idx, row) in enumerate(df_target_work.iterrows()):
@@ -284,7 +317,14 @@ def run_fast_probe(batch_target=None, limit=None):
 
             if cat == "brt" and len([c for c in candidates_to_try if c["asset_id"] not in used_buffer_ids]) < 5:
                 # Tambah dynamic BRT jika cadangan menipis
-                candidates_to_try.extend(fetch_extra_brt())
+                extra_brt = fetch_extra_brt()
+                if extra_brt:
+                    candidates_to_try.extend(extra_brt)
+            elif cat == "parking" and len([c for c in candidates_to_try if c["asset_id"] not in used_buffer_ids]) < 5:
+                # Tambah dynamic Parking jika cadangan menipis
+                extra_pkg = fetch_extra_parking()
+                if extra_pkg:
+                    candidates_to_try.extend(extra_pkg)
 
             for b_row in candidates_to_try:
                 buf_id = str(b_row["asset_id"])

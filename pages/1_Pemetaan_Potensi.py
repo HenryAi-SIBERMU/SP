@@ -133,14 +133,14 @@ if df_summary is None or df_summary.empty:
 # ─── NOTE BOX & STATUS PILOT ──────────────────────────────────────────────────
 st.markdown(f"""
 <div class="note-box">
-<strong>Laporan Validasi Empiris Google Solar API (Proof of Work {count_pts} Titik Pilot — {count_cats} Kategori — Full SKU Layers)</strong><br>
+<strong>Laporan Validasi Empiris Google Solar API (Proof of Work {count_pts} Titik Fasilitas Terpadu — {count_cats} Kategori Lengkap Jabodetabek)</strong><br>
 Data berikut memuat hasil ekstraksi citra satelit Google resolusi tinggi (<strong>0.25 m/pixel — BASE Quality</strong>) untuk {count_cats} kategori infrastruktur perkotaan se-Jabodetabek. 
 Dilengkapi seluruh layer turunan SKU: <strong>Foto Satelit RGB</strong>, <strong>Layout Sebaran Panel Surya di Atap (Show Panels on Roof)</strong>, <strong>Annual Solar Flux Heatmap</strong>, <strong>Digital Surface Model (DSM 3D)</strong>, dan <strong>Roof Mask Segmentasi</strong>.
 </div>
 """, unsafe_allow_html=True)
 
 # ─── EXECUTIVE KPI BANNER ─────────────────────────────────────────────────────
-st.markdown(f'<div class="section-header">Ringkasan Potensi Surya {count_pts} Titik Pilot ({count_cats} Kategori)</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section-header">Ringkasan Potensi Surya {count_pts} Titik Terpadu ({count_cats} Kategori)</div>', unsafe_allow_html=True)
 
 total_capacity_kwp = df_summary["installed_capacity_kwp"].sum()
 total_roof_area = df_summary["max_roof_area_m2"].sum()
@@ -189,7 +189,7 @@ with c4:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─── MASTER SUMMARY DROPDOWN TABLE ──────────────────────────────────────────
-with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master Data Layers & Building Insights)", expanded=True):
+with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Fasilitas (Master Data Layers & Building Insights)", expanded=True):
     st.markdown("#### Kompilasi Terpadu Seluruh Indikator Teknis, Spasial, & Lingkungan")
     st.caption("Tabel ini merangkum seluruh parameter dari Google Solar API Building Insights, Data Layers GeoTIFF, Segmentasi Bidang Atap, dan Audit Spasial yang ditampilkan di halaman ini:")
 
@@ -234,7 +234,7 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master D
         selected_gap_val = gap_map[selected_gap_label]
     with f_col3:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        st.caption(f"Menampilkan data dari {len(df_master)} titik pilot representatif se-Jabodetabek")
+        st.caption(f"Menampilkan data dari {len(df_master)} titik fasilitas terverifikasi se-Jabodetabek")
 
     df_display_master = df_master.copy()
     if selected_cat != "Semua Kategori":
@@ -431,6 +431,8 @@ CAT_COLORS = {
     "airport": "#00897B",     # Teal Bandara
     "terminal": "#5E35B1",    # Ungu Tua Terminal Bus
     "parking": "#8E24AA",     # Ungu Gedung Parkir
+    "jpo": "#26A69A",         # Toska JPO / Skywalk
+    "mrt_lrt": "#E53935",     # Merah MRT / LRT
 }
 
 with col_map:
