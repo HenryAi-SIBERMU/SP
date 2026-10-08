@@ -227,8 +227,8 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master D
         gap_map = {
             "Semua Kondisi Atap": None,
             f"Gap Sedikit (Cakupan ≥ 80% • {cnt_sedikit} Titik)": "Gap Sedikit",
-            f"Gap Sedang (Cakupan 65%–80% • {cnt_sedang} Titik)": "Gap Sedang",
-            f"Gap Besar (Cakupan < 65% • {cnt_besar} Titik)": "Gap Besar",
+            f"Gap Sedang (Cakupan 70%–80% • {cnt_sedang} Titik)": "Gap Sedang",
+            f"Gap Besar (Cakupan < 70% • {cnt_besar} Titik)": "Gap Besar",
         }
         selected_gap_label = st.selectbox("Filter Celah Atap:", options=list(gap_map.keys()), index=0, key="master_gap_filter")
         selected_gap_val = gap_map[selected_gap_label]
@@ -549,8 +549,8 @@ with col_filter_gap:
     insp_gap_map = {
         "Semua Kondisi Atap": None,
         f"Gap Sedikit (Cakupan ≥ 80% • {cnt_insp_sedikit} Titik)": "Gap Sedikit",
-        f"Gap Sedang (Cakupan 65%–80% • {cnt_insp_sedang} Titik)": "Gap Sedang",
-        f"Gap Besar (Cakupan < 65% • {cnt_insp_besar} Titik)": "Gap Besar",
+        f"Gap Sedang (Cakupan 70%–80% • {cnt_insp_sedang} Titik)": "Gap Sedang",
+        f"Gap Besar (Cakupan < 70% • {cnt_insp_besar} Titik)": "Gap Besar",
     }
     insp_selected_gap_label = st.selectbox("Saring Berdasarkan Celah Atap:", options=list(insp_gap_map.keys()), index=0, key="insp_gap_filter")
     insp_selected_gap_val = insp_gap_map[insp_selected_gap_label]
