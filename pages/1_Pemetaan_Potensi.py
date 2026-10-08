@@ -67,6 +67,7 @@ PROCESSED_GIS_PATH = (
     )
 )
 PROCESSED_ORIENTATION_REF_PATH = PROJECT_ROOT / "data" / "processed" / "references" / "standar_orientasi_surya_nrel_sni.csv"
+PROCESSED_INFILL_PATH = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_gap_infill_extension.csv"
 
 def load_processed_data():
     if not PROCESSED_CALC_PATH.exists():
@@ -81,7 +82,13 @@ def load_solar_orientation_ref():
         return pd.read_csv(PROCESSED_ORIENTATION_REF_PATH, encoding="utf-8")
     return pd.DataFrame()
 
+def load_infill_data():
+    if PROCESSED_INFILL_PATH.exists():
+        return pd.read_csv(PROCESSED_INFILL_PATH)
+    return pd.DataFrame()
+
 df_summary, gdf_points, df_segments = load_processed_data()
+df_infill = load_infill_data()
 
 def normalize_img_path(rel_path):
     if not pd.notna(rel_path) or not isinstance(rel_path, str) or len(rel_path.strip()) == 0:
@@ -182,7 +189,7 @@ with c4:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─── MASTER SUMMARY DROPDOWN TABLE ──────────────────────────────────────────
-with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers & Building Insights)", expanded=True):
+with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Pilot (Master Data Layers & Building Insights)", expanded=True):
     st.markdown("#### Kompilasi Terpadu Seluruh Indikator Teknis, Spasial, & Lingkungan")
     st.caption("Tabel ini merangkum seluruh parameter dari Google Solar API Building Insights, Data Layers GeoTIFF, Segmentasi Bidang Atap, dan Audit Spasial yang ditampilkan di halaman ini:")
 
@@ -327,6 +334,71 @@ with st.expander("Tabel Dropdown Seluruh Data 5 Titik Pilot (Master Data Layers 
         file_name=f"master_potensi_surya_jabodetabek_{count_export}_titik_terverifikasi.csv",
         mime="text/csv"
     )
+
+    if not df_infill.empty:
+        st.markdown("<hr style='border-color: #1E293B; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
+        st.markdown("#### Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap (*Roof Gap Infill Extension*)")
+        st.caption(
+            "Hasil simulasi terpisah pemanfaatan ruang celah fisik (atap peron transit, koridor non-segmen) "
+            "menggunakan standar SNI 8395:2017 & NFPA 1 tanpa mengubah sertifikasi baseline resmi Google Solar API:"
+        )
+
+        tot_inf_kwp = df_infill["infill_additional_kwp"].sum()
+        tot_inf_panels = int(df_infill["infill_additional_panels"].sum())
+        tot_inf_mwh = df_infill["infill_additional_generation_mwh"].sum()
+        tot_inf_co2 = df_infill["infill_additional_co2_savings_ton"].sum()
+
+        c_inf1, c_inf2, c_inf3, c_inf4 = st.columns(4)
+        c_inf1.metric("Tambahan Potensi Infill", f"+{tot_inf_kwp:,.1f} kWp", f"{len(df_infill)} fasilitas gap")
+        c_inf2.metric("Tambahan Modul Surya", f"+{tot_inf_panels:,} unit", "@ 400Wp")
+        c_inf3.metric("Tambahan Listrik Bersih", f"+{tot_inf_mwh:,.1f} MWh/thn", "Ekivalen radiasi lokal")
+        c_inf4.metric("Tambahan Reduksi CO₂", f"+{tot_inf_co2:,.1f} Ton/thn", "Grid Jamali")
+
+        infill_disp = df_infill[[
+            "asset_name", "category_display", "city_regency",
+            "google_baseline_kwp", "infill_additional_kwp", "combined_scenario_total_kwp",
+            "capacity_growth_potential_pct", "measured_unsegmented_gap_m2",
+            "infill_net_usable_area_m2", "structural_readiness", "engineering_justification"
+        ]].rename(columns={
+            "asset_name": "Infrastruktur",
+            "category_display": "Kategori",
+            "city_regency": "Wilayah",
+            "google_baseline_kwp": "Baseline Google (kWp)",
+            "infill_additional_kwp": "Tambahan Celah (kWp)",
+            "combined_scenario_total_kwp": "Total Gabungan (kWp)",
+            "capacity_growth_potential_pct": "Kenaikan Potensi (%)",
+            "measured_unsegmented_gap_m2": "Celah Non-Segmen (m²)",
+            "infill_net_usable_area_m2": "Luas Bersih Infill (m²)",
+            "structural_readiness": "Kesiapan Struktur",
+            "engineering_justification": "Catatan Rekayasa Celah"
+        }).copy()
+
+        infill_disp.insert(0, "No", range(1, len(infill_disp) + 1))
+
+        st.dataframe(
+            infill_disp,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "No": st.column_config.NumberColumn("No", format="%d", width="small"),
+                "Baseline Google (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                "Tambahan Celah (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                "Total Gabungan (kWp)": st.column_config.NumberColumn(format="%.1f kWp"),
+                "Kenaikan Potensi (%)": st.column_config.NumberColumn(format="+%.1f%%"),
+                "Celah Non-Segmen (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                "Luas Bersih Infill (m²)": st.column_config.NumberColumn(format="%.1f m²"),
+                "Catatan Rekayasa Celah": st.column_config.TextColumn(width="large")
+            }
+        )
+
+        infill_csv_bytes = df_infill.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label=f"Unduh Data Skenario Suplemen Infill ({len(df_infill)} Fasilitas .CSV)",
+            data=infill_csv_bytes,
+            file_name=f"skenario_suplemen_gap_infill_{len(df_infill)}_fasilitas.csv",
+            mime="text/csv",
+            key="dl_infill_csv"
+        )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -541,14 +613,15 @@ st.markdown(f"""
 
 # Tabs to explore all SKU layers (Text only, clean academic styling)
 # Tabs to explore all SKU layers (Text only, clean academic styling)
-tab_segments, tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery = st.tabs([
+tab_segments, tab_panels, tab_rgb, tab_flux, tab_dsm, tab_mask, tab_gallery, tab_infill = st.tabs([
     "Segmentasi Atap & Metodologi",
     "Layout Panel di Atap",
     "Citra Satelit RGB",
     "Annual Solar Flux",
     "DSM 3D Elevasi",
     "Roof Mask",
-    "Komparasi 5 Layer Bersandingan"
+    "Komparasi 5 Layer Bersandingan",
+    "Simulasi Rekayasa Celah (Infill)"
 ])
 
 with tab_segments:
@@ -1042,6 +1115,98 @@ with tab_gallery:
             st.image(p_msk, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
+
+with tab_infill:
+    st.markdown("#### Skenario Rekayasa Celah Atap Fisik (*Roof Gap Infill Simulation*)")
+    st.caption("Eksplorasi potensi tambahan jika area celah fisik (kanopi peron rel, strip non-segmen) dimanfaatkan secara rekayasa tanpa mengubah sertifikasi baseline resmi Google Solar API:")
+
+    curr_infill = pd.DataFrame()
+    if not df_infill.empty and "asset_name" in df_infill.columns:
+        curr_infill = df_infill[df_infill["asset_name"] == asset_row["asset_name"]]
+
+    if not curr_infill.empty:
+        inf_row = curr_infill.iloc[0]
+        
+        # 3 Side-by-Side Comparison Cards
+        c_sc1, c_sc2, c_sc3 = st.columns(3)
+        with c_sc1:
+            st.markdown(f"""
+            <div style="background: #0D1B12; border: 1px solid #2E5A36; border-radius: 8px; padding: 16px; min-height: 200px;">
+                <div style="color: #81C784; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">1. Baseline Google Solar API (Certified)</div>
+                <div style="color: #ECEFF1; font-size: 1.5rem; font-weight: 800; margin: 6px 0;">{inf_row['google_baseline_kwp']:,.1f} kWp</div>
+                <div style="color: #94A3B8; font-size: 0.82rem;">{int(inf_row['google_baseline_panels']):,} Panel @ 400Wp</div>
+                <hr style="border-color: #2E5A36; margin: 10px 0;">
+                <div style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.6;">
+                    * <strong>Produksi:</strong> {inf_row['google_baseline_generation_mwh']:,.1f} MWh/thn<br>
+                    * <strong>Reduksi CO₂:</strong> {inf_row['google_baseline_co2_savings_ton']:,.1f} Ton/thn<br>
+                    * <strong>Status:</strong> Terverifikasi Fotogrametri 3D
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with c_sc2:
+            st.markdown(f"""
+            <div style="background: #0E1E2E; border: 1px solid #1E4976; border-radius: 8px; padding: 16px; min-height: 200px;">
+                <div style="color: #64B5F6; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">2. Potensi Tambahan Celah Infill</div>
+                <div style="color: #38BDF8; font-size: 1.5rem; font-weight: 800; margin: 6px 0;">+{inf_row['infill_additional_kwp']:,.1f} kWp</div>
+                <div style="color: #94A3B8; font-size: 0.82rem;">+{int(inf_row['infill_additional_panels']):,} Panel Baru</div>
+                <hr style="border-color: #1E4976; margin: 10px 0;">
+                <div style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.6;">
+                    * <strong>Tambahan Listrik:</strong> +{inf_row['infill_additional_generation_mwh']:,.1f} MWh/thn<br>
+                    * <strong>Tambahan Reduksi:</strong> +{inf_row['infill_additional_co2_savings_ton']:,.1f} Ton/thn<br>
+                    * <strong>Kesiapan:</strong> {inf_row['structural_readiness']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with c_sc3:
+            st.markdown(f"""
+            <div style="background: #231C0E; border: 1px solid #6E4E16; border-radius: 8px; padding: 16px; min-height: 200px;">
+                <div style="color: #FFD54F; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">3. Skenario Optimis Rekayasa (Total)</div>
+                <div style="color: #FBBF24; font-size: 1.5rem; font-weight: 800; margin: 6px 0;">{inf_row['combined_scenario_total_kwp']:,.1f} kWp</div>
+                <div style="color: #94A3B8; font-size: 0.82rem;">{int(inf_row['combined_scenario_total_panels']):,} Total Panel (+{inf_row['capacity_growth_potential_pct']:.1f}%)</div>
+                <hr style="border-color: #6E4E16; margin: 10px 0;">
+                <div style="color: #CBD5E1; font-size: 0.8rem; line-height: 1.6;">
+                    * <strong>Total Listrik:</strong> {inf_row['combined_scenario_generation_mwh']:,.1f} MWh/thn<br>
+                    * <strong>Total Reduksi:</strong> {inf_row['combined_scenario_co2_savings_ton']:,.1f} Ton/thn<br>
+                    * <strong>Ekspansi:</strong> +{inf_row['capacity_growth_potential_pct']:.1f}% dari Baseline
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        st.markdown("##### Parameter Teknis & Landasan Rekayasa Celah")
+        c_param1, c_param2 = st.columns([1.1, 1.1])
+        with c_param1:
+            st.markdown(f"""
+            * **Sumber Dasar Luas Celah:** `{inf_row['infill_base_area_source']}`
+            * **Luas Celah Non-Segmen Terukur:** `{inf_row['measured_unsegmented_gap_m2']:,.1f} m²`
+            * **Total Area Celah Fisik:** `{inf_row['measured_total_gap_m2']:,.1f} m²`
+            * **Fraksi Pemanfaatan Efektif:** `{inf_row['infill_applied_fraction']*100:.0f}%` (Sumber: `{inf_row['infill_fraction_source']}`)
+            * **Luas Bersih Layak Panel Infill:** `{inf_row['infill_net_usable_area_m2']:,.1f} m²`
+            """)
+        with c_param2:
+            st.markdown(f"""
+            * **Status Kesiapan Beban Struktur:** `{inf_row['structural_readiness']}`
+            * **Catatan Rekayasa:** {inf_row['engineering_justification']}
+            * **Dasar Standar Rujukan:** `{inf_row['methodology_standard']}`
+            * **Tipe Data:** `{inf_row['data_layer_type']}`
+            """)
+
+        st.info(
+            "💡 **Pemisahan Metodologi Mutlak:** Data baseline Google Solar API di atas adalah hasil sertifikasi fotogrametri "
+            "citra satelit Google Maps Platform yang 100% utuh tanpa manipulasi. Angka Skenario Infill adalah hasil model rekayasa "
+            "suplemen independen berdasarkan parameter regulasi SNI 8395:2017 & NFPA 1 yang tersimpan di file terpisah `pow_solar_gap_infill_extension.csv`."
+        )
+    else:
+        gap_cat_now = asset_row.get("gap_category", "Gap Sedikit")
+        roof_cov_now = float(asset_row.get("roof_coverage_ratio_pct", 100.0))
+        st.success(
+            f"✅ **Fasilitas ini memiliki kondisi `{gap_cat_now}` (Cakupan Deteksi Fotogrametri: {roof_cov_now:.1f}%).**\n\n"
+            "Algoritma Google Solar API telah mendeteksi hampir seluruh bidang tapak atap secara optimal. "
+            "Fasilitas ini tidak memerlukan simulasi suplemen celah atap karena pemanfaatan geometrinya sudah mendekati potensi atap maksimum."
+        )
 
 st.markdown("<br><hr>", unsafe_allow_html=True)
 st.caption("CELIOS Solar Dashboard — Clean Energy & Economic Transition Research Aglomerasi Jabodetabek (2026)")
