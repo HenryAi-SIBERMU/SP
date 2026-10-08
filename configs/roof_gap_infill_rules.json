@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Roof Gap Infill Engineering Rules & Parameters",
+  "description": "Parameter baku rekayasa suplemen untuk menghitung potensi atap celah fisik (Gap Besar) secara terpisah dari baseline resmi Google Solar API.",
+  "metadata": {
+    "version": "1.0.0",
+    "updated_at": "2026-10-08",
+    "authors": "Tim Analis Spasial CELIOS & Solar Engineering",
+    "regulatory_references": [
+      "SNI 8395:2017 - Panduan Pemasangan Sistem PLTS Fotovoltaik pada Bangunan Gedung",
+      "NFPA 1 Fire Code Section 11.12 - PV Systems Access Pathways and Setbacks",
+      "NREL PVWatts Technical Report NREL/TP-6A20-62641",
+      "Permen ESDM No. 2 Tahun 2024 tentang PLTS Atap"
+    ]
+  },
+  "pv_module_specifications": {
+    "module_type": "Tier-1 Monocrystalline Half-Cell 400Wp",
+    "rated_power_wp": 400.0,
+    "module_width_m": 1.134,
+    "module_length_m": 1.722,
+    "module_gross_area_m2": 1.9527,
+    "spacing_and_mounting_allowance_m2": 0.15,
+    "effective_area_per_panel_m2": 2.1027,
+    "system_derate_efficiency": 0.82
+  },
+  "default_infill_parameters": {
+    "usable_gap_fraction": 0.60,
+    "fire_safety_setback_fraction": 0.20,
+    "skylight_and_drainage_fraction": 0.20,
+    "minimum_contiguous_area_m2": 15.0,
+    "minimum_panel_cluster": 6
+  },
+  "category_specific_rules": {
+    "krl": {
+      "usable_gap_fraction": 0.65,
+      "fire_safety_setback_fraction": 0.15,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Kanopi peron rel kereta memerlukan verifikasi daya dukung beban mati baja ringan (15-20 kg/m²)"
+    },
+    "mrt": {
+      "usable_gap_fraction": 0.60,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Kanopi layang beton prategang MRT memiliki integritas beban struktural sangat tinggi"
+    },
+    "lrt": {
+      "usable_gap_fraction": 0.60,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Struktur atap stasiun layang LRT terstandarisasi modern"
+    },
+    "brt": {
+      "usable_gap_fraction": 0.55,
+      "fire_safety_setback_fraction": 0.25,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Halte BRT koridor median jalan raya memiliki batasan rintangan pohon pelindung jalan"
+    },
+    "stadium": {
+      "usable_gap_fraction": 0.70,
+      "fire_safety_setback_fraction": 0.15,
+      "skylight_and_drainage_fraction": 0.15,
+      "structural_retrofit_note": "Struktur atap bentang lebar kantilever stadion memiliki daya tampung panel surya luas"
+    },
+    "market": {
+      "usable_gap_fraction": 0.50,
+      "fire_safety_setback_fraction": 0.25,
+      "skylight_and_drainage_fraction": 0.25,
+      "structural_retrofit_note": "Atap pasar tradisional memiliki densitas tinggi cerobong ventilasi alami dan kubah udara"
+    },
+    "hospital": {
+      "usable_gap_fraction": 0.55,
+      "fire_safety_setback_fraction": 0.25,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Rooftop rumah sakit memiliki konsentrasi tinggi unit chiller AC sentral dan pipa medis MEP"
+    },
+    "mall": {
+      "usable_gap_fraction": 0.60,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Atap mall memiliki cooling tower dan area parkir rooftop"
+    },
+    "university": {
+      "usable_gap_fraction": 0.65,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.15,
+      "structural_retrofit_note": "Atap gedung rektorat/fakultas memiliki bidang datar beton (dak) yang stabil"
+    },
+    "school": {
+      "usable_gap_fraction": 0.65,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.15,
+      "structural_retrofit_note": "Atap pelana genteng/seng sekolah negeri memerlukan rangka dudukan khusus"
+    },
+    "airport": {
+      "usable_gap_fraction": 0.65,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.15,
+      "structural_retrofit_note": "Terminal bandara wajib mematuhi batasan glint & glare keselamatan penerbangan (FAA)"
+    },
+    "terminal": {
+      "usable_gap_fraction": 0.60,
+      "fire_safety_setback_fraction": 0.20,
+      "skylight_and_drainage_fraction": 0.20,
+      "structural_retrofit_note": "Kanopi peron bus antar kota memiliki luas tapak seragam"
+    },
+    "parking": {
+      "usable_gap_fraction": 0.70,
+      "fire_safety_setback_fraction": 0.15,
+      "skylight_and_drainage_fraction": 0.15,
+      "structural_retrofit_note": "Lantai teratas gedung parkir siap dipasangi solar canopy (kanopi peneduh kendaraan)"
+    }
+  }
+}
