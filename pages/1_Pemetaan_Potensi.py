@@ -1176,7 +1176,30 @@ with tab_infill:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        st.markdown("##### Parameter Teknis & Landasan Rekayasa Celah")
+        # Visualisasi Komparasi Layout: Baseline Google vs Skenario Penuh Infill (Warna Sama Biru Fotovoltaik)
+        st.markdown("##### Visualisasi Komparasi Tata Letak Panel di Atap")
+        st.caption("Perbandingan posisi modul surya antara baseline resmi Google Solar API vs simulasi atap terisi penuh pasca-rekayasa celah:")
+
+        col_img_base, col_img_inf = st.columns(2)
+        with col_img_base:
+            st.markdown(f"**Baseline Sertifikasi Google ({int(inf_row['google_baseline_panels']):,} Panel)**")
+            base_p_rel = asset_row.get("preview_panels_png")
+            base_p_clean = get_clean_img_path(base_p_rel)
+            if base_p_clean:
+                st.image(base_p_clean, caption=f"Baseline Google: {int(inf_row['google_baseline_panels']):,} Panel ({inf_row['google_baseline_kwp']:.1f} kWp)", use_container_width=True)
+            else:
+                st.caption("Gambar baseline belum tersedia.")
+
+        with col_img_inf:
+            st.markdown(f"**Simulasi Penuh Pasca-Infill ({int(inf_row['combined_scenario_total_panels']):,} Panel)**")
+            inf_p_rel = inf_row.get("preview_infill_panels_png")
+            inf_p_clean = get_clean_img_path(inf_p_rel)
+            if inf_p_clean:
+                st.image(inf_p_clean, caption=f"Skenario Penuh: {int(inf_row['combined_scenario_total_panels']):,} Panel ({inf_row['combined_scenario_total_kwp']:.1f} kWp)", use_container_width=True)
+            else:
+                st.caption("Gambar simulasi infill belum tersedia.")
+
+        st.markdown("<br>", unsafe_allow_html=True)
         c_param1, c_param2 = st.columns([1.1, 1.1])
         with c_param1:
             st.markdown(f"""
