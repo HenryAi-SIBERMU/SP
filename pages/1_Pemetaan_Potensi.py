@@ -449,10 +449,12 @@ def generate_interactive_map_html(df_input: pd.DataFrame) -> str:
     center_lon = float(df_input["google_center_lon"].mean())
     
     # Folium map using clean Esri Satellite + OSM basemaps (NO Carto API KEY watermark)
+    # prefer_canvas=True mengaktifkan akselerasi GPU HTML5 Canvas untuk performa 60 FPS pada 2.100 titik
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=11,
-        tiles=None
+        tiles=None,
+        prefer_canvas=True
     )
 
     folium.TileLayer(
@@ -481,9 +483,13 @@ def generate_interactive_map_html(df_input: pd.DataFrame) -> str:
     for row in records:
         color = CAT_COLORS.get(row["category"], "#66BB6A")
         
+        # Sanitasi nama aset dan kategori agar kebal terhadap karakter backtick (`) dan quote (") pada template literal Leaflet
+        safe_name = str(row["asset_name"]).replace("`", "'").replace('"', '&quot;').replace("\\", "")
+        safe_cat = str(row["category_display"]).replace("`", "'").replace('"', '&quot;')
+        
         popup_html = f"""
         <div style="font-family: 'Inter', sans-serif; min-width: 220px; color: #111;">
-            <b style="font-size: 13px; color: {color};">[{row['category_display']}] {row['asset_name']}</b><br>
+            <b style="font-size: 13px; color: {color};">[{safe_cat}] {safe_name}</b><br>
             <hr style="margin: 4px 0;">
             <b>Kapasitas PLTS:</b> {row['installed_capacity_kwp']:,.1f} kWp ({int(row['max_panels_count']):,} panel)<br>
             <b>Luas Atap:</b> {row['max_roof_area_m2']:,.1f} m²<br>
@@ -503,7 +509,7 @@ def generate_interactive_map_html(df_input: pd.DataFrame) -> str:
             fill_color=color,
             fill_opacity=0.90,
             popup=folium.Popup(popup_html, max_width=320),
-            tooltip=f"[{row['category_display']}] {row['asset_name']} ({row['installed_capacity_kwp']:,.1f} kWp)"
+            tooltip=f"[{safe_cat}] {safe_name} ({row['installed_capacity_kwp']:,.1f} kWp)"
         )
 
         cat_val = row["category"]
