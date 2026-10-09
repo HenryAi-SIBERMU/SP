@@ -206,22 +206,69 @@ Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 
 ---
 
-## 5. Sumber Data Fisik yang Dikonsumsi (Zero Mock / Zero Hardcoding)
+## 5. Pemetaan Sumber Data Sub-Bab 2.1 s.d. 2.5 (Audit Ketergantungan API vs Hibrida)
 
-Halaman ini HANYA mengonsumsi data yang telah tersedia di repositori:
-1. `data/processed/calculations/pow_solar_kumulatif_summary.csv` (atau `pow_solar_100_titik_summary.csv` / `pow_solar_13_titik_summary.csv`): Atribut kapasitas, luas atap, jumlah modul, MWh tahunan, PSH tahunan, dan kategori.
-2. `data/processed/calculations/pow_solar_gap_infill_extension.csv`: Tambahan kapasitas modul infill celah atap.
-3. `data/processed/references/standar_orientasi_surya_nrel_sni.csv`: Standar matematis azimuth dan pitch solar geometry.
-4. `data/raw/pln/pln_tariff_2026.csv`: Tarif resmi per kWh per sektor PLN.
-5. `data/raw/pln/pln_statistics_jabodetabek.csv` (Ekstraksi resmi publikasi PLN): Data penjualan dan konsumsi listrik sektoral Jabodetabek.
+Sesuai prinsip aturan `anti_yesman_spatial_methodology_integrity.md` (Pilar 1: *Pre-Execution Reality Check* & Pilar 6: *Transparansi Cacat Data*), data yang menopang Halaman 2 tidak semuanya murni berasal dari Google Solar API. Google Solar API adalah sensor fotogrametri atap yang hanya mencatat luas fisik dan radiasi tahunan, bukan pencatat beban listrik PLN.
+
+Berikut adalah matriks kepemilikan dan ketergantungan data per sub-bab:
+
+| Sub-Bab | Topik Pembahasan | Status Google Solar API | Sumber Pendukung Non-Solar API | Status Ketersediaan Lokal di Repositori |
+|:---|:---|:---:|:---|:---|
+| **2.1** | **Konversi Luasan ke Daya & Energi ($m^2 \rightarrow \text{MWp} \& \text{GWh}$)** | ✅ **100% Murni Solar API** | Tidak Ada | 🟢 **Sudah Lengkap di Repositori**<br>`data/processed/calculations/pow_solar_kumulatif_summary.csv` (`max_roof_area_m2`, `max_panels_count`, `installed_capacity_kwp`, `annual_generation_mwh`, breakdown 13 kategori). |
+| **2.2** | **Profil Iradiasi & Fluktuasi Musiman (Jan–Des)** | 🟡 **Hibrida**<br>(Total Jam/Tahun dari Solar API) | **PVGIS (JRC European Commission) & NASA POWER** (Kurva 12 Bulan) | 🟢 **Sudah Lengkap di Repositori**<br>Total PSH tahunan dari Solar API (`sunshine_hours_annual`), kurva distribusi bulanan dari file lokal `data/raw/solar/pvgis_jakarta_monthly.csv` dan `pvgis_jakarta.csv`. |
+| **2.3** | **Uji Substitusi Beban Konsumsi Kota** | 🔴 **Bukan Solar API**<br>(Solar API = Pasokan, PLN = Beban) | **PT PLN (Persero) Statistics & Tarif Dasar Listrik** | 🟡 **Sebagian Sudah Ada, Perlu Ekstraksi Tambahan**<br>Tarif per kWh sudah ada di `data/raw/pln/pln_tariff_2026.csv`. Data total penjualan listrik sektoral Jabodetabek perlu diekstrak ke CSV fisik terstruktur. |
+| **2.4** | **Analisis Sensitivitas & Kontrol Parametrik** | 🟡 **Hibrida**<br>(Baseline dari Solar API) | **Engine Simulasi Rekayasa + SNI 8395 / NFPA 1 (Infill Extension)** | 🟢 **Sudah Lengkap di Repositori**<br>Baseline atap dari Solar API; slider Wp/PR dihitung analitis; potensi celah dak tersedia di `data/processed/calculations/pow_solar_gap_infill_extension.csv`. |
+| **2.5** | **Benchmark Empiris & Ground-Truth** | 🟡 **Hibrida**<br>(Model dari Solar API) | **Laporan Tahunan / Keberlanjutan PTBA & PT Angkasa Pura II** | 🟡 **Sebagian Sudah Ada, Perlu Tabel Komparasi**<br>Model satelit Bandara Soetta T3 (`AIR-001` & `AIR-0010`) sudah ada di Solar API. Perlu tabel komparasi terhadap realisasi kontrak aktual AP II (~2 MWp). |
 
 ---
 
-## 6. Checklist Eksekusi Pengembangan
+## 6. Pemetaan Tabel Data yang Perlu Kita Cari & Himpun (Data Acquisition Mapping)
+
+Mematuhi aturan ketat `no_hardcoded_data.md` (Pilar 3 & 4: *Auditability & Single Source of Truth*) dan `strict_data_folder_boundary.md` (Pilar 4: *Mandatory Raw Proof*), seluruh angka statistik beban PLN dan benchmark eksternal **DILARANG KERAS ditulis hardcoded di skrip Python**. Berkas fisik wajib diunduh ke `data/raw/` dan diekstrak menjadi CSV terstruktur di `data/processed/`.
+
+Berikut adalah pemetaan detail tabel data yang perlu dihimpun:
+
+### A. Tabel Data yang Harus Dicari (Action Items / Missing Datasets)
+
+| No | Nama Dataset Target | Kategori Data | Dokumen Sumber Resmi (*Mandatory Proof*) | Rencana Lokasi Simpan Berkas Asli | Rencana File Hasil Ekstraksi CSV | Struktur Kolom yang Wajib Diekstrak | Kegunaan Spesifik di Page 2 |
+|:---:|:---|:---:|:---|:---|:---|:---|:---|
+| **1** | **PLN Statistics Penjualan Listrik Sektoral Jabodetabek** | Beban Energi / Demand | **Laporan Tahunan Statistik PLN 2023 / 2024 (PDF Resmi PT PLN Persero)**<br>(Tabel Penjualan Tenaga Listrik per Golongan Tarif & Unit Distribusi) | `data/raw/pln/PLN_Statistik_2023_2024.pdf` | `data/processed/calculations/pln_konsumsi_sektoral_jabodetabek.csv` | • `uid_distribusi` (UID Jakarta Raya, UID Jawa Barat, UID Banten)<br>• `wilayah_pelayanan` (Jakarta, Bodetabek)<br>• `sektor` (Publik/Pemerintah, Bisnis/Komersial, Industri, Rumah Tangga, Sosial)<br>• `golongan_tarif` (P-1, P-2, P-3, B-2, B-3, R-1, I-3, dll)<br>• `penjualan_gwh`<br>• `jumlah_pelanggan`<br>• `daya_tersambung_mva`<br>• `tahun_data`<br>• `file_bukti_raw` | Menghitung **Rasio Substitusi Mandiri (Sub-Bab 2.3)**:<br>$$\% \text{ Offset} = \frac{\text{Produksi PLTS (GWh)}}{\text{Konsumsi Sektor P (GWh)}} \times 100\%$$ Menggantikan konstanta `78.000 GWh` dengan data resmi terverifikasi. |
+| **2** | **Ground-Truth Benchmark PLTS Eksisting Bandara Soetta T3** | Validasi Empiris | **Sustainability Report PT Bukit Asam Tbk (PTBA) 2023 / Annual Report PT Angkasa Pura II**<br>(Bagian Operasional PLTS Atap Bandara Soekarno-Hatta T3) | `data/raw/sources/ptba_ap2_plts_soetta_annual_report.pdf` | `data/processed/references/benchmark_plts_soetta_aktual.csv` | • `nama_fasilitas` (PLTS Bandara Soetta T3)<br>• `operator_epc` (PTBA / AP II)<br>• `kapasitas_aktual_kwp` (~2.000 kWp / 2 MWp)<br>• `area_pemasangan` (Kanopi Gedung Parkir & Terminal)<br>• `produksi_aktual_mwh_tahun`<br>• `tahun_cod` (Commercial Operation Date)<br>• `model_solarapi_kwp` ($325,2\text{ kWp}$ kanopi dermaga)<br>• `file_bukti_raw`<br>• `halaman_laporan` | Mengisi tabel komparasi **Sub-Bab 2.5** untuk mengukur deviasi antara model fotogrametri satelit vs realisasi teknis lapangan. |
+
+---
+
+### B. Tabel Data yang Sudah Tersedia Lengkap di Repositori Lokal
+
+Untuk komponen lainnya, pipeline telah memiliki dataset fisik yang sah dan siap dikonsumsi langsung:
+
+| No | Nama Dataset Lokal | Lokasi File Fisik di Repositori | Cakupan Data & Kolom Utama | Sub-Bab yang Mengonsumsi |
+|:---:|:---|:---|:---|:---:|
+| **1** | **Master Rekapitulasi Potensi PLTS Solar API** | `data/processed/calculations/pow_solar_kumulatif_summary.csv` & `pow_solar_100_titik_summary.csv` | `asset_id`, `category`, `max_roof_area_m2`, `max_panels_count`, `installed_capacity_kwp`, `annual_generation_mwh`, `sunshine_hours_annual`, `weighted_pitch_deg` (13 kategori lengkap). | **Sub-Bab 2.1 & Hero Metrics** |
+| **2** | **Profil Iradiasi & PSH Bulanan Jabodetabek** | `data/raw/solar/pvgis_jakarta_monthly.csv` & `pvgis_jakarta.csv` | `Location`, `Month` (1–12), `Energy_kWh`, `Irradiation_kWh_m2`, `Peak_Sun_Hours` (Jakarta Pusat, Utara, Selatan, Timur, Barat). | **Sub-Bab 2.2** |
+| **3** | **Tarif Dasar Listrik PLN 2026** | `data/raw/pln/pln_tariff_2026.csv` | `sector`, `category`, `power`, `tariff_rp_kwh` (12 golongan tarif: B-2, B-3, P-1, P-2, I-3, R-1, R-2, dll). | **Sub-Bab 2.3** |
+| **4** | **Ekstensi Celah Atap (SNI / NFPA Infill)** | `data/processed/calculations/pow_solar_gap_infill_extension.csv` | `asset_id`, `infill_additional_panels`, `infill_additional_kwp`, `infill_additional_mwh`, rasio keselamatan setback. | **Sub-Bab 2.4** |
+| **5** | **Standar Orientasi Surya & Aspek Teknis** | `data/processed/references/standar_orientasi_surya_nrel_sni.csv` | Bin Azimuth 8 arah mata angin, karakteristik radiasi, standar NREL PVWatts & SNI 8395:2017. | **Sub-Bab 2.1 & 2.4** |
+
+---
+
+### C. Protokol Eksekusi Pengambilan Data (SOP Kepatuhan Aturan)
+
+Sebelum angka konsumsi PLN dan benchmark dimasukkan ke dalam kode `pages/2_Analisis_Kapasitas.py`, agen/analis wajib menjalankan 3 langkah berikut:
+1. **Langkah 1 (Unduh Berkas Mentah):** Mengunduh berkas fisik PDF resmi ke folder `data/raw/pln/` atau `data/raw/sources/`.
+2. **Langkah 2 (Ekstraksi Deterministik):** Menjalankan skrip ekstraksi Python (misal `tools/pln/extract_pln_statistics.py`) untuk mengubah tabel PDF menjadi file CSV terstruktur di `data/processed/calculations/`.
+3. **Langkah 3 (Audit Lineage):** Memastikan file CSV memuat kolom metadata sitasi lengkap (`file_bukti_raw`, `halaman_dokumen`, `tahun_rilis`).
+
+---
+
+## 7. Checklist Eksekusi Pengembangan
 
 - [x] Kerangka kerja desain Page 2 disusun komprehensif di `docs/KERANGKA-PAGE-2-ANALISIS-KAPASITAS.md`.
 - [x] Struktur sub-bab dipastikan hierarkis menggunakan penomoran baku **2.1, 2.2, 2.3, 2.4, 2.5**.
 - [x] Alur kausalitas, tesis kedaulatan energi, dan bento cards diselaraskan 100% dengan standar riset CELIOS 2.
+- [x] Pemetaan ketergantungan data Solar API vs Hibrida Non-Solar API didokumentasikan transparan (Section 5).
+- [x] Tabel data yang perlu dicari (PLN Statistics & Benchmark Soetta) dipetakan detail lengkap dengan kolom targetnya (Section 6).
+- [ ] Unduh dokumen fisik PDF Statistik PLN ke `data/raw/pln/` dan ekstraksi ke CSV `pln_konsumsi_sektoral_jabodetabek.csv`.
 - [ ] Implementasi kode frontend Streamlit di `pages/2_Analisis_Kapasitas.py`.
 - [ ] Pengujian interaktivitas slider parametrik dan audit visualisasi.
 - [ ] Auto-commit seluruh artefak ke Git repository.
+
