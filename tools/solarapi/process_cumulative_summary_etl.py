@@ -320,23 +320,25 @@ def run_cumulative_etl(max_batch=1):
     print(f"[*] TOTAL KATEGORI RESMI          : {len(unique_cats)} KATEGORI")
     print(f"[*] Daftar Kategori Terdaftar     : {unique_cats}")
 
-    # 5. Save Outputs
-    out_csv = CALC_OUT_DIR / "pow_solar_100_titik_summary.csv"
-    out_parq = CALC_OUT_DIR / "pow_solar_100_titik_summary.parquet"
+    # 5. Save Outputs (DEDICATED CUMULATIVE FILES - 100 PILOT REMAINS UNTOUCHED)
+    out_cumul_csv = CALC_OUT_DIR / "pow_solar_kumulatif_summary.csv"
+    out_cumul_parq = CALC_OUT_DIR / "pow_solar_kumulatif_summary.parquet"
+    out_2000_csv = CALC_OUT_DIR / "pow_solar_2000_titik_summary.csv"
     out_acc_csv = CALC_OUT_DIR / "pow_solar_accumulated_summary.csv"
-    out_acc_parq = CALC_OUT_DIR / "pow_solar_accumulated_summary.parquet"
 
-    df_combined.to_csv(out_csv, index=False, encoding="utf-8")
-    df_combined.to_parquet(out_parq, index=False)
+    df_combined.to_csv(out_cumul_csv, index=False, encoding="utf-8")
+    df_combined.to_parquet(out_cumul_parq, index=False)
+    df_combined.to_csv(out_2000_csv, index=False, encoding="utf-8")
     df_combined.to_csv(out_acc_csv, index=False, encoding="utf-8")
-    df_combined.to_parquet(out_acc_parq, index=False)
 
     # GeoJSON
-    out_geojson = GIS_OUT_DIR / "pow_solar_100_titik.geojson"
+    out_cumul_geojson = GIS_OUT_DIR / "pow_solar_kumulatif.geojson"
+    out_2000_geojson = GIS_OUT_DIR / "pow_solar_2000_titik.geojson"
     out_acc_geojson = GIS_OUT_DIR / "pow_solar_accumulated.geojson"
     geometry = [Point(xy) for xy in zip(df_combined["raw_lon"], df_combined["raw_lat"])]
     gdf = gpd.GeoDataFrame(df_combined, geometry=geometry, crs="EPSG:4326")
-    gdf.to_file(out_geojson, driver="GeoJSON")
+    gdf.to_file(out_cumul_geojson, driver="GeoJSON")
+    gdf.to_file(out_2000_geojson, driver="GeoJSON")
     gdf.to_file(out_acc_geojson, driver="GeoJSON")
 
     # 6. Print KPI Summary
@@ -356,7 +358,7 @@ def run_cumulative_etl(max_batch=1):
     print(f"  * Estimasi Produksi Listrik : {tot_mwh:,.1f} MWh/thn")
     print(f"  * Reduksi Emisi GRK Tahunan : {tot_co2:,.1f} Ton CO2/thn")
     print("=" * 80)
-    print(f"[+] Output tersimpan di: {out_csv.name} & {out_geojson.name}")
+    print(f"[+] Output tersimpan di: {out_cumul_csv.name} & {out_cumul_geojson.name}")
 
 
 def main():

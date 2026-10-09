@@ -36,7 +36,7 @@ from urllib3.util import Retry
 
 # Konfigurasi Encoding Windows
 try:
-    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
 except AttributeError:
     pass
 
@@ -174,7 +174,14 @@ def run_fast_probe(batch_target=None, limit=None):
     used_names = set(df_main["asset_name"].str.strip().str.lower())
     used_coords = set(zip(df_main["latitude"].round(5), df_main["longitude"].round(5)))
 
-    # Exclude buffers that are already in df_main
+    # Seed with Pilot 100 baseline to prevent any buffer swap collision with pilot
+    pilot_csv = PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_pilot_100_baseline.csv"
+    if pilot_csv.exists():
+        df_pilot = pd.read_csv(pilot_csv)
+        used_names.update(df_pilot["asset_name"].str.strip().str.lower())
+        used_coords.update(zip(df_pilot["raw_lat"].round(5), df_pilot["raw_lon"].round(5)))
+
+    # Exclude buffers that are already in df_main or pilot
     if not df_buffer.empty:
         is_unused = ~df_buffer["asset_name"].str.strip().str.lower().isin(used_names)
         df_buffer = df_buffer[is_unused].copy().reset_index(drop=True)

@@ -40,12 +40,16 @@ st.markdown(get_solar_css(), unsafe_allow_html=True)
 
 # ─── DATA LOADING (PROCESSED DATA ONLY) ──────────────────────────────────────────
 PROCESSED_CALC_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_summary.csv"
-    if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_summary.csv").exists()
+    PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_summary.csv"
+    if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_summary.csv").exists()
     else (
-        PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv"
-        if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv").exists()
-        else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv")
+        PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_summary.csv"
+        if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_summary.csv").exists()
+        else (
+            PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv"
+            if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_summary.csv").exists()
+            else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_summary.csv")
+        )
     )
 )
 PROCESSED_SEGMENTS_PATH = (
@@ -58,12 +62,16 @@ PROCESSED_SEGMENTS_PATH = (
     )
 )
 PROCESSED_GIS_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_100_titik.geojson"
-    if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_100_titik.geojson").exists()
+    PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_kumulatif.geojson"
+    if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_kumulatif.geojson").exists()
     else (
-        PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson"
-        if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson").exists()
-        else (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson")
+        PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_100_titik.geojson"
+        if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_100_titik.geojson").exists()
+        else (
+            PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson"
+            if (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_13_titik.geojson").exists()
+            else (PROJECT_ROOT / "data" / "processed" / "gis" / "pow_solar_5_titik.geojson")
+        )
     )
 )
 PROCESSED_ORIENTATION_REF_PATH = PROJECT_ROOT / "data" / "processed" / "references" / "standar_orientasi_surya_nrel_sni.csv"
