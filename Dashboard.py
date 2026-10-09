@@ -107,9 +107,9 @@ with col2:
 with col3:
     st.markdown(f"""
     <div class="metric-card">
-        <div class="metric-label">Kontribusi Regional</div>
-        <div class="metric-value">{kontribusi_regional_pct:.2f}%</div>
-        <div class="metric-desc">Dari kebutuhan listrik Jabodetabek (~78.000 GWh - PLN Statistics)</div>
+        <div class="metric-label">Total Luas Atap Efektif</div>
+        <div class="metric-value">{total_roof_area_m2:,.0f} m²</div>
+        <div class="metric-desc">Permukaan atap layak panel surya terverifikasi satelit</div>
     </div>
     """, unsafe_allow_html=True)
 
