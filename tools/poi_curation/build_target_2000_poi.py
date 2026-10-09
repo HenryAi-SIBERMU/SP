@@ -3,25 +3,36 @@
 build_target_2000_poi.py
 ========================
 Skrip Kurasi Master Dataset Target 2.000 Titik Potensi PLTS Atap Jabodetabek
-Memenuhi Spesifikasi Dokumen: STRATEGI-EKSEKUSI-5-PILAR-2000-TITIK-JABODETABEK.md
+Memenuhi Spesifikasi Dokumen:
+- STRATEGI-EKSEKUSI-5-PILAR-2000-TITIK-JABODETABEK.md
+- LAPORAN-AUDIT-METODOLOGI-KUOTA-2000-TITIK-DAN-REALOKASI-OSM.md
 
-PRINSIP METODOLOGI:
-1. PILAR 1: Komposisi 13 Kategori Gabungan (2.000 Titik Utama + 200 Titik Buffer = 2.200 Kandidat).
-2. ZERO HARDCODED: Mengekstrak dari dataset lokal terverifikasi (data/raw/) dan Overpass API terkurasi.
-3. PILAR 3 BATCH MAPPING: Mengalokasikan 8 Batch @ 250 Titik secara terstruktur.
-4. SPATIAL INTEGRITY: WGS84, deduplikasi spasial (jarak > 30m), boundary filter Jabodetabek.
+PRINSIP METODOLOGI & REGULASI AGEN:
+1. ZERO HALLUCINATED / DUMMY ENTITIES: 100% entitas beratap fisik riil dan bernama resmi.
+   Dilarang keras membuat label sintetis dummy berformat `#OSM_ID`.
+2. STRICT DATASET BOUNDARY: Mengekstrak hanya dari aset bank database lokal (data/raw/).
+3. SPATIAL INTEGRITY: WGS84, boundary filter Aglomerasi Jabodetabek, dan deduplikasi spasial
+   berbasis cKDTree (scipy.spatial) standar industri.
+4. PILAR 3 BATCH MAPPING: 8 Batch presisi @ 250 Titik. Batch 1 Transit (250 titik) dipertahankan
+   secara mutlak agar selaras dengan 1.000 GeoTIFF Data Layers yang telah selesai diunduh.
 """
 
 import os
 import sys
 import json
-import time
 import math
+import time
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
-import requests
+from scipy.spatial import cKDTree
+
+# Windows console encoding
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except AttributeError:
+    pass
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
@@ -36,31 +47,6 @@ BBOX_JABODETABEK = {
     "max_lon": 107.15
 }
 
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
-OVERPASS_HEADERS = {
-    "User-Agent": "CeliosSolarResearch/2.0 (contact: admin@celios.co.id; research@celios.org)"
-}
-
-
-def query_overpass(query_str: str, max_retries: int = 3) -> list:
-    """Helper untuk mengambil data OSM via Overpass API dengan retry aman."""
-    for attempt in range(max_retries):
-        try:
-            r = requests.post(
-                OVERPASS_URL,
-                data={"data": query_str},
-                headers=OVERPASS_HEADERS,
-                timeout=60
-            )
-            if r.status_code == 200:
-                data = r.json()
-                return data.get("elements", [])
-            elif r.status_code == 429:
-                time.sleep(10 * (attempt + 1))
-        except Exception as e:
-            time.sleep(5 * (attempt + 1))
-    return []
-
 
 def is_in_bbox(lat: float, lon: float) -> bool:
     """Validasi apakah koordinat berada di koridor Aglomerasi Jabodetabek."""
@@ -72,7 +58,6 @@ def is_in_bbox(lat: float, lon: float) -> bool:
 
 def determine_city(lat: float, lon: float) -> str:
     """Estimasi wilayah administratif berbasis koordinat lintang/bujur Jabodetabek."""
-    # Jakarta bounds rough breakdown
     if lat > -6.40:
         if lon < 106.75:
             if lat < -6.25:
@@ -83,7 +68,6 @@ def determine_city(lat: float, lon: float) -> str:
                 return "Kab. Bekasi"
             return "Kota Bekasi"
         else:
-            # DKI Jakarta sectors
             if lat > -6.16:
                 return "Jakarta Utara"
             elif lat > -6.22:
@@ -101,7 +85,6 @@ def determine_city(lat: float, lon: float) -> str:
             else:
                 return "Kota Depok"
     else:
-        # Southern Jabodetabek (Depok / Bogor)
         if lat > -6.45:
             return "Kota Depok"
         elif lon < 106.85:
@@ -111,28 +94,34 @@ def determine_city(lat: float, lon: float) -> str:
 
 
 def deduplicate_spatial(records: list, min_dist_m: float = 25.0) -> list:
-    """Deduplikasi koordinat berdekatan dalam satu kategori agar tidak menumpuk."""
-    unique = []
-    for r in records:
-        lat1, lon1 = r["latitude"], r["longitude"]
-        too_close = False
-        for u in unique:
-            lat2, lon2 = u["latitude"], u["longitude"]
-            # Haversine approximation
-            dlat = (lat1 - lat2) * 111000
-            dlon = (lon1 - lon2) * 111000 * math.cos(math.radians(lat1))
-            dist = math.sqrt(dlat*dlat + dlon*dlon)
-            if dist < min_dist_m:
-                too_close = True
-                break
-        if not too_close:
-            unique.append(r)
-    return unique
+    """
+    Deduplikasi spasial berkecepatan tinggi O(N log N) menggunakan scipy.spatial.cKDTree.
+    Sesuai aturan pilar 2 anti-yesman: dilarang manual scratch loop jika library industri tersedia.
+    """
+    if not records:
+        return []
+
+    # Proyeksi ekuirektangular lokal berpusat di Jakarta (-6.2 LS)
+    lat0 = math.radians(-6.2)
+    coords = [
+        (r["longitude"] * 111320 * math.cos(lat0), r["latitude"] * 110540)
+        for r in records
+    ]
+
+    tree = cKDTree(coords)
+    pairs = tree.query_pairs(r=min_dist_m)
+
+    drop_indices = set()
+    for i, j in sorted(pairs):
+        if i not in drop_indices and j not in drop_indices:
+            drop_indices.add(j)
+
+    return [r for idx, r in enumerate(records) if idx not in drop_indices]
 
 
-# ─── 1. EXTRACT PARKING (TARGET 900 + 46 BUFFER = 946) ────────────────────────
+# ─── 1. EXTRACT PARKING (HANYA ENTITAS BERNAMA RESMI / 0 DUMMY) ───────────────
 def harvest_parking() -> list:
-    print("[*] Mengekstrak data Parkir / MSCP dari data/raw/osm/parking_jakarta.gpkg...")
+    print("[*] Mengekstrak data Gedung Parkir & MSCP (HANYA bernama resmi) dari parking_jakarta.gpkg...")
     p_file = RAW_DIR / "osm" / "parking_jakarta.gpkg"
     records = []
     if not p_file.exists():
@@ -140,20 +129,21 @@ def harvest_parking() -> list:
         return records
 
     gdf = gpd.read_file(p_file)
-    gdf["centroid"] = gdf.geometry.centroid
-    
-    # Pisahkan yang punya nama dan unnamed
+    # Centroid projected aman
+    gdf["centroid"] = gdf.to_crs(epsg=3857).geometry.centroid.to_crs(epsg=4326)
+
+    # Filter HANYA yang memiliki nama resmi (BUANG SEMUA UNNAMED DUMMY)
     named = gdf[gdf["name"].notnull()].copy()
-    unnamed = gdf[gdf["name"].isnull()].copy()
-    
-    idx = 1
-    # Proses yang bernama dulu
+
     for _, row in named.iterrows():
         lat = row["centroid"].y
         lon = row["centroid"].x
         if not is_in_bbox(lat, lon):
             continue
         nm = str(row["name"]).strip()
+        # Cegah string nan atau dummy
+        if not nm or nm.lower() == "nan" or "#" in nm:
+            continue
         records.append({
             "asset_name": nm,
             "category": "parking",
@@ -163,35 +153,50 @@ def harvest_parking() -> list:
             "longitude": round(lon, 6),
             "source_reference": f"parking_jakarta.gpkg:{row['id']}"
         })
-        idx += 1
 
-    # Tambahkan unnamed dengan penamaan lokasional yang rapi
-    for _, row in unnamed.iterrows():
+    records = deduplicate_spatial(records, min_dist_m=25.0)
+    print(f"    -> Berhasil mengekstrak {len(records)} titik Gedung Parkir bernama resmi.")
+    return records
+
+
+# ─── 2. EXTRACT HOSPITALS & PUSKESMAS (TARGET 246 DARI GPKG LOKAL) ─────────────
+def harvest_hospitals() -> list:
+    print("[*] Mengekstrak Rumah Sakit & Fasilitas Medis dari hospitals_jakarta.gpkg...")
+    h_file = RAW_DIR / "osm" / "hospitals_jakarta.gpkg"
+    records = []
+    if not h_file.exists():
+        print(f"[!] File {h_file} tidak ditemukan!")
+        return records
+
+    gdf = gpd.read_file(h_file).dropna(subset=["name"])
+    gdf["centroid"] = gdf.to_crs(epsg=3857).geometry.centroid.to_crs(epsg=4326)
+
+    for _, row in gdf.iterrows():
+        nm = str(row["name"]).strip()
+        if not nm or nm.lower() == "nan":
+            continue
         lat = row["centroid"].y
         lon = row["centroid"].x
         if not is_in_bbox(lat, lon):
             continue
-        city = determine_city(lat, lon)
-        nm = f"Area Parkir Gedung {city} #{row['id']}"
         records.append({
             "asset_name": nm,
-            "category": "parking",
-            "category_display": "Gedung & Area Parkir (MSCP)",
-            "city_regency": city,
+            "category": "hospital",
+            "category_display": "Rumah Sakit & Fasilitas Medis",
+            "city_regency": determine_city(lat, lon),
             "latitude": round(lat, 6),
             "longitude": round(lon, 6),
-            "source_reference": f"parking_jakarta.gpkg:{row['id']}"
+            "source_reference": f"hospitals_jakarta.gpkg:{row['id']}"
         })
-        idx += 1
 
-    records = deduplicate_spatial(records, min_dist_m=30.0)
-    print(f"    -> Berhasil mengekstrak {len(records)} titik Parkir unik.")
-    return records[:946]
+    records = deduplicate_spatial(records, min_dist_m=35.0)
+    print(f"    -> Berhasil mengekstrak {len(records)} Fasilitas Medis unik.")
+    return records
 
 
-# ─── 2. EXTRACT TRANSJAKARTA (TARGET 400 + 40 BUFFER = 440) ───────────────────
+# ─── 3. EXTRACT TRANSJAKARTA (TARGET 400 TITIK) ────────────────────────────────
 def harvest_transjakarta() -> list:
-    print("[*] Mengekstrak Halte TransJakarta dari data/raw/transjakarta/transjakarta_stations.csv...")
+    print("[*] Mengekstrak Halte TransJakarta dari transjakarta_stations.csv...")
     tj_file = RAW_DIR / "transjakarta" / "transjakarta_stations.csv"
     records = []
     if not tj_file.exists():
@@ -199,10 +204,7 @@ def harvest_transjakarta() -> list:
         return records
 
     df = pd.read_csv(tj_file).dropna(subset=["Latitude", "Longitude", "Nama_Halte"])
-    # Filter duplikasi nama
     df = df.drop_duplicates(subset=["Nama_Halte"]).copy()
-
-    # Prioritaskan halte yang memiliki kata kunci 'Halte', 'Koridor', atau nama stasiun
     df["is_priority"] = df["Nama_Halte"].str.contains(r"Halte|Koridor|Stasiun|Terminal|Simpang|Flyover|Plaza|Mall", case=False, regex=True)
     df = df.sort_values(by="is_priority", ascending=False)
 
@@ -212,7 +214,6 @@ def harvest_transjakarta() -> list:
         if not is_in_bbox(lat, lon):
             continue
         nm = str(row["Nama_Halte"]).strip()
-        # Standarisasi prefix nama halte
         if not nm.lower().startswith("halte ") and not nm.lower().startswith("shelter "):
             nm = f"Halte {nm}"
 
@@ -225,21 +226,18 @@ def harvest_transjakarta() -> list:
             "longitude": round(lon, 6),
             "source_reference": "transjakarta_stations.csv"
         })
-        if len(records) >= 600:
-            break
 
     records = deduplicate_spatial(records, min_dist_m=20.0)
     print(f"    -> Berhasil mengekstrak {len(records)} Halte TransJakarta.")
-    return records[:440]
+    return records
 
 
-# ─── 3. EXTRACT KRL (TARGET 80 + 10 BUFFER = 90) ─────────────────────────────
+# ─── 4. EXTRACT KRL (TARGET 80 TITIK) ─────────────────────────────────────────
 def harvest_krl() -> list:
     print("[*] Mengekstrak Stasiun KRL Commuter Line...")
     records = []
     krl_file = RAW_DIR / "krl" / "krl_stations.csv"
     st_gpkg = RAW_DIR / "osm" / "stations_jakarta.gpkg"
-
     seen_names = set()
 
     if krl_file.exists():
@@ -265,7 +263,7 @@ def harvest_krl() -> list:
 
     if st_gpkg.exists():
         gdf_st = gpd.read_file(st_gpkg)
-        gdf_st["centroid"] = gdf_st.geometry.centroid
+        gdf_st["centroid"] = gdf_st.to_crs(epsg=3857).geometry.centroid.to_crs(epsg=4326)
         for _, row in gdf_st.iterrows():
             raw_name = str(row.get("name", "")).strip()
             if not raw_name or raw_name == "nan":
@@ -290,10 +288,10 @@ def harvest_krl() -> list:
 
     records = deduplicate_spatial(records, min_dist_m=50.0)
     print(f"    -> Berhasil mengekstrak {len(records)} Stasiun KRL.")
-    return records[:90]
+    return records
 
 
-# ─── 4. EXTRACT MRT & LRT (TARGET 40 + 5 BUFFER = 45) ─────────────────────────
+# ─── 5. EXTRACT MRT & LRT (TARGET 31 TITIK) ───────────────────────────────────
 def harvest_mrt_lrt() -> list:
     print("[*] Mengekstrak Stasiun MRT & LRT Jabodebek/Jakarta...")
     records = []
@@ -324,7 +322,7 @@ def harvest_mrt_lrt() -> list:
         f = RAW_DIR / "mrt_lrt" / geo_name
         if f.exists():
             gdf = gpd.read_file(f)
-            gdf["centroid"] = gdf.geometry.centroid
+            gdf["centroid"] = gdf.to_crs(epsg=3857).geometry.centroid.to_crs(epsg=4326)
             for _, row in gdf.iterrows():
                 nm = str(row.get("name", row.get("station_name", ""))).strip()
                 if not nm or nm == "nan":
@@ -349,217 +347,209 @@ def harvest_mrt_lrt() -> list:
 
     records = deduplicate_spatial(records, min_dist_m=40.0)
     print(f"    -> Berhasil mengekstrak {len(records)} Stasiun MRT & LRT.")
-    return records[:45]
+    return records
 
 
-# ─── 5. EXTRACT HOSPITALS (TARGET 100 + 15 BUFFER = 115) ─────────────────────
-def harvest_hospitals() -> list:
-    print("[*] Mengekstrak Rumah Sakit & Fasilitas Medis dari hospitals_jakarta.gpkg...")
-    h_file = RAW_DIR / "osm" / "hospitals_jakarta.gpkg"
-    records = []
-    if not h_file.exists():
-        return records
-
-    gdf = gpd.read_file(h_file).dropna(subset=["name"])
-    gdf["centroid"] = gdf.geometry.centroid
-
-    for _, row in gdf.iterrows():
-        nm = str(row["name"]).strip()
-        lat = row["centroid"].y
-        lon = row["centroid"].x
-        if not is_in_bbox(lat, lon):
-            continue
-        records.append({
-            "asset_name": nm,
-            "category": "hospital",
-            "category_display": "Rumah Sakit & Fasilitas Medis",
-            "city_regency": determine_city(lat, lon),
-            "latitude": round(lat, 6),
-            "longitude": round(lon, 6),
-            "source_reference": f"hospitals_jakarta.gpkg:{row['id']}"
-        })
-
-    records = deduplicate_spatial(records, min_dist_m=50.0)
-    print(f"    -> Berhasil mengekstrak {len(records)} Fasilitas Medis.")
-    return records[:115]
-
-
-# ─── 6. EXTRACT JPO (TARGET 30 + 5 BUFFER = 35) ──────────────────────────────
+# ─── 6. EXTRACT JPO (TARGET 30 TITIK) ─────────────────────────────────────────
 def harvest_jpo() -> list:
     print("[*] Mengekstrak Jembatan Penyeberangan Orang (JPO)...")
     records = []
     jpo_file = RAW_DIR / "jpo" / "jpo_jakarta.csv"
-    if not jpo_file.exists():
-        return records
+    if jpo_file.exists():
+        df = pd.read_csv(jpo_file).dropna(subset=["Latitude", "Longitude", "Nama_JPO"])
+        named_jpo = df[~df["Nama_JPO"].str.contains("Tanpa Nama", case=False, na=False)].copy()
 
-    df = pd.read_csv(jpo_file).dropna(subset=["Latitude", "Longitude", "Nama_JPO"])
-    named_jpo = df[~df["Nama_JPO"].str.contains("Tanpa Nama", case=False, na=False)].copy()
-
-    for _, row in named_jpo.iterrows():
-        lat = float(row["Latitude"])
-        lon = float(row["Longitude"])
-        if not is_in_bbox(lat, lon):
-            continue
-        nm = str(row["Nama_JPO"]).strip()
-        full_nm = f"JPO {nm}" if not nm.lower().startswith("jpo") else nm
-        records.append({
-            "asset_name": full_nm,
-            "category": "jpo",
-            "category_display": "Jembatan Penyeberangan Orang (JPO)",
-            "city_regency": determine_city(lat, lon),
-            "latitude": round(lat, 6),
-            "longitude": round(lon, 6),
-            "source_reference": "jpo_jakarta.csv"
-        })
-        if len(records) >= 100:
-            break
+        for _, row in named_jpo.iterrows():
+            lat = float(row["Latitude"])
+            lon = float(row["Longitude"])
+            if not is_in_bbox(lat, lon):
+                continue
+            nm = str(row["Nama_JPO"]).strip()
+            full_nm = f"JPO {nm}" if not nm.lower().startswith("jpo") else nm
+            records.append({
+                "asset_name": full_nm,
+                "category": "jpo",
+                "category_display": "Jembatan Penyeberangan Orang (JPO)",
+                "city_regency": determine_city(lat, lon),
+                "latitude": round(lat, 6),
+                "longitude": round(lon, 6),
+                "source_reference": "jpo_jakarta.csv"
+            })
 
     records = deduplicate_spatial(records, min_dist_m=30.0)
     print(f"    -> Berhasil mengekstrak {len(records)} JPO bernama.")
-    return records[:35]
+    return records
 
 
-# ─── 7. HARVEST OVERPASS CATEGORIES (EDUCATION, MALL, MARKET, STADIUM, TERMINAL, AIRPORT) ───
-def harvest_overpass_categories() -> dict:
-    print("[*] Menghubungi Overpass API untuk mengekstrak fasilitas pendidikan, mall, pasar, stadion, terminal & bandara...")
-    query = """
-    [out:json][timeout:90];
-    (
-      nwr["amenity"="school"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["amenity"="university"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["amenity"="college"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["shop"="mall"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["amenity"="marketplace"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["leisure"="stadium"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["leisure"="sports_centre"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["amenity"="bus_station"]["name"](-6.65, 106.55, -6.05, 107.15);
-      nwr["aeroway"~"aerodrome|terminal"]["name"](-6.65, 106.55, -6.05, 107.15);
-    );
-    out center;
-    """
-    elements = query_overpass(query)
-    print(f"    -> Total elemen mentah diterima dari Overpass: {len(elements)}")
+# ─── 7. EXTRACT MALL, MARKET, STADIUM, TERMINAL, AIRPORT ───────────────────────
+def harvest_existing_candidates() -> dict:
+    print("[*] Mengekstrak Mall, Pasar, Stadion, Terminal, Bandara terkurasi...")
+    cand_file = POI_DIR / "candidates_2200_titik.csv"
+    cat_map = {"mall": [], "market": [], "stadium": [], "terminal": [], "airport": []}
 
-    cat_map = {
-        "school": [],
-        "university": [],
-        "mall": [],
-        "market": [],
-        "stadium": [],
-        "terminal": [],
-        "airport": []
-    }
-
-    for el in elements:
-        tags = el.get("tags", {})
-        nm = str(tags.get("name", "")).strip()
-        if not nm:
-            continue
-        lat = el.get("lat") or el.get("center", {}).get("lat")
-        lon = el.get("lon") or el.get("center", {}).get("lon")
-        if not lat or not lon or not is_in_bbox(lat, lon):
-            continue
-
-        osm_id = f"{el.get('type', 'node')}/{el.get('id', '')}"
-        city = determine_city(lat, lon)
-
-        # Kategorisasi
-        amenity = tags.get("amenity", "")
-        shop = tags.get("shop", "")
-        leisure = tags.get("leisure", "")
-        aeroway = tags.get("aeroway", "")
-
-        if amenity in ["university", "college"] or "universitas" in nm.lower() or "institut" in nm.lower() or "politeknik" in nm.lower():
-            cat_map["university"].append({
-                "asset_name": nm,
-                "category": "university",
-                "category_display": "Universitas & Kampus",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif amenity == "school" or "sma" in nm.lower() or "smk" in nm.lower() or "smp" in nm.lower() or "sekolah" in nm.lower():
-            cat_map["school"].append({
-                "asset_name": nm,
-                "category": "school",
-                "category_display": "Sekolah Menengah (SMA/SMK/SMP)",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif shop == "mall" or "mall" in nm.lower() or "plaza" in nm.lower() or "square" in nm.lower():
-            cat_map["mall"].append({
-                "asset_name": nm,
-                "category": "mall",
-                "category_display": "Pusat Perbelanjaan / Mall",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif amenity == "marketplace" or "pasar" in nm.lower():
-            cat_map["market"].append({
-                "asset_name": nm,
-                "category": "market",
-                "category_display": "Pasar Tradisional",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif leisure in ["stadium", "sports_centre"] or "stadion" in nm.lower() or "gor" in nm.lower() or "gelanggang" in nm.lower():
-            cat_map["stadium"].append({
-                "asset_name": nm,
-                "category": "stadium",
-                "category_display": "Stadion & Arena Olahraga",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif amenity == "bus_station" or "terminal" in nm.lower():
-            cat_map["terminal"].append({
-                "asset_name": nm,
-                "category": "terminal",
-                "category_display": "Terminal Bus & Simpul Antarmoda",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-        elif aeroway or "bandara" in nm.lower() or "airport" in nm.lower() or "terminal 1" in nm.lower() or "terminal 2" in nm.lower() or "terminal 3" in nm.lower():
-            cat_map["airport"].append({
-                "asset_name": nm,
-                "category": "airport",
-                "category_display": "Fasilitas Penunjang Bandara",
-                "city_regency": city,
-                "latitude": round(lat, 6),
-                "longitude": round(lon, 6),
-                "source_reference": f"osm_overpass:{osm_id}"
-            })
-
-    # Deduplikasi masing-masing
-    for k in cat_map:
-        cat_map[k] = deduplicate_spatial(cat_map[k], min_dist_m=35.0)
-        print(f"    -> Kategori {k}: {len(cat_map[k])} titik terkurasi.")
-
+    if cand_file.exists():
+        df = pd.read_csv(cand_file)
+        for cat in cat_map:
+            sub = df[df["category"] == cat].copy()
+            for _, row in sub.iterrows():
+                nm = str(row["asset_name"]).strip()
+                lat = float(row["latitude"])
+                lon = float(row["longitude"])
+                if not is_in_bbox(lat, lon):
+                    continue
+                cat_map[cat].append({
+                    "asset_name": nm,
+                    "category": cat,
+                    "category_display": row["category_display"],
+                    "city_regency": determine_city(lat, lon),
+                    "latitude": round(lat, 6),
+                    "longitude": round(lon, 6),
+                    "source_reference": str(row.get("source_reference", ""))
+                })
+            cat_map[cat] = deduplicate_spatial(cat_map[cat], min_dist_m=30.0)
+            print(f"    -> {cat}: {len(cat_map[cat])} titik terkurasi.")
     return cat_map
 
 
-# ─── BATCH ASSIGNMENT LOGIC (PILAR 3: 8 BATCH @ 250 TITIK) ────────────────────
+# ─── 8. EXTRACT UNIVERSITIES (TARGET 180 TITIK) ───────────────────────────────
+def harvest_universities() -> list:
+    print("[*] Mengekstrak Universitas & Kampus dari data/raw/osm/universities_osm_overpass.json...")
+    records = []
+    seen_names = set()
+
+    # Prioritaskan kandidat lama yang sudah ada di candidates_2200_titik.csv
+    cand_file = POI_DIR / "candidates_2200_titik.csv"
+    if cand_file.exists():
+        df_old = pd.read_csv(cand_file)
+        u_old = df_old[df_old["category"] == "university"]
+        for _, row in u_old.iterrows():
+            nm = str(row["asset_name"]).strip()
+            seen_names.add(nm.lower())
+            records.append({
+                "asset_name": nm,
+                "category": "university",
+                "category_display": "Universitas & Kampus",
+                "city_regency": determine_city(float(row["latitude"]), float(row["longitude"])),
+                "latitude": round(float(row["latitude"]), 6),
+                "longitude": round(float(row["longitude"]), 6),
+                "source_reference": str(row.get("source_reference", ""))
+            })
+
+    # Tambahkan dari raw overpass lokal
+    u_file = RAW_DIR / "osm" / "universities_osm_overpass.json"
+    if u_file.exists():
+        with open(u_file, "r", encoding="utf-8") as f:
+            elements = json.load(f)
+        for el in elements:
+            tags = el.get("tags", {})
+            nm = str(tags.get("name", "")).strip()
+            if not nm or nm.lower() in seen_names:
+                continue
+            lat = el.get("lat") or el.get("center", {}).get("lat")
+            lon = el.get("lon") or el.get("center", {}).get("lon")
+            if not lat or not lon or not is_in_bbox(lat, lon):
+                continue
+            osm_id = f"{el.get('type', 'node')}/{el.get('id', '')}"
+            seen_names.add(nm.lower())
+            records.append({
+                "asset_name": nm,
+                "category": "university",
+                "category_display": "Universitas & Kampus",
+                "city_regency": determine_city(lat, lon),
+                "latitude": round(lat, 6),
+                "longitude": round(lon, 6),
+                "source_reference": f"osm_overpass:{osm_id}"
+            })
+
+    records = deduplicate_spatial(records, min_dist_m=35.0)
+    print(f"    -> Berhasil mengekstrak {len(records)} Universitas & Kampus bernama resmi.")
+    return records
+
+
+# ─── 9. EXTRACT SCHOOLS (TARGET 659 TITIK) ────────────────────────────────────
+def harvest_schools() -> list:
+    print("[*] Mengekstrak Sekolah Menengah (SMA/SMK/SMP) dari schools_osm_overpass.json...")
+    records = []
+    seen_names = set()
+
+    # Prioritaskan sekolah lama dari candidates_2200_titik.csv
+    cand_file = POI_DIR / "candidates_2200_titik.csv"
+    if cand_file.exists():
+        df_old = pd.read_csv(cand_file)
+        s_old = df_old[df_old["category"] == "school"]
+        for _, row in s_old.iterrows():
+            nm = str(row["asset_name"]).strip()
+            seen_names.add(nm.lower())
+            records.append({
+                "asset_name": nm,
+                "category": "school",
+                "category_display": "Sekolah Menengah (SMA/SMK/SMP)",
+                "city_regency": determine_city(float(row["latitude"]), float(row["longitude"])),
+                "latitude": round(float(row["latitude"]), 6),
+                "longitude": round(float(row["longitude"]), 6),
+                "source_reference": str(row.get("source_reference", ""))
+            })
+
+    # Tambahkan dari raw overpass lokal
+    s_file = RAW_DIR / "osm" / "schools_osm_overpass.json"
+    if s_file.exists():
+        with open(s_file, "r", encoding="utf-8") as f:
+            elements = json.load(f)
+
+        # Pisahkan prioritas SMA/SMK/SMP negeri/swasta
+        priority_sch = []
+        regular_sch = []
+
+        for el in elements:
+            tags = el.get("tags", {})
+            nm = str(tags.get("name", "")).strip()
+            if not nm or nm.lower() in seen_names:
+                continue
+            lat = el.get("lat") or el.get("center", {}).get("lat")
+            lon = el.get("lon") or el.get("center", {}).get("lon")
+            if not lat or not lon or not is_in_bbox(lat, lon):
+                continue
+            osm_id = f"{el.get('type', 'node')}/{el.get('id', '')}"
+            seen_names.add(nm.lower())
+
+            item = {
+                "asset_name": nm,
+                "category": "school",
+                "category_display": "Sekolah Menengah (SMA/SMK/SMP)",
+                "city_regency": determine_city(lat, lon),
+                "latitude": round(lat, 6),
+                "longitude": round(lon, 6),
+                "source_reference": f"osm_overpass:{osm_id}"
+            }
+
+            # Utamakan SMA, SMK, SMP, MA, MTS
+            if any(k in nm.lower() for k in ["sma", "smk", "smp", "madrasah", "aliyah", "tsanawiyah", "high school"]):
+                priority_sch.append(item)
+            else:
+                regular_sch.append(item)
+
+        records.extend(priority_sch)
+        records.extend(regular_sch)
+
+    records = deduplicate_spatial(records, min_dist_m=35.0)
+    print(f"    -> Berhasil mengekstrak {len(records)} Sekolah bernama resmi.")
+    return records
+
+
+# ─── 10. BATCH ASSIGNMENT LOGIC (8 BATCH @ 250 TITIK) ─────────────────────────
 def assign_batches(df_main: pd.DataFrame) -> pd.DataFrame:
     """
-    Mengalokasikan nomor Batch 1 s.d. Batch 8 (Presisi 250 titik per batch):
+    Mengalokasikan nomor Batch 1 s.d. Batch 8 (Presisi tepat 250 titik per batch):
     * Batch 1: Klaster Rel & Simpul Transit (KRL 80, MRT/LRT 31, Terminal 30, JPO 30, Bandara 10, Halte 69) = 250 titik
-    * Batch 2: Halte TransJakarta Koridor = 250 titik
-    * Batch 3: Halte TransJakarta Sisa (81) + Parkir MSCP (169) = 250 titik
-    * Batch 4: Gedung Parkir MSCP = 250 titik
-    * Batch 5: Gedung Parkir MSCP = 250 titik
-    * Batch 6: Pendidikan (Sekolah 165 + Kampus 61) + Parkir MSCP (24) = 250 titik
-    * Batch 7: Fasilitas Medis (100) + Pasar Tradisional (80) + Parkir MSCP (70) = 250 titik
-    * Batch 8: Mall (70) + Stadion (50) + Parkir MSCP (130) = 250 titik
+      (100% IDENTIK dengan penarikan Batch 1 yang telah selesai & terverifikasi di git)
+    * Batch 2: Halte TransJakarta Koridor = 250 titik (BRT 70..319)
+    * Batch 3: Halte TransJakarta Sisa (81) + Gedung Parkir Resmi (99) + Mall (70) = 250 titik
+    * Batch 4: Sisa Mall (10) + Pasar Tradisional (100) + Stadion (55) + Kampus (85) = 250 titik
+    * Batch 5: Sisa Kampus (95) + Rumah Sakit & Medis (155) = 250 titik
+    * Batch 6: Sisa Rumah Sakit (91) + Sekolah Menengah (159) = 250 titik
+    * Batch 7: Sekolah Menengah = 250 titik
+    * Batch 8: Sisa Sekolah Menengah = 250 titik
+    TOTAL: 8 Batch x 250 Titik = 2.000 Titik Tepat
     """
     df = df_main.copy()
     df["batch_no"] = 0
@@ -571,43 +561,43 @@ def assign_batches(df_main: pd.DataFrame) -> pd.DataFrame:
     air_idx = df[df["category"] == "airport"].index.tolist()
     brt_idx = df[df["category"] == "brt"].index.tolist()
     pkg_idx = df[df["category"] == "parking"].index.tolist()
-    sch_idx = df[df["category"] == "school"].index.tolist()
+    mall_idx = df[df["category"] == "mall"].index.tolist()
+    mkt_idx = df[df["category"] == "market"].index.tolist()
+    std_idx = df[df["category"] == "stadium"].index.tolist()
     univ_idx = df[df["category"] == "university"].index.tolist()
     hosp_idx = df[df["category"] == "hospital"].index.tolist()
-    mkt_idx = df[df["category"] == "market"].index.tolist()
-    mall_idx = df[df["category"] == "mall"].index.tolist()
-    std_idx = df[df["category"] == "stadium"].index.tolist()
+    sch_idx = df[df["category"] == "school"].index.tolist()
 
-    # Batch 1 (250 titik)
+    # Batch 1 (250 titik: 80 KRL, 31 MRT/LRT, 30 Terminal, 30 JPO, 10 Bandara, 69 BRT)
     b1 = krl_idx[:80] + mrt_idx[:31] + term_idx[:30] + jpo_idx[:30] + air_idx[:10] + brt_idx[:69]
     df.loc[b1, "batch_no"] = 1
 
-    # Batch 2 (250 titik Halte TJ)
+    # Batch 2 (250 titik: BRT 70..319)
     b2 = brt_idx[69:319]
     df.loc[b2, "batch_no"] = 2
 
-    # Batch 3 (250 titik: sisa 81 Halte TJ + 169 Parkir)
-    b3 = brt_idx[319:400] + pkg_idx[:169]
+    # Batch 3 (250 titik: sisa 81 BRT + 99 Parkir + 70 Mall)
+    b3 = brt_idx[319:400] + pkg_idx[:99] + mall_idx[:70]
     df.loc[b3, "batch_no"] = 3
 
-    # Batch 4 (250 titik Parkir)
-    b4 = pkg_idx[169:419]
+    # Batch 4 (250 titik: sisa 10 Mall + 100 Pasar + 55 Stadion + 85 Kampus)
+    b4 = mall_idx[70:80] + mkt_idx[:100] + std_idx[:55] + univ_idx[:85]
     df.loc[b4, "batch_no"] = 4
 
-    # Batch 5 (250 titik Parkir)
-    b5 = pkg_idx[419:669]
+    # Batch 5 (250 titik: sisa 95 Kampus + 155 RS)
+    b5 = univ_idx[85:180] + hosp_idx[:155]
     df.loc[b5, "batch_no"] = 5
 
-    # Batch 6 (250 titik: 165 Sekolah + 61 Kampus + 24 Parkir)
-    b6 = sch_idx[:165] + univ_idx[:61] + pkg_idx[669:693]
+    # Batch 6 (250 titik: sisa 91 RS + 159 Sekolah)
+    b6 = hosp_idx[155:246] + sch_idx[:159]
     df.loc[b6, "batch_no"] = 6
 
-    # Batch 7 (250 titik: 100 RS + 80 Pasar + 70 Parkir)
-    b7 = hosp_idx[:100] + mkt_idx[:80] + pkg_idx[693:763]
+    # Batch 7 (250 titik Sekolah)
+    b7 = sch_idx[159:409]
     df.loc[b7, "batch_no"] = 7
 
-    # Batch 8 (250 titik: 70 Mall + 50 Stadion + 130 Parkir)
-    b8 = mall_idx[:70] + std_idx[:50] + pkg_idx[763:893]
+    # Batch 8 (250 titik Sekolah)
+    b8 = sch_idx[409:659]
     df.loc[b8, "batch_no"] = 8
 
     return df
@@ -616,42 +606,43 @@ def assign_batches(df_main: pd.DataFrame) -> pd.DataFrame:
 def main():
     print("=" * 80)
     print("  KURASI DATASET TARGET 2.000 TITIK POTENSI PLTS ATAP JABODETABEK")
-    print("  Dokumen: STRATEGI-EKSEKUSI-5-PILAR-2000-TITIK-JABODETABEK.md (Pilar 1)")
+    print("  AUDIT METODOLOGIS: 100% ENTITAS RESMI, BERATAP RIIL, ZERO DUMMY #OSM_ID")
     print("=" * 80)
 
-    # 1. Ekstraksi dari Dataset Lokal
+    # 1. Ekstraksi seluruh kategori dari sumber lokal resmi
     parking_list = harvest_parking()
+    hosp_list = harvest_hospitals()
     brt_list = harvest_transjakarta()
     krl_list = harvest_krl()
     mrt_list = harvest_mrt_lrt()
-    hosp_list = harvest_hospitals()
     jpo_list = harvest_jpo()
 
-    # 2. Ekstraksi Kategori Pendukung via Overpass API
-    overpass_data = harvest_overpass_categories()
-    sch_list = overpass_data["school"]
-    univ_list = overpass_data["university"]
-    mall_list = overpass_data["mall"]
-    mkt_list = overpass_data["market"]
-    std_list = overpass_data["stadium"]
-    term_list = overpass_data["terminal"]
-    air_list = overpass_data["airport"]
+    cand_cats = harvest_existing_candidates()
+    mall_list = cand_cats["mall"]
+    mkt_list = cand_cats["market"]
+    std_list = cand_cats["stadium"]
+    term_list = cand_cats["terminal"]
+    air_list = cand_cats["airport"]
 
-    # 3. Alokasi Target Utama & Buffer Cadangan (Presisi 2.000 Target + 200 Buffer = 2.200 Titik)
+    univ_list = harvest_universities()
+    sch_list = harvest_schools()
+
+    # 2. Konfigurasi Target Utama & Buffer Cadangan
+    # Total Target Utama Tepat 2.000 Titik!
     targets_config = [
-        ("parking", "Gedung & Area Parkir (MSCP)", parking_list, 893, 0, "PKG"),
-        ("brt", "Halte TransJakarta & Shelter", brt_list, 400, 25, "BRT"),
-        ("school", "Sekolah Menengah (SMA/SMK/SMP)", sch_list, 165, 50, "SCH"),
-        ("hospital", "Rumah Sakit & Fasilitas Medis", hosp_list, 100, 15, "RS"),
+        ("brt", "Halte TransJakarta & Shelter", brt_list, 400, 20, "BRT"),
         ("krl", "Stasiun KRL Commuter Line", krl_list, 80, 2, "KRL"),
-        ("market", "Pasar Tradisional", mkt_list, 80, 30, "MKT"),
-        ("mall", "Pusat Perbelanjaan / Mall", mall_list, 70, 20, "MALL"),
-        ("university", "Universitas & Kampus", univ_list, 61, 20, "UNIV"),
-        ("stadium", "Stadion & Arena Olahraga", std_list, 50, 20, "STD"),
         ("mrt_lrt", "Stasiun MRT & LRT", mrt_list, 31, 0, "MRT"),
-        ("terminal", "Terminal Bus & Simpul Antarmoda", term_list, 30, 13, "TERM"),
+        ("terminal", "Terminal Bus & Simpul Antarmoda", term_list, 30, 10, "TERM"),
         ("jpo", "Jembatan Penyeberangan Orang (JPO)", jpo_list, 30, 5, "JPO"),
         ("airport", "Fasilitas Penunjang Bandara", air_list, 10, 0, "AIR"),
+        ("parking", "Gedung & Area Parkir (MSCP)", parking_list, 99, 0, "PKG"),
+        ("mall", "Pusat Perbelanjaan / Mall", mall_list, 80, 5, "MALL"),
+        ("market", "Pasar Tradisional", mkt_list, 100, 7, "MKT"),
+        ("stadium", "Stadion & Arena Olahraga", std_list, 55, 10, "STD"),
+        ("university", "Universitas & Kampus", univ_list, 180, 30, "UNIV"),
+        ("hospital", "Rumah Sakit & Fasilitas Medis", hosp_list, 246, 0, "RS"),
+        ("school", "Sekolah Menengah (SMA/SMK/SMP)", sch_list, 659, 50, "SCH"),
     ]
 
     all_curated = []
@@ -711,7 +702,7 @@ def main():
     gdf_main.to_file(out_target_geojson, driver="GeoJSON")
 
     print("=" * 80)
-    print("[+] SUKSES: Kurasi Master Dataset 2.000 Titik Berhasil Disimpan!")
+    print("[+] SUKSES: Kurasi Master Dataset 2.000 Titik Baru Berhasil Disimpan!")
     print(f"    - Master Target 2.000 CSV    : {out_target_csv}")
     print(f"    - Master Target 2.000 GeoJSON: {out_target_geojson}")
     print(f"    - Pool Kandidat + Buffer CSV : {out_cand_csv}")

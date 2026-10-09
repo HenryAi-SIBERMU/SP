@@ -24,6 +24,7 @@ import os
 import sys
 import json
 import time
+import math
 import argparse
 from pathlib import Path
 from dotenv import load_dotenv
@@ -261,10 +262,10 @@ def run_fast_probe(batch_target=None, limit=None):
         for _, r in gdf_p.iterrows():
             lat_c = float(r["centroid"].y)
             lon_c = float(r["centroid"].x)
-            if not (-6.65 <= lat_c <= -6.05 and 106.55 <= lon_c <= 107.15):
+            if pd.isna(r.get("name")) or not str(r.get("name", "")).strip() or str(r.get("name", "")).strip().lower() == "nan":
                 continue
-            name_c = str(r["name"]).strip() if pd.notna(r.get("name")) and str(r["name"]).strip() != "" and str(r["name"]).strip().lower() != "nan" else f"Gedung Parkir {determine_city(lat_c, lon_c)} #{r['id']}"
-            if name_c.lower() in used_names:
+            name_c = str(r["name"]).strip()
+            if "#" in name_c or name_c.lower() in used_names:
                 continue
             coord_c = (round(lat_c, 5), round(lon_c, 5))
             if coord_c in used_coords:
@@ -296,10 +297,25 @@ def run_fast_probe(batch_target=None, limit=None):
 
         out_json = RAW_BI_DIR / cat / f"{aid.lower()}_insights.json"
 
-        # 1. Cek Caching Lokal (Zero API Call)
+        # 1. Cek Caching Lokal & Validasi Spasial (< 75 meter)
+        is_valid_cache = False
+        d_m = 999.0
         if out_json.exists():
+            try:
+                with open(out_json, "r", encoding="utf-8") as jf:
+                    cdata = json.load(jf)
+                center = cdata.get("center", {})
+                clat = center.get("latitude", 0)
+                clon = center.get("longitude", 0)
+                d_m = math.sqrt(((lat - clat) * 110540)**2 + ((lon - clon) * 111320 * math.cos(math.radians(-6.2)))**2)
+                if d_m <= 75.0:
+                    is_valid_cache = True
+            except Exception:
+                is_valid_cache = False
+
+        if is_valid_cache:
             valid_cached_cnt += 1
-            print(f"[{idx+1}/{len(df_target_work)}] [CACHED] {aid} | {nm[:35]:35s} -> Tersedia Lokal")
+            print(f"[{idx+1}/{len(df_target_work)}] [CACHED] {aid} | {nm[:35]:35s} -> Cache Valid ({d_m:.1f}m)")
             continue
 
         # 2. Panggilan API Ringan
