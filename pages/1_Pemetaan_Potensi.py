@@ -444,8 +444,8 @@ CAT_COLORS = {
 }
 
 with col_map:
-    center_lat = df_summary["google_center_lat"].mean()
-    center_lon = df_summary["google_center_lon"].mean()
+    center_lat = float(df_summary["google_center_lat"].mean())
+    center_lon = float(df_summary["google_center_lon"].mean())
     
     # Folium map using clean Esri Satellite + OSM basemaps (NO Carto API KEY watermark)
     m = folium.Map(
@@ -469,14 +469,22 @@ with col_map:
         control=True
     ).add_to(m)
 
-    for _, row in df_summary.iterrows():
+    # Feature Groups per kategori infrastruktur (bisa di-toggle on/off di LayerControl)
+    cat_groups = {}
+    for cat_val, cat_df in df_summary.groupby("category"):
+        disp = cat_df["category_display"].iloc[0]
+        fg = folium.FeatureGroup(name=f"{disp} ({len(cat_df):,} titik)", show=True)
+        cat_groups[cat_val] = fg
+
+    records = df_summary.to_dict("records")
+    for row in records:
         color = CAT_COLORS.get(row["category"], "#66BB6A")
         
         popup_html = f"""
         <div style="font-family: 'Inter', sans-serif; min-width: 220px; color: #111;">
             <b style="font-size: 13px; color: {color};">[{row['category_display']}] {row['asset_name']}</b><br>
             <hr style="margin: 4px 0;">
-            <b>Kapasitas PLTS:</b> {row['installed_capacity_kwp']:,.1f} kWp ({row['max_panels_count']:,} panel)<br>
+            <b>Kapasitas PLTS:</b> {row['installed_capacity_kwp']:,.1f} kWp ({int(row['max_panels_count']):,} panel)<br>
             <b>Luas Atap:</b> {row['max_roof_area_m2']:,.1f} m²<br>
             <b>Produksi Listrik:</b> {row['annual_generation_mwh']:,.1f} MWh/thn<br>
             <b>Reduksi CO₂:</b> {row['ghg_reduction_tons_co2']:,.1f} Ton/thn<br>
@@ -485,29 +493,29 @@ with col_map:
         </div>
         """
 
-        folium.CircleMarker(
+        marker = folium.CircleMarker(
             location=[row["google_center_lat"], row["google_center_lon"]],
-            radius=9,
+            radius=7,
             color="#FFFFFF",
-            weight=2,
-            fill=True,
-            fill_color=color,
-            fill_opacity=0.95,
-            popup=folium.Popup(popup_html, max_width=320),
-            tooltip=f"[{row['category_display']}] {row['asset_name']} ({row['installed_capacity_kwp']} kWp)"
-        ).add_to(m)
-
-        folium.Circle(
-            location=[row["google_center_lat"], row["google_center_lon"]],
-            radius=60,
-            color=color,
             weight=1.5,
             fill=True,
-            fill_opacity=0.20
-        ).add_to(m)
+            fill_color=color,
+            fill_opacity=0.90,
+            popup=folium.Popup(popup_html, max_width=320),
+            tooltip=f"[{row['category_display']}] {row['asset_name']} ({row['installed_capacity_kwp']:,.1f} kWp)"
+        )
 
-    folium.LayerControl(position="topright").add_to(m)
-    st_folium(m, width="100%", height=490)
+        cat_val = row["category"]
+        if cat_val in cat_groups:
+            marker.add_to(cat_groups[cat_val])
+        else:
+            marker.add_to(m)
+
+    for fg in cat_groups.values():
+        fg.add_to(m)
+
+    folium.LayerControl(position="topright", collapsed=True).add_to(m)
+    st_folium(m, use_container_width=True, height=520, returned_objects=[])
 
 with col_list:
     st.markdown("#### Audit Integritas Spasial")
