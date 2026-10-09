@@ -18,7 +18,7 @@ import pandas as pd
 import geopandas as gpd
 import streamlit as st
 import folium
-from streamlit_folium import st_folium
+import streamlit.components.v1 as components
 from pathlib import Path
 from PIL import Image
 
@@ -443,9 +443,10 @@ CAT_COLORS = {
     "mrt_lrt": "#E53935",     # Merah MRT / LRT
 }
 
-with col_map:
-    center_lat = float(df_summary["google_center_lat"].mean())
-    center_lon = float(df_summary["google_center_lon"].mean())
+@st.cache_data(show_spinner="Menyiapkan peta interaktif 2.100 titik...")
+def generate_interactive_map_html(df_input: pd.DataFrame) -> str:
+    center_lat = float(df_input["google_center_lat"].mean())
+    center_lon = float(df_input["google_center_lon"].mean())
     
     # Folium map using clean Esri Satellite + OSM basemaps (NO Carto API KEY watermark)
     m = folium.Map(
@@ -471,12 +472,12 @@ with col_map:
 
     # Feature Groups per kategori infrastruktur (bisa di-toggle on/off di LayerControl)
     cat_groups = {}
-    for cat_val, cat_df in df_summary.groupby("category"):
+    for cat_val, cat_df in df_input.groupby("category"):
         disp = cat_df["category_display"].iloc[0]
         fg = folium.FeatureGroup(name=f"{disp} ({len(cat_df):,} titik)", show=True)
         cat_groups[cat_val] = fg
 
-    records = df_summary.to_dict("records")
+    records = df_input.to_dict("records")
     for row in records:
         color = CAT_COLORS.get(row["category"], "#66BB6A")
         
@@ -515,7 +516,11 @@ with col_map:
         fg.add_to(m)
 
     folium.LayerControl(position="topright", collapsed=True).add_to(m)
-    st_folium(m, use_container_width=True, height=520, returned_objects=[])
+    return m.get_root().render()
+
+with col_map:
+    map_html = generate_interactive_map_html(df_summary)
+    components.html(map_html, height=520)
 
 with col_list:
     st.markdown("#### Audit Integritas Spasial")
