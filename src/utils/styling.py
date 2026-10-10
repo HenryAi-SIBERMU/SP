@@ -55,6 +55,51 @@ def get_solar_css():
         line-height: 1.4;
     }
     
+    .bento-card {
+        background: linear-gradient(135deg, #141A24, #1E2738);
+        border: 1px solid #2E3B4E;
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 175px;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .bento-card:hover {
+        border-color: #4CAF50;
+        transform: translateY(-2px);
+    }
+    .bento-val {
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin: 8px 0;
+    }
+    .bento-lbl {
+        font-size: 0.78rem;
+        color: #90A4AE;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+    .bento-desc {
+        font-size: 0.76rem;
+        color: #CFD8DC;
+        line-height: 1.4;
+        text-align: left;
+        margin-top: 4px;
+    }
+    .bento-src {
+        font-size: 0.68rem;
+        color: #78909C;
+        margin-top: 10px;
+        padding-top: 6px;
+        border-top: 1px dotted #37474F;
+        text-align: left;
+    }
+    
     .section-header {
         font-size: 1.3rem;
         font-weight: 700;
