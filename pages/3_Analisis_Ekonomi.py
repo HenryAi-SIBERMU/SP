@@ -763,13 +763,14 @@ st.markdown(f"""
 </p>
 """, unsafe_allow_html=True)
 
-st.markdown("#### 3.2.1 Konversi Penghematan Listrik Menjadi Nilai Manfaat Layanan Publik Nyata")
+st.markdown("#### 3.2.1 Skenario A: Alokasi Agregat 100% Portofolio (Maksimal 59,7 Juta Tiket / Tahun)")
 st.markdown(f"""
 <p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
-    Menerjemahkan angka penghematan Rp {total_savings_miliar:,.2f} Miliar ke dalam tiga alternatif alokasi layanan publik prioritas membuktikan daya jangkau manfaat sosialnya:
+    Jika seluruh penghematan tagihan listrik APBD dari <b>seluruh 13 kategori infrastruktur</b> (total <b>Rp {total_savings_miliar:,.2f} Miliar/tahun</b>) 
+    dipusatkan untuk mendanai satu pos belanja publik prioritas secara maksimal:
     <br>• <b>Opsi Alokasi 1 — Subsidi Tarif Mobilitas Komuter TransJakarta:</b> 
     Dengan standar subsidi operasional <b>Rp {biaya_tiket_rp:,.0f} per perjalanan pelanggan</b> (selisih biaya riil armada Rp 13.500 dengan tarif warga Rp 3.500), 
-    penghematan listrik ini setara dengan membiayai penuh <b>{dividen_tiket_total:,} perjalanan komuter bersubsidi setiap tahun</b>. 
+    penghematan listrik ini setara dengan membiayai penuh <b>{dividen_tiket_total:,} perjalanan komuter bersubsidi setiap tahun (59,7 Juta Tiket)</b>. 
     Jumlah ini secara langsung menutup <b>{rasio_trans_pct:.1f}%</b> dari total alokasi pagu subsidi PSO tahunan Pemprov DKI Jakarta (Rp {pagu_trans_miliar:,.0f} Miliar), 
     menjamin mobilitas terjangkau dan mendorong perpindahan massal warga ke transportasi rendah emisi.
     <br>• <b>Opsi Alokasi 2 — Operasional Jaringan Puskesmas Kelurahan:</b> 
@@ -785,19 +786,22 @@ st.markdown(f"""
 </p>
 """, unsafe_allow_html=True)
 
-st.markdown("#### 3.2.2 Pembebasan Ruang Fiskal Daerah (*Fiscal Space Expansion*) & Model Reinvestasi Sektoral")
+st.markdown("#### 3.2.2 Skenario B: Rekomendasi Reinvestasi Sektoral Tertutup / Closed-Loop (19,2 Juta Tiket / Tahun)")
 st.markdown(f"""
 <p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
     Manfaat terbesar bagi kepala daerah dan DPRD adalah terjadinya <b>pembebasan ruang fiskal daerah (*fiscal space expansion*)</b> 
-    secara permanen tanpa harus menaikkan tarif pajak daerah, Pajak Bumi dan Bangunan (PBB), maupun retribusi warga. 
-    Guna mencegah inefisiensi birokrasi, CELIOS merekomendasikan penerapan <b>Model Reinvestasi Sektoral Tertutup (<i>Sectoral Closed-Loop</i>)</b>, 
-    di mana dividen penghematan diikat (*earmarked*) untuk memperkuat sektor yang bersangkutan:
+    secara permanen tanpa harus menaikkan tarif pajak daerah maupun retribusi warga. 
+    Namun, guna mencegah persaingan anggaran antar-dinas dan menjamin keadilan alokasi, CELIOS merekomendasikan penerapan 
+    <b>Model Reinvestasi Sektoral Tertutup (<i>Sectoral Closed-Loop</i>)</b>, di mana efisiensi tagihan listrik <b>diikat (*earmarked*) langsung ke sektor asalnya tanpa subsidi silang</b>:
     <br>1. <b>Sektor Simpul Transit & Mobilitas ({len(df_trans_cluster)} Kategori, Hemat Rp {savings_trans_cluster:,.2f} M/th):</b> 
-    Langsung membiayai <b>{dividen_tiket_closed:,} perjalanan komuter bersubsidi</b> di halte busway dan stasiun kereta api.
+    Hanya menggunakan efisiensi listrik dari halte TransJakarta, stasiun KRL/MRT/LRT, terminal, bandara, dan parkir, 
+    langsung membiayai <b>{dividen_tiket_closed:,} perjalanan komuter bersubsidi (19,2 Juta Tiket/tahun)</b>.
     <br>2. <b>Sektor Rumah Sakit Umum Daerah (RSUD, Hemat Rp {savings_health_cluster:,.2f} M/th):</b> 
-    Langsung membiayai <b>{dividen_puskesmas_closed:,.1f} unit Puskesmas Kelurahan</b> di kantong-kantong kemiskinan perkotaan.
+    Khusus mendanai operasional <b>{dividen_puskesmas_closed:,.1f} unit Puskesmas Kelurahan</b> di kawasan permukiman padat.
     <br>3. <b>Sektor Pendidikan & Kampus (Sekolah & Universitas, Hemat Rp {savings_edu_cluster:,.2f} M/th):</b> 
-    Langsung mendanai <b>{dividen_beasiswa_closed:,} beasiswa siswa sekolah menengah</b> dari keluarga desil terbawah.
+    Khusus mendanai beasiswa bagi <b>{dividen_beasiswa_closed:,} siswa sekolah menengah prasejahtera (KJP Plus)</b>.
+    <br>4. <b>Sektor Fasilitas Komersial Publik (Mall, Pasar, Stadion, Hemat Rp {savings_comm_cluster:,.2f} M/th):</b> 
+    Dikonversi menjadi dividen kas daerah untuk Pendapatan Asli Daerah (PAD) dan dana darurat iklim perkotaan.
 </p>
 """, unsafe_allow_html=True)
 
@@ -805,7 +809,7 @@ st.markdown(f"""
 col_chart_d1, col_chart_d2 = st.columns([3, 2])
 
 with col_chart_d1:
-    st.markdown("###### Tiga Skenario Alokasi Dividen Sosial: Agregat Penuh vs Reinvestasi Sektoral Tertutup")
+    st.markdown("###### Tiga Skenario Alokasi Dividen Sosial: Agregat Penuh (59,7 Jt) vs Reinvestasi Sektoral Tertutup (19,2 Jt)")
     
     categories_label = [
         "Subsidi Tiket Komuter<br>(Rp 10.000 / Perjalanan)",
@@ -819,7 +823,7 @@ with col_chart_d1:
     fig_dividen.add_trace(go.Bar(
         y=categories_label,
         x=[savings_trans_cluster, savings_health_cluster, savings_edu_cluster],
-        name='Reinvestasi Sektoral Tertutup (Closed-Loop)',
+        name='Skenario B: Reinvestasi Sektoral Tertutup (Closed-Loop)',
         orientation='h',
         marker=dict(color='#26A69A', line=dict(color='#80CBC4', width=1)),
         text=[
@@ -830,8 +834,8 @@ with col_chart_d1:
         textposition='auto',
         hoverinfo='text',
         hovertext=[
-            f"Klaster Transit (BRT, KRL, MRT, Terminal, Parkir): Hemat Rp {savings_trans_cluster:,.2f} M/th -> {dividen_tiket_closed:,} tiket",
-            f"Klaster RSUD: Hemat Rp {savings_health_cluster:,.2f} M/th -> {dividen_puskesmas_closed:.1f} unit Puskesmas terdanai penuh",
+            f"Klaster Transit Saja: Hemat Rp {savings_trans_cluster:,.2f} M/th -> {dividen_tiket_closed:,} tiket komuter",
+            f"Klaster RSUD Saja: Hemat Rp {savings_health_cluster:,.2f} M/th -> {dividen_puskesmas_closed:.1f} unit Puskesmas terdanai penuh",
             f"Klaster Sekolah & Kampus: Hemat Rp {savings_edu_cluster:,.2f} M/th -> {dividen_beasiswa_closed:,} beasiswa siswa KJP Plus"
         ]
     ))
@@ -840,7 +844,7 @@ with col_chart_d1:
     fig_dividen.add_trace(go.Bar(
         y=categories_label,
         x=[total_savings_miliar, total_savings_miliar, total_savings_miliar],
-        name=f'Alokasi Agregat 100% Portofolio (Rp {total_savings_miliar:,.1f} M)',
+        name=f'Skenario A: Alokasi Agregat 100% Portofolio (Rp {total_savings_miliar:,.1f} M)',
         orientation='h',
         marker=dict(color='#4CAF50', line=dict(color='#81C784', width=1)),
         text=[
@@ -860,7 +864,7 @@ with col_chart_d1:
     fig_dividen.update_layout(
         barmode='group',
         height=480,
-        margin=dict(l=10, r=40, t=30, b=20),
+        margin=dict(l=10, r=80, t=30, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         legend=dict(
@@ -874,7 +878,8 @@ with col_chart_d1:
         xaxis=dict(
             title=dict(text='Nilai Belanja Listrik yang Dialokasikan (Miliar Rupiah / Tahun)', font=dict(color='#B0BEC5', size=11)),
             tickfont=dict(color='#90A4AE'),
-            gridcolor='#263238'
+            gridcolor='#263238',
+            range=[0, total_savings_miliar * 1.35]
         ),
         yaxis=dict(
             tickfont=dict(color='#ECEFF1', size=11)
