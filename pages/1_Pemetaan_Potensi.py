@@ -53,12 +53,20 @@ PROCESSED_CALC_PATH = (
     )
 )
 PROCESSED_SEGMENTS_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_segments.csv"
-    if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_segments.csv").exists()
+    PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_segments.parquet"
+    if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_segments.parquet").exists()
     else (
-        PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv"
-        if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv").exists()
-        else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv")
+        PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_segments.csv"
+        if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_kumulatif_segments.csv").exists()
+        else (
+            PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_segments.csv"
+            if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_100_titik_segments.csv").exists()
+            else (
+                PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv"
+                if (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_13_titik_segments.csv").exists()
+                else (PROJECT_ROOT / "data" / "processed" / "calculations" / "pow_solar_5_titik_segments.csv")
+            )
+        )
     )
 )
 PROCESSED_GIS_PATH = (
@@ -82,7 +90,10 @@ def load_processed_data():
         return None, None, None
     df = pd.read_csv(PROCESSED_CALC_PATH)
     gdf = gpd.read_file(PROCESSED_GIS_PATH) if PROCESSED_GIS_PATH.exists() else None
-    df_segs = pd.read_csv(PROCESSED_SEGMENTS_PATH) if PROCESSED_SEGMENTS_PATH.exists() else pd.DataFrame()
+    if PROCESSED_SEGMENTS_PATH.exists():
+        df_segs = pd.read_parquet(PROCESSED_SEGMENTS_PATH) if PROCESSED_SEGMENTS_PATH.suffix == ".parquet" else pd.read_csv(PROCESSED_SEGMENTS_PATH)
+    else:
+        df_segs = pd.DataFrame()
     return df, gdf, df_segs
 
 def load_solar_orientation_ref():
@@ -235,11 +246,12 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Fasilitas (Mast
     st.caption("Tabel ini merangkum seluruh parameter dari Google Solar API Building Insights, Data Layers GeoTIFF, Segmentasi Bidang Atap, dan Audit Spasial yang ditampilkan di halaman ini:")
 
     if not df_segments.empty:
-        seg_agg = df_segments.groupby("asset_name").agg(
+        merge_col = "asset_id" if ("asset_id" in df_segments.columns and "asset_id" in df_summary.columns) else "asset_name"
+        seg_agg = df_segments.groupby(merge_col).agg(
             total_segments=("segment_index", "count"),
             active_segments=("panels_count", lambda x: int((x > 0).sum()))
         ).reset_index()
-        df_master = pd.merge(df_summary, seg_agg, on="asset_name", how="left")
+        df_master = pd.merge(df_summary, seg_agg, on=merge_col, how="left")
         df_master["total_segments"] = df_master["total_segments"].fillna(0).astype(int)
         df_master["active_segments"] = df_master["active_segments"].fillna(0).astype(int)
     else:
@@ -627,16 +639,18 @@ if df_filtered_insp.empty:
     st.info(f"Tidak ada fasilitas dengan kombinasi '{insp_selected_cat}' dan '{insp_selected_gap_label}'. Menampilkan seluruh daftar.")
     df_filtered_insp = df_summary.copy()
 
-insp_asset_options = df_filtered_insp["asset_name"].tolist()
+insp_asset_ids = df_filtered_insp["asset_id"].tolist()
+asset_name_map = dict(zip(df_filtered_insp["asset_id"], df_filtered_insp["asset_name"]))
 
-selected_asset_name = st.selectbox(
-    f"Pilih Infrastruktur untuk Inspeksi Detail ({len(insp_asset_options)} fasilitas tersedia):",
-    options=insp_asset_options,
+selected_asset_id = st.selectbox(
+    f"Pilih Infrastruktur untuk Inspeksi Detail ({len(insp_asset_ids)} fasilitas tersedia):",
+    options=insp_asset_ids,
+    format_func=lambda aid: f"{asset_name_map.get(aid, aid)} [{aid}]",
     index=0,
     key="insp_asset_select"
 )
 
-asset_row = df_filtered_insp[df_filtered_insp["asset_name"] == selected_asset_name].iloc[0]
+asset_row = df_filtered_insp[df_filtered_insp["asset_id"] == selected_asset_id].iloc[0]
 maps_url = asset_row.get("google_maps_url", "")
 if not maps_url or "place_id:" in str(maps_url):
     c_lat = asset_row.get("google_center_lat", asset_row.get("raw_lat", 0))
@@ -759,7 +773,7 @@ with tab_segments:
         segments_img_rel = asset_row.get("preview_segments_png")
         seg_caption = f"Visualisasi Poligon Segmen Atap 3D: {asset_row['asset_name']} ({disp_panels_count:,} Modul / {disp_capacity_kwp:,.1f} kWp)"
 
-        segments_img_path = get_clean_img_path(segments_img_rel)
+        segments_img_path = get_clean_img_path(segments_img_rel, aid=asset_row['asset_id'], layer_name='segments')
         if segments_img_path:
             st.image(
                 segments_img_path,
@@ -771,7 +785,7 @@ with tab_segments:
 
     with col_seg_info:
         if not df_segments.empty:
-            curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
+            curr_segs = df_segments[df_segments["asset_id"] == asset_row["asset_id"]].copy() if "asset_id" in df_segments.columns else df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
             if not curr_segs.empty:
                 total_segs = len(curr_segs)
                 active_segs = len(curr_segs[curr_segs["panels_count"] > 0])
@@ -842,7 +856,7 @@ Pada bangunan infrastruktur perkotaan seperti stasiun dan gedung parkir superblo
     st.markdown("<br>", unsafe_allow_html=True)
 
     if not df_segments.empty:
-        curr_segs = df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
+        curr_segs = df_segments[df_segments["asset_id"] == asset_row["asset_id"]].copy() if "asset_id" in df_segments.columns else df_segments[df_segments["asset_name"] == asset_row["asset_name"]].copy()
         if not curr_segs.empty:
             total_segs = len(curr_segs)
             st.markdown(f"#### Rincian Data Segmen Atap: {asset_row['asset_name']} ({total_segs} Segmen)")
