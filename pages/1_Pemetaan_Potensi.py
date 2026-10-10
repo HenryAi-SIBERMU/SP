@@ -132,14 +132,21 @@ def normalize_img_path(rel_path=None, aid=None, layer_name=None):
         if cand_rf.exists():
             return str(cand_rf)
 
-        # 1b. Cek previews showcase lokal
+        # 1b. Cek previews showcase lokal (.png dan .webp)
         if layer_clean == "infill":
             cand_prev_inf = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / fname).resolve()
             if cand_prev_inf.exists():
                 return str(cand_prev_inf)
+            cand_prev_inf_w = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / fname.replace(".png", ".webp")).resolve()
+            if cand_prev_inf_w.exists():
+                return str(cand_prev_inf_w)
+
         cand_prev = (PROJECT_ROOT / "data" / "processed" / "previews" / fname).resolve()
         if cand_prev.exists():
             return str(cand_prev)
+        cand_prev_w = (PROJECT_ROOT / "data" / "processed" / "previews" / fname.replace(".png", ".webp")).resolve()
+        if cand_prev_w.exists():
+            return str(cand_prev_w)
 
     # Check 2: Relative path langsung
     if pd.notna(rel_path) and isinstance(rel_path, str) and len(rel_path.strip()) > 0:
@@ -149,20 +156,30 @@ def normalize_img_path(rel_path=None, aid=None, layer_name=None):
         cand1 = (PROJECT_ROOT / clean).resolve()
         if cand1.exists():
             return str(cand1)
+        cand1_w = (PROJECT_ROOT / clean.replace(".png", ".webp")).resolve()
+        if cand1_w.exists():
+            return str(cand1_w)
             
         # 2b. Relative to current working directory
         cand2 = Path(clean).resolve()
         if cand2.exists():
             return str(cand2)
             
-        # 2c. Fallback check in data/processed/previews / infill by filename
+        # 2c. Fallback check in data/processed/previews / infill by filename (.png dan .webp)
         filename = Path(clean).name
         cand3 = (PROJECT_ROOT / "data" / "processed" / "previews" / filename).resolve()
         if cand3.exists():
             return str(cand3)
+        cand3_w = (PROJECT_ROOT / "data" / "processed" / "previews" / filename.replace(".png", ".webp")).resolve()
+        if cand3_w.exists():
+            return str(cand3_w)
+
         cand4 = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / filename).resolve()
         if cand4.exists():
             return str(cand4)
+        cand4_w = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / filename.replace(".png", ".webp")).resolve()
+        if cand4_w.exists():
+            return str(cand4_w)
 
     return None
 
