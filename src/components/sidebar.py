@@ -35,7 +35,7 @@ def render_sidebar():
 
         st.markdown("---")
 
-        st.page_link("Dashboard.py", label="Overview")
+        # st.page_link("Dashboard.py", label="Overview")  # hidden
 
         st.markdown('<div class="sidebar-label">Analisis Potensi</div>', unsafe_allow_html=True)
         st.page_link("pages/1_Pemetaan_Potensi.py",        label="Pemetaan Potensi")
