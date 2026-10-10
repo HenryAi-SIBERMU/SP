@@ -207,9 +207,13 @@ def load_economic_datasets():
     pln_path = CALC_DIR / "pln_konsumsi_sektoral_jabodetabek.csv"
     df_pln = pd.read_csv(pln_path) if pln_path.exists() else pd.DataFrame()
 
-    return df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln
+    # 7. Standar Pengali Multiplier Green Jobs IESR / IRENA
+    jobs_mult_path = REF_DIR / "pow_solar_green_jobs_multiplier.csv"
+    df_jobs_mult = pd.read_csv(jobs_mult_path) if jobs_mult_path.exists() else pd.DataFrame()
 
-df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln = load_economic_datasets()
+    return df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult
+
+df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult = load_economic_datasets()
 
 if df_ekonomi.empty:
     st.error("Error: Dataset ringkasan ekonomi kebijakan tidak ditemukan di `data/processed/calculations/pow_solar_ekonomi_kebijakan.csv`.")
@@ -1001,15 +1005,342 @@ with st.expander("📋 Data Lineage: Ekuivalensi Dividen Sosial per 13 Kategori 
     )
 
 # ═════════════════════════════════════════════════════════════════════════════════
-# PLACEHOLDER NAVIGASI SUB-BAB 3.3 S.D. 3.5
+# SUB-BAB 3.3: DAMPAK PENCIPTAAN LAPANGAN KERJA HIJAU (GREEN JOBS MULTIPLIER)
+# ═════════════════════════════════════════════════════════════════════════════════
+st.markdown("---")
+st.markdown(r"### 3.3 Dampak Penciptaan Lapangan Kerja Hijau ($\text{Green Jobs Multiplier} \ \text{\&} \ \text{Just Transition}$)")
+st.markdown('<div class="sub-chapter-badge">Sub-Bab 3.3: Kuantifikasi Serapan Tenaga Kerja Lokal Transisi Energi, Multiplier IRENA/IESR & Just Energy Transition</div>', unsafe_allow_html=True)
+
+with st.expander("ℹ️ Metodologi 3.3: Formulasi Pengali Ketenagakerjaan Hijau IRENA/IESR & Dekomposisi Siklus Hidup Tenaga Kerja"):
+    st.markdown(r"""
+    **Prinsip Metodologis Analisis Ketenagakerjaan Hijau (*Green Jobs Accounting*):**
+    
+    1. **Adopsi Standar Pengali Resmi IRENA & IESR:**  
+       Kuantifikasi penyerapan tenaga kerja mengacu pada kajian resmi *Institute for Essential Services Reform* (IESR, 2021/2024) dan *International Renewable Energy Agency* (IRENA *Renewable Energy and Jobs Annual Review*):
+       * **Fase Konstruksi & Fabrikasi Elektrikal (Fase Awal 1–2 Tahun Proyek):**  
+         $$\text{Jobs}_{\text{Konstruksi}} (\text{Orang}) = \sum_{i=1}^{13} \left( P_{\text{MWp}, i} \times M_{\text{Konstruksi}, i} \right)$$  
+         - *Rooftop Dak Beton Standar:* **20,0 orang per MWp** (penyiapan rel profil aluminium, pemasangan modul PV, tarikan kabel DC/AC, proteksi inverter, dan sertifikasi laik operasi).  
+         - *Solar Carport & Kanopi Rangka Baja Bentang Lebar:* **28,0 orang per MWp** (membutuhkan tambahan alokasi tukang las/welder baja galvanis 3G/4G, pekerja pengecoran angkur beton, dan tim waterproofing kanopi peneduh kendaraan/komuter).
+       * **Fase Operasional & Pemeliharaan Jangka Panjang (25 Tahun Masa Operasional Penuh):**  
+         $$\text{Jobs}_{\text{O\&M}} (\text{Pekerja Tetap}) = \sum_{i=1}^{13} \left( P_{\text{MWp}, i} \times M_{\text{O\&M}, i} \right)$$  
+         - *Rooftop Dak Beton Standar:* **1,5 pekerja tetap per MWp** (petugas pembersih modul berkala, teknisi inspeksi inverter string, dan analis data monitoring energi).  
+         - *Solar Carport & Kanopi Rangka Baja:* **1,8 pekerja tetap per MWp** (inspektur korosi baja, tim pembersihan kanopi halte/stasiun, dan teknisi integrasi charging EV).
+         
+    2. **Total Lapangan Kerja Hijau Portofolio:**  
+       $$\text{Total Green Jobs} = \text{Jobs}_{\text{Konstruksi}} + \text{Jobs}_{\text{O\&M}} = \sum_{i=1}^{13} \text{Total\_Jobs}_i$$
+       
+    3. **Tesis Transisi Energi Berkeadilan (*Just Energy Transition*):**  
+       Pemasangan PLTS Atap perkotaan membantah mitos bahwa energi terbarukan bersifat elitis dan mematikan lapangan kerja. Sebaliknya, proyek skala metropolitan ini menciptakan rantai pasok industri padat karya di level lokal (bengkel fabrikasi baja, perakit aluminium, kontraktor elektrikal menengah ke bawah) dan menyerap langsung ribuan lulusan SMK Ketenagalistrikan serta politeknik daerah.
+    """)
+
+# ─── PRA-KALKULASI VARIABEL KETENAGAKERJAAN HIJAU ───────────────────────────────
+jobs_total = int(df_ekonomi['total_green_jobs_orang'].sum())
+jobs_const_total = int(df_ekonomi['green_jobs_konstruksi_orang'].sum())
+jobs_om_total = int(df_ekonomi['green_jobs_om_orang'].sum())
+
+# Breakdown Klaster Dak vs Carport
+dak_categories = ['hospital', 'school', 'university', 'mall', 'market', 'stadium']
+carport_categories = ['parking', 'brt', 'krl', 'mrt_lrt', 'terminal', 'jpo', 'airport']
+
+df_dak_jobs = df_ekonomi[df_ekonomi['category'].isin(dak_categories)]
+df_carport_jobs = df_ekonomi[df_ekonomi['category'].isin(carport_categories)]
+
+dak_jobs_const = int(df_dak_jobs['green_jobs_konstruksi_orang'].sum())
+dak_jobs_om = int(df_dak_jobs['green_jobs_om_orang'].sum())
+dak_jobs_total = int(df_dak_jobs['total_green_jobs_orang'].sum())
+dak_jobs_pct = (dak_jobs_total / jobs_total) * 100.0
+
+carport_jobs_const = int(df_carport_jobs['green_jobs_konstruksi_orang'].sum())
+carport_jobs_om = int(df_carport_jobs['green_jobs_om_orang'].sum())
+carport_jobs_total = int(df_carport_jobs['total_green_jobs_orang'].sum())
+carport_jobs_pct = (carport_jobs_total / jobs_total) * 100.0
+
+# Ranking Kategori
+df_ranked_jobs = df_ekonomi.sort_values(by='total_green_jobs_orang', ascending=False)
+top_job_1 = df_ranked_jobs.iloc[0]
+top_job_2 = df_ranked_jobs.iloc[1]
+top_job_3 = df_ranked_jobs.iloc[2]
+top_job_4 = df_ranked_jobs.iloc[3]
+
+# ─── NARASI TEKS ANALITIS 3.3.1 & 3.3.2 ──────────────────────────────────────────
+st.markdown(f"""
+<p style="color: #ECEFF1; font-size: 1.03rem; line-height: 1.75; margin-bottom: 1.2rem;">
+    Transisi energi perkotaan di kawasan aglomerasi Jabodetabek tidak hanya berdampak pada neraca moneter APBD dan penurunan emisi karbon, 
+    tetapi juga menjadi mesin pencipta lapangan kerja riil yang inklusif. 
+    Berdasarkan standar pengali resmi IRENA dan IESR, pemanfaatan potensi <b>{total_capacity_mwp:,.1f} MWp PLTS Atap</b> di 2.000 titik aset publik 
+    mampu menyerap total <b>{jobs_total:,} tenaga kerja hijau (<i>green jobs</i>)</b>. 
+    Dampak ketenagakerjaan ini terbagi ke dalam dua horizon waktu: <b>{jobs_const_total:,} pekerja</b> pada fase konstruksi dan instalasi awal (fase 1–2 tahun), 
+    serta <b>{jobs_om_total:,} pekerja teknis tetap</b> yang terjamin penghidupannya selama 25 tahun siklus operasional dan pemeliharaan fasilitas surya.
+</p>
+""", unsafe_allow_html=True)
+
+st.markdown("#### 3.3.1 Kuantifikasi Serapan Tenaga Kerja Lokal (Fase Konstruksi vs Operasional 25 Tahun)")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Analisis siklus hidup proyek membuktikan adanya diversifikasi profil keterampilan yang diserap dari pasar tenaga kerja lokal:
+    <br>• <b>Fase Konstruksi & Instalasi Elektrikal ({jobs_const_total:,} Pekerja / 93,4%):</b> 
+    Menyerap volume tenaga kerja terbesar pada tahap eksekusi fisik. Terdiri dari pekerja perakitan rel profil aluminium, 
+    juru las (welder 3G/4G) struktur penopang kanopi baja, teknisi pemasangan modul fotovoltaik, instalatur pengkabelan DC/AC, 
+    serta penguji kelaikan sistem untuk sertifikasi laik operasi (SLO). Mayoritas posisi ini sangat cocok menyerap lulusan <b>SMK Jurusan Ketenagalistrikan & Teknik Konstruksi</b> se-Jabodetabek.
+    <br>• <b>Fase Pemeliharaan & Operasi Jangka Panjang ({jobs_om_total:,} Pekerja Tetap / 6,6%):</b> 
+    Membuka lapangan kerja permanen berkarier panjang (25 tahun garansi modul). Terdiri atas tim pembersih modul berkala (<i>cleaning crew</i>), 
+    teknisi inspeksi kelistrikan preventif, analis pemantauan performa digital (SCADA / IoT monitoring), dan teknisi pemeliharaan inverter. 
+    Posisi ini memberikan stabilitas pendapatan jangka panjang bagi komunitas teknisi lokal.
+</p>
+""", unsafe_allow_html=True)
+
+st.markdown("#### 3.3.2 Distribusi Penyerapan Tenaga Kerja per Klaster Infrastruktur (Rangka Baja vs Rooftop Dak)")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Karakter fisik fasilitas membagi distribusi penyerapan tenaga kerja ke dalam dua klaster struktural yang saling melengkapi:
+    <br>• <b>Klaster Rooftop Dak Beton (6 Kategori):</b> 
+    Menyerap <b>{dak_jobs_total:,} pekerja ({dak_jobs_pct:.1f}%)</b>, didorong oleh skala kapasitas megawatt-peak yang masif pada bangunan publik. 
+    Kategori <b>{top_job_1['category_display']}</b> menempati peringkat pertama dengan serapan <b>{top_job_1['total_green_jobs_orang']:,} pekerja</b> 
+    ({top_job_1['green_jobs_konstruksi_orang']:,} konstruksi + {top_job_1['green_jobs_om_orang']:,} O&M), 
+    disusul oleh <b>{top_job_3['category_display']} ({top_job_3['total_green_jobs_orang']:,} pekerja)</b> dan 
+    <b>{top_job_4['category_display']} ({top_job_4['total_green_jobs_orang']:,} pekerja)</b>.
+    <br>• <b>Klaster Solar Carport & Kanopi Rangka Baja (7 Kategori):</b> 
+    Menyerap <b>{carport_jobs_total:,} pekerja ({carport_jobs_pct:.1f}%)</b> dengan intensitas tenaga kerja lebih padat (28 pekerja/MWp). 
+    Pemasangan kanopi surya pada <b>{top_job_2['category_display']}</b> menyerap <b>{top_job_2['total_green_jobs_orang']:,} pekerja</b> 
+    ({top_job_2['green_jobs_konstruksi_orang']:,} konstruksi + {top_job_2['green_jobs_om_orang']:,} O&M), 
+    sementara <b>Halte Bus TransJakarta</b> menyerap <b>622 pekerja</b> dan <b>Stasiun MRT/LRT</b> menyerap <b>484 pekerja</b>. 
+    Pekerjaan kanopi baja ini secara langsung menghidupkan ekosistem bengkel manufaktur dan fabrikator baja lokal di wilayah penyangga Bodetabek.
+</p>
+""", unsafe_allow_html=True)
+
+# ─── DUAL VISUALISASI PLOTLY (STACKED BAR & DONUT CHART) ─────────────────────────
+col_chart_j1, col_chart_j2 = st.columns([3, 2])
+
+with col_chart_j1:
+    st.markdown("###### Distribusi Serapan Tenaga Kerja Hijau per Kategori (Fase Konstruksi vs O&M 25 Tahun)")
+    
+    df_chart_jobs = df_ekonomi.sort_values(by="total_green_jobs_orang", ascending=True).copy()
+    
+    fig_jobs_stack = go.Figure()
+    
+    # Trace 1: Konstruksi (Short-term 1-2 Th)
+    fig_jobs_stack.add_trace(go.Bar(
+        y=df_chart_jobs['category_display'],
+        x=df_chart_jobs['green_jobs_konstruksi_orang'],
+        name='Konstruksi & Fabrikasi (1–2 Th)',
+        orientation='h',
+        marker=dict(color='#4CAF50', line=dict(color='#81C784', width=1)),
+        text=df_chart_jobs['green_jobs_konstruksi_orang'].apply(lambda x: f"{x:,}"),
+        textposition='inside',
+        hoverinfo='text',
+        hovertext=[
+            f"{cat}: {k:,} pekerja konstruksi ({st_type})"
+            for cat, k, st_type in zip(df_chart_jobs['category_display'], df_chart_jobs['green_jobs_konstruksi_orang'], df_chart_jobs['tipe_struktur_plts'])
+        ]
+    ))
+    
+    # Trace 2: O&M Permanen (Long-term 25 Th)
+    fig_jobs_stack.add_trace(go.Bar(
+        y=df_chart_jobs['category_display'],
+        x=df_chart_jobs['green_jobs_om_orang'],
+        name='Pemeliharaan Permanen (25 Th O&M)',
+        orientation='h',
+        marker=dict(color='#42A5F5', line=dict(color='#90CAF9', width=1)),
+        text=df_chart_jobs['green_jobs_om_orang'].apply(lambda x: f"{x:,}"),
+        textposition='outside',
+        hoverinfo='text',
+        hovertext=[
+            f"{cat}: {om:,} teknisi O&M permanen 25 tahun"
+            for cat, om in zip(df_chart_jobs['category_display'], df_chart_jobs['green_jobs_om_orang'])
+        ]
+    ))
+    
+    fig_jobs_stack.update_layout(
+        barmode='stack',
+        height=480,
+        margin=dict(l=10, r=40, t=30, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='#CFD8DC', size=11)
+        ),
+        xaxis=dict(
+            title=dict(text='Jumlah Tenaga Kerja Hijau yang Diserap (Orang)', font=dict(color='#B0BEC5', size=11)),
+            tickfont=dict(color='#90A4AE'),
+            gridcolor='#263238'
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#ECEFF1', size=11)
+        )
+    )
+    st.plotly_chart(fig_jobs_stack, use_container_width=True)
+
+with col_chart_j2:
+    st.markdown("###### Komposisi Serapan Lapangan Kerja Berdasarkan Karakter Struktur Fisik")
+    
+    donut_labels = [
+        f"Dak Beton ({len(df_dak_jobs)} Kat.)",
+        f"Carport & Baja ({len(df_carport_jobs)} Kat.)"
+    ]
+    donut_values = [dak_jobs_total, carport_jobs_total]
+    
+    fig_jobs_donut = go.Figure(data=[go.Pie(
+        labels=donut_labels,
+        values=donut_values,
+        hole=0.55,
+        marker=dict(
+            colors=['#4CAF50', '#26A69A'],
+            line=dict(color='#1E2738', width=2)
+        ),
+        textinfo='percent+label',
+        textposition='outside',
+        hoverinfo='text',
+        hovertext=[
+            f"Klaster Dak Beton: {dak_jobs_total:,} pekerja ({dak_jobs_pct:.1f}%)<br>• Konstruksi: {dak_jobs_const:,} orang<br>• O&M 25 Th: {dak_jobs_om:,} orang",
+            f"Klaster Carport & Baja: {carport_jobs_total:,} pekerja ({carport_jobs_pct:.1f}%)<br>• Konstruksi: {carport_jobs_const:,} orang<br>• O&M 25 Th: {carport_jobs_om:,} orang"
+        ],
+        textfont=dict(color='#ECEFF1', size=11)
+    )])
+    
+    fig_jobs_donut.update_layout(
+        height=480,
+        margin=dict(l=10, r=10, t=30, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        showlegend=False,
+        annotations=[dict(
+            text=f"<b>{jobs_total:,}</b><br><span style='font-size:10px;color:#90A4AE;'>Total Pekerja</span>",
+            x=0.5, y=0.5,
+            font_size=16,
+            font_color='#FFFFFF',
+            showarrow=False
+        )]
+    )
+    st.plotly_chart(fig_jobs_donut, use_container_width=True)
+
+# ─── 3 KOTAK CALLOUT TEMUAN & INTERPRETASI KRITIS CELIOS ─────────────────────────
+col_box_j1, col_box_j2, col_box_j3 = st.columns(3)
+
+with col_box_j1:
+    st.markdown(f"""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #4CAF50; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            1. Fakta Data Multiplier Ketenagakerjaan
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Total potensi 312,2 MWp surya di Jabodetabek menciptakan <b>{jobs_total:,} lapangan kerja hijau</b>:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li><b>{jobs_const_total:,} pekerja</b> pada fase konstruksi & perakitan fisik awal.</li>
+                <li><b>{jobs_om_total:,} teknisi tetap</b> selama 25 tahun operasional penuh.</li>
+                <li>Sektor mobilitas transit (KRL, Busway, MRT, Terminal) menyerap <b>2.535 pekerja</b> sekaligus menjadi etalase edukasi publik.</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_box_j2:
+    st.markdown("""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #26A69A; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            2. Tesis Ketenagakerjaan Berkeadilan (Just Transition)
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Transisi energi perkotaan terbukti merupakan instrumen <b>redistribusi lapangan kerja padat karya</b>:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li>Menyerap langsung ribuan lulusan SMK Ketenagalistrikan dan Politeknik lokal yang selama ini menghadapi tantangan pengangguran muda perkotaan.</li>
+                <li>Menggairahkan rantai pasok bengkel las lokal, fabrikator baja galvanis, dan pemasok aluminium domestik di Jabodetabek.</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_box_j3:
+    st.markdown("""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #42A5F5; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            3. Rekomendasi Kebijakan Ketenagakerjaan Daerah
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Guna memaksimalkan serapan tenaga kerja lokal daerah, Pemda didesak:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li>Membuka program <b>Pelatihan & Sertifikasi Teknisi Surya Gratis</b> berbasis SKKNI Ketenagalistrikan di Balai Latihan Kerja (BLK) daerah.</li>
+                <li>Mewajibkan klausul <b>TKDN Tenaga Kerja Lokal minimal 80%</b> dalam seluruh dokumen lelang pengadaan fasilitas tenaga surya daerah.</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─── DATA LINEAGE & TABEL DATA MENTAH 3.3 ────────────────────────────────────────
+with st.expander("📋 Data Lineage: Standar Pengali Multiplier Green Jobs Resmi IESR & IRENA (CSV)"):
+    st.markdown("Parameter standar pengali ketenagakerjaan hijau berikut diadopsi dari studi resmi IESR dan kajian ketenagakerjaan IRENA dengan bukti fisik verbatim:")
+    
+    st.dataframe(
+        df_jobs_mult[[
+            "id_multiplier", "fase_kegiatan", "tipe_struktur_plts", "durasi_siklus",
+            "multiplier_orang_per_mwp", "satuan_multiplier", "profil_keahlian_tenaga_kerja",
+            "institusi_sumber", "kalimat_verbatim"
+        ]].rename(columns={
+            "id_multiplier": "ID Pengali",
+            "fase_kegiatan": "Fase Kegiatan Proyek",
+            "tipe_struktur_plts": "Tipe Struktur PLTS",
+            "durasi_siklus": "Durasi Siklus Hidup",
+            "multiplier_orang_per_mwp": "Pengali (Orang/MWp)",
+            "satuan_multiplier": "Satuan",
+            "profil_keahlian_tenaga_kerja": "Profil Keahlian / Jurusan",
+            "institusi_sumber": "Institusi Sumber",
+            "kalimat_verbatim": "Kutipan Verbatim Bukti Fisik"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    col_dl_j1, col_dl_j2 = st.columns(2)
+    with col_dl_j1:
+        csv_jobs_bytes = df_jobs_mult.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Unduh Standar Pengali Multiplier Green Jobs (CSV)",
+            data=csv_jobs_bytes,
+            file_name="pow_solar_green_jobs_multiplier.csv",
+            mime="text/csv",
+            key="dl_jobs_mult_csv"
+        )
+    with col_dl_j2:
+        st.caption("🔍 Berkas sumber: `data/processed/references/pow_solar_green_jobs_multiplier.csv` | Dilengkapi tautan bukti resmi IESR & IRENA.")
+
+with st.expander("📋 Data Lineage: Rincian Serapan Tenaga Kerja Hijau per 13 Kategori Fasilitas (CSV)"):
+    st.markdown("Rincian pembagian tenaga kerja fase konstruksi vs pemeliharaan permanen 25 tahun untuk setiap kategori infrastruktur:")
+    
+    cols_jobs_cat = [
+        "category_display", "total_points", "total_capacity_kwp", "tipe_struktur_plts",
+        "green_jobs_konstruksi_orang", "green_jobs_om_orang", "total_green_jobs_orang",
+        "rekomendasi_kebijakan"
+    ]
+    
+    st.dataframe(
+        df_ekonomi[cols_jobs_cat].rename(columns={
+            "category_display": "Kategori Fasilitas",
+            "total_points": "Jumlah Titik",
+            "total_capacity_kwp": "Kapasitas (kWp)",
+            "tipe_struktur_plts": "Struktur Rangka",
+            "green_jobs_konstruksi_orang": "Pekerja Konstruksi (Orang)",
+            "green_jobs_om_orang": "Teknisi O&M (Orang)",
+            "total_green_jobs_orang": "Total Pekerja Hijau (Orang)",
+            "rekomendasi_kebijakan": "Rekomendasi Kebijakan"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+
+# ═════════════════════════════════════════════════════════════════════════════════
+# PLACEHOLDER NAVIGASI SUB-BAB 3.4 S.D. 3.5
 # ═════════════════════════════════════════════════════════════════════════════════
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("""
 <div style="background: #141A24; border: 1px dashed #37474F; border-radius: 8px; padding: 1.2rem; text-align: center; color: #90A4AE; font-size: 0.9rem;">
     <b>Sub-Bab Berikutnya dalam Pengembangan Bertahap Sesuai Kerangka Riset CELIOS:</b><br>
-    <span style="color: #4CAF50;">[Sub-Bab 3.3: Dampak Penciptaan Green Jobs]</span> &nbsp;•&nbsp; 
     <span style="color: #4CAF50;">[Sub-Bab 3.4: Matriks Prioritas Quick Wins]</span> &nbsp;•&nbsp; 
     <span style="color: #4CAF50;">[Sub-Bab 3.5: Solusi Pengadaan Zero-APBD]</span>
 </div>
 """, unsafe_allow_html=True)
+
 
