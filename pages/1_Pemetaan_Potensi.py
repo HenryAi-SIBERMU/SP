@@ -457,7 +457,7 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Fasilitas (Mast
     )
 
 if not df_infill.empty:
-    with st.expander(f"🧩 Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap Infill ({len(df_infill)} Fasilitas — Standar SNI 8395:2017 & NFPA 1)", expanded=False):
+    with st.expander(f"Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap Infill ({len(df_infill)} Fasilitas — Standar SNI 8395:2017 & NFPA 1)", expanded=False):
         st.markdown("#### Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap (*Roof Gap Infill Extension*)")
         st.caption(
             "Hasil simulasi terpisah pemanfaatan ruang celah fisik (atap peron transit, koridor non-segmen) "
