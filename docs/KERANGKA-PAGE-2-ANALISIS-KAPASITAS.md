@@ -267,8 +267,10 @@ Sebelum angka konsumsi PLN dan benchmark dimasukkan ke dalam kode `pages/2_Anali
 - [x] Alur kausalitas, tesis kedaulatan energi, dan bento cards diselaraskan 100% dengan standar riset CELIOS 2.
 - [x] Pemetaan ketergantungan data Solar API vs Hibrida Non-Solar API didokumentasikan transparan (Section 5).
 - [x] Tabel data yang perlu dicari (PLN Statistics & Benchmark Soetta) dipetakan detail lengkap dengan kolom targetnya (Section 6).
-- [ ] Unduh dokumen fisik PDF Statistik PLN ke `data/raw/pln/` dan ekstraksi ke CSV `pln_konsumsi_sektoral_jabodetabek.csv`.
-- [ ] Implementasi kode frontend Streamlit di `pages/2_Analisis_Kapasitas.py`.
-- [ ] Pengujian interaktivitas slider parametrik dan audit visualisasi.
-- [ ] Auto-commit seluruh artefak ke Git repository.
+- [x] Unduh dokumen fisik PDF Statistik PLN ke `data/raw/pln/` (`Statistik_PLN_2023.pdf` & `Statistik_PLN_2024.pdf`) dan ekstraksi ke CSV/Parquet `data/processed/calculations/pln_konsumsi_sektoral_jabodetabek.csv`.
+- [x] Unduh dokumen siaran pers resmi PTBA/AP II ke `data/raw/sources/` dan ekstraksi dataset ground-truth ke `data/processed/references/benchmark_plts_soetta_aktual.csv`.
+- [x] Implementasi kode frontend Streamlit di `pages/2_Analisis_Kapasitas.py` (Org Badge, Hero Statement, 6 Bento Cards, Sub-Bab 2.1 s.d. 2.5, Slider Sensitivitas Interaktif, Expander Data Mentah).
+- [x] Pengujian kompilasi sintaksis Python (`python -m py_compile`) dan audit integritas data fisik.
+- [x] Auto-commit seluruh artefak ke Git repository (Commit `b91c6f0` & `93078cb`).
+
 
