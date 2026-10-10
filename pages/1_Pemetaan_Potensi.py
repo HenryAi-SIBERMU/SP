@@ -245,16 +245,16 @@ else:
 
 pct_substitusi_publik = (total_gen_gwh / pln_jkt_publik_gwh) * 100.0 if pln_jkt_publik_gwh > 0 else 0.0
 
-# ─── BENTO METRIC CARDS (3 KOLOM x 2 BARIS) ──────────────────────────────────
-col_b1, col_b2, col_b3 = st.columns(3)
+# ─── BENTO METRIC CARDS (4 KOLOM) ────────────────────────────────────────────
+col_b1, col_b2, col_b3, col_b4 = st.columns(4)
 
 with col_b1:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Kapasitas Terpasang (Sampel {total_assets:,} Titik)</div>
-            <div class="bento-val" style="color: #4CAF50;">{total_capacity_mwp:,.1f} <span style="font-size:1.1rem;color:#A5D6A7;">MWp</span></div>
-            <div class="bento-desc">Daya puncak DC dari {total_panels:,} modul surya 400 Wp di {total_assets:,} titik aset publik dan simpul transit.</div>
+            <div class="bento-lbl">Total Kapasitas Terpasang</div>
+            <div class="bento-val" style="color: #4CAF50;">{total_capacity_kwp:,.1f} <span style="font-size:1.05rem;color:#A5D6A7;">kWp</span></div>
+            <div class="bento-desc">Setara <b>{total_capacity_kwp/1000:,.2f} MWp</b> ({total_panels:,} panel @ 400Wp) pada aset publik & simpul transit.</div>
         </div>
         <div class="bento-src"><b>Sumber:</b> Google Solar API (Sampel {total_assets:,} Titik)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
@@ -264,11 +264,11 @@ with col_b2:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Pembangkitan Energi Bersih Tahunan</div>
-            <div class="bento-val" style="color: #66BB6A;">{total_gen_gwh:,.1f} <span style="font-size:1.1rem;color:#C8E6C9;">GWh/th</span></div>
-            <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan Performance Ratio (PR) konservatif 80%.</div>
+            <div class="bento-lbl">Total Luas Atap Efektif</div>
+            <div class="bento-val" style="color: #FFA726;">{total_roof_area:,.0f} <span style="font-size:1.05rem;color:#FFE0B2;">m²</span></div>
+            <div class="bento-desc">Permukaan bidang atap layak panel surya bebas bayangan terverifikasi fotogrametri satelit (0,25 m/px).</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Google Solar API & Standar IEC 61724<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Google Building Insights (BASE Tier)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -276,51 +276,23 @@ with col_b3:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Substitusi Sektor Publik DKI Jakarta</div>
-            <div class="bento-val" style="color: #26A69A;">{pct_substitusi_publik:.1f}% <span style="font-size:1.1rem;color:#B2DFDB;">Offset</span></div>
-            <div class="bento-desc">Mampu menyuplai seperempat total beban listrik kantor pemerintah dan PJU DKI (dari 10,4% populasi OSM).</div>
-        </div>
-        <div class="bento-src"><b>Sumber:</b> Statistik PLN UID Jakarta Raya 2024 (Hal. 35)<br><b>File:</b> pln_konsumsi_sektoral_jabodetabek.csv</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<div style='margin-bottom: 14px;'></div>", unsafe_allow_html=True)
-
-col_b4, col_b5, col_b6 = st.columns(3)
-
-with col_b4:
-    st.markdown(f"""
-    <div class="bento-card">
-        <div>
-            <div class="bento-lbl">Jam Penyinaran Efektif (PSH Harian)</div>
-            <div class="bento-val" style="color: #FFA726;">{avg_psh:.2f} <span style="font-size:1.1rem;color:#FFE0B2;">Jam/hari</span></div>
-            <div class="bento-desc">Ekuivalen radiasi efektif harian fotogrametri satelit (1.628 jam PSH tahunan iklim tropis).</div>
-        </div>
-        <div class="bento-src"><b>Sumber:</b> Google Solar Annual Flux Heatmap<br><b>File:</b> pvgis_jakarta_monthly.csv</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_b5:
-    st.markdown(f"""
-    <div class="bento-card">
-        <div>
-            <div class="bento-lbl">Specific Yield Produktivitas</div>
-            <div class="bento-val" style="color: #42A5F5;">{avg_specific_yield:,.0f} <span style="font-size:1.1rem;color:#BBDEFB;">kWh/kWp</span></div>
-            <div class="bento-desc">Produktivitas per unit kapasitas terpasang sesuai standar iklim tropis khatulistiwa.</div>
+            <div class="bento-lbl">Estimasi Produksi Listrik</div>
+            <div class="bento-val" style="color: #66BB6A;">{total_gen_mwh:,.1f} <span style="font-size:1.05rem;color:#C8E6C9;">MWh/th</span></div>
+            <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan Performance Ratio (PR) 80% iklim tropis perkotaan.</div>
         </div>
         <div class="bento-src"><b>Sumber:</b> Standar IEC 61724 & NREL PVWatts<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with col_b6:
+with col_b4:
     st.markdown(f"""
-    <div class="bento-card" style="border: 1px solid #2E7D32;">
+    <div class="bento-card">
         <div>
-            <div class="bento-lbl">Potensi Ekstensi Celah Atap Infill (SNI)</div>
-            <div class="bento-val" style="color: #AB47BC;">+{infill_mwp:,.1f} <span style="font-size:1.1rem;color:#E1BEE7;">MWp</span></div>
-            <div class="bento-desc">Kapasitas tambahan dengan optimalisasi dak sisa celah aman koridor damkar NFPA 1.</div>
+            <div class="bento-lbl">Reduksi Emisi GRK</div>
+            <div class="bento-val" style="color: #42A5F5;">{total_ghg_tons:,.1f} <span style="font-size:1.05rem;color:#BBDEFB;">Ton/th</span></div>
+            <div class="bento-desc">Dekarbonisasi setara penghentian pembakaran batu bara di PLTU pesisir Jawa-Banten (Grid Jamali).</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Analisis Infill SNI 8395:2017 & NFPA 1<br><b>File:</b> pow_solar_gap_infill_extension.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Faktor Emisi Grid Jamali (808,99 kg/MWh)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
