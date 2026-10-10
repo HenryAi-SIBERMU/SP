@@ -98,35 +98,68 @@ def load_infill_data():
 df_summary, gdf_points, df_segments = load_processed_data()
 df_infill = load_infill_data()
 
-def normalize_img_path(rel_path):
-    if not pd.notna(rel_path) or not isinstance(rel_path, str) or len(rel_path.strip()) == 0:
-        return None
-    # Normalize Windows backslashes to forward slashes for Linux/Streamlit Cloud compatibility
-    clean = rel_path.strip().replace("\\", "/").lstrip("/")
-    
-    # Check 1: PROJECT_ROOT / clean
-    cand1 = (PROJECT_ROOT / clean).resolve()
-    if cand1.exists():
-        return str(cand1)
+def normalize_img_path(rel_path=None, aid=None, layer_name=None):
+    # Check 1: Resolusi cerdas berdasarkan asset_id dan layer_name
+    if aid and layer_name:
+        aid_clean = str(aid).strip().lower()
+        layer_clean = str(layer_name).strip().lower()
+
+        suffix_map = {
+            "rgb": "_rgb.png",
+            "panels": "_panels_overlay.png",
+            "dsm": "_dsm_elevation.png",
+            "mask": "_roof_mask.png",
+            "flux": "_flux_heatmap.png",
+            "segments": "_segments_overlay.png",
+            "infill": "_infill_panels_overlay.png",
+        }
+        suffix = suffix_map.get(layer_clean, f"_{layer_clean}.png")
+        fname = f"{aid_clean}{suffix}"
+
+        # 1a. Cek renders_full lokal (Full repository)
+        cand_rf = (PROJECT_ROOT / "data" / "processed" / "renders_full" / layer_clean / fname).resolve()
+        if cand_rf.exists():
+            return str(cand_rf)
+
+        # 1b. Cek previews showcase lokal
+        if layer_clean == "infill":
+            cand_prev_inf = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / fname).resolve()
+            if cand_prev_inf.exists():
+                return str(cand_prev_inf)
+        cand_prev = (PROJECT_ROOT / "data" / "processed" / "previews" / fname).resolve()
+        if cand_prev.exists():
+            return str(cand_prev)
+
+    # Check 2: Relative path langsung
+    if pd.notna(rel_path) and isinstance(rel_path, str) and len(rel_path.strip()) > 0:
+        clean = rel_path.strip().replace("\\", "/").lstrip("/")
         
-    # Check 2: Relative to current working directory
-    cand2 = Path(clean).resolve()
-    if cand2.exists():
-        return str(cand2)
-        
-    # Check 3: Fallback check in data/processed/previews by filename
-    filename = Path(clean).name
-    cand3 = (PROJECT_ROOT / "data" / "processed" / "previews" / filename).resolve()
-    if cand3.exists():
-        return str(cand3)
-        
+        # 2a. PROJECT_ROOT / clean
+        cand1 = (PROJECT_ROOT / clean).resolve()
+        if cand1.exists():
+            return str(cand1)
+            
+        # 2b. Relative to current working directory
+        cand2 = Path(clean).resolve()
+        if cand2.exists():
+            return str(cand2)
+            
+        # 2c. Fallback check in data/processed/previews / infill by filename
+        filename = Path(clean).name
+        cand3 = (PROJECT_ROOT / "data" / "processed" / "previews" / filename).resolve()
+        if cand3.exists():
+            return str(cand3)
+        cand4 = (PROJECT_ROOT / "data" / "processed" / "previews" / "infill" / filename).resolve()
+        if cand4.exists():
+            return str(cand4)
+
     return None
 
-def is_valid_img_path(rel_path):
-    return normalize_img_path(rel_path) is not None
+def is_valid_img_path(rel_path, aid=None, layer_name=None):
+    return normalize_img_path(rel_path, aid=aid, layer_name=layer_name) is not None
 
-def get_clean_img_path(rel_path):
-    return normalize_img_path(rel_path)
+def get_clean_img_path(rel_path, aid=None, layer_name=None):
+    return normalize_img_path(rel_path, aid=aid, layer_name=layer_name)
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="page-title">Pemetaan Potensi Urban Jabodetabek</div>', unsafe_allow_html=True)
@@ -1031,7 +1064,7 @@ with tab_panels:
         panels_img_rel = asset_row.get("preview_panels_png")
         p_cap = f"Tata Letak {disp_panels_count:,} Panel Surya di Atap {asset_row['asset_name']} ({disp_capacity_kwp:,.1f} kWp)"
 
-        panels_img_path = get_clean_img_path(panels_img_rel)
+        panels_img_path = get_clean_img_path(panels_img_rel, aid=asset_row['asset_id'], layer_name='panels')
         if panels_img_path:
             st.image(panels_img_path, caption=p_cap, use_container_width=True)
         else:
@@ -1055,7 +1088,7 @@ with tab_rgb:
         st.markdown("#### Citra Satelit Aerial Resolusi Tinggi (RGB)")
         st.caption("Foto satelit ortorektifikasi resolusi 0.25 m/pixel Google Maps Platform:")
         rgb_img_rel = asset_row.get("preview_rgb_png")
-        rgb_img_path = get_clean_img_path(rgb_img_rel)
+        rgb_img_path = get_clean_img_path(rgb_img_rel, aid=asset_row['asset_id'], layer_name='rgb')
         if rgb_img_path:
             st.image(rgb_img_path, caption=f"Foto Satelit Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
@@ -1076,7 +1109,7 @@ with tab_flux:
         st.markdown("#### Annual Solar Flux Heatmap")
         st.caption("Peta kontur iradiasi radiasi matahari tahunan (kWh/kW/year) per piksel atap:")
         flux_img_rel = asset_row.get("preview_flux_png")
-        flux_img_path = get_clean_img_path(flux_img_rel)
+        flux_img_path = get_clean_img_path(flux_img_rel, aid=asset_row['asset_id'], layer_name='flux')
         if flux_img_path:
             st.image(flux_img_path, caption=f"Heatmap Iradiasi Surya: {asset_row['asset_name']}", use_container_width=True)
         else:
@@ -1096,7 +1129,7 @@ with tab_dsm:
         st.markdown("#### Digital Surface Model (DSM 3D Elevation)")
         st.caption("Model elevasi dan ketinggian fisik permukaan struktur atap (meter di atas permukaan tanah):")
         dsm_img_rel = asset_row.get("preview_dsm_png")
-        dsm_img_path = get_clean_img_path(dsm_img_rel)
+        dsm_img_path = get_clean_img_path(dsm_img_rel, aid=asset_row['asset_id'], layer_name='dsm')
         if dsm_img_path:
             st.image(dsm_img_path, caption=f"Model Ketinggian 3D Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
@@ -1116,7 +1149,7 @@ with tab_mask:
         st.markdown("#### Roof Mask (Segmentasi Atap Layak Panel)")
         st.caption("Binary mask yang memisahkan permukaan atap bangunan (hijau) vs area jalan/tanah (gelap):")
         mask_img_rel = asset_row.get("preview_mask_png")
-        mask_img_path = get_clean_img_path(mask_img_rel)
+        mask_img_path = get_clean_img_path(mask_img_rel, aid=asset_row['asset_id'], layer_name='mask')
         if mask_img_path:
             st.image(mask_img_path, caption=f"Mask Boundary Atap: {asset_row['asset_name']}", use_container_width=True)
         else:
@@ -1138,7 +1171,7 @@ with tab_gallery:
     
     with g_col1:
         st.markdown("**1. RGB Asli**")
-        p_rgb = get_clean_img_path(asset_row.get("preview_rgb_png"))
+        p_rgb = get_clean_img_path(asset_row.get("preview_rgb_png"), aid=asset_row['asset_id'], layer_name='rgb')
         if p_rgb:
             st.image(p_rgb, use_container_width=True)
         else:
@@ -1146,28 +1179,28 @@ with tab_gallery:
     with g_col2:
         st.markdown("**2. Layout Panel**")
         p_pan_rel = asset_row.get("preview_panels_png")
-        p_pan = get_clean_img_path(p_pan_rel)
+        p_pan = get_clean_img_path(p_pan_rel, aid=asset_row['asset_id'], layer_name='panels')
         if p_pan:
             st.image(p_pan, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col3:
         st.markdown("**3. Annual Flux**")
-        p_flx = get_clean_img_path(asset_row.get("preview_flux_png"))
+        p_flx = get_clean_img_path(asset_row.get("preview_flux_png"), aid=asset_row['asset_id'], layer_name='flux')
         if p_flx:
             st.image(p_flx, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col4:
         st.markdown("**4. DSM 3D**")
-        p_dsm = get_clean_img_path(asset_row.get("preview_dsm_png"))
+        p_dsm = get_clean_img_path(asset_row.get("preview_dsm_png"), aid=asset_row['asset_id'], layer_name='dsm')
         if p_dsm:
             st.image(p_dsm, use_container_width=True)
         else:
             st.caption("Tidak tersedia")
     with g_col5:
         st.markdown("**5. Roof Mask**")
-        p_msk = get_clean_img_path(asset_row.get("preview_mask_png"))
+        p_msk = get_clean_img_path(asset_row.get("preview_mask_png"), aid=asset_row['asset_id'], layer_name='mask')
         if p_msk:
             st.image(p_msk, use_container_width=True)
         else:
@@ -1241,7 +1274,7 @@ with tab_infill:
         with col_img_base:
             st.markdown(f"**Baseline Sertifikasi Google ({int(inf_row['google_baseline_panels']):,} Panel)**")
             base_p_rel = asset_row.get("preview_panels_png")
-            base_p_clean = get_clean_img_path(base_p_rel)
+            base_p_clean = get_clean_img_path(base_p_rel, aid=asset_row['asset_id'], layer_name='panels')
             if base_p_clean:
                 st.image(base_p_clean, caption=f"Baseline Google: {int(inf_row['google_baseline_panels']):,} Panel ({inf_row['google_baseline_kwp']:.1f} kWp)", use_container_width=True)
             else:
@@ -1250,7 +1283,7 @@ with tab_infill:
         with col_img_inf:
             st.markdown(f"**Simulasi Penuh Pasca-Infill ({int(inf_row['combined_scenario_total_panels']):,} Panel)**")
             inf_p_rel = inf_row.get("preview_infill_panels_png")
-            inf_p_clean = get_clean_img_path(inf_p_rel)
+            inf_p_clean = get_clean_img_path(inf_p_rel, aid=asset_row['asset_id'], layer_name='infill')
             if inf_p_clean:
                 st.image(inf_p_clean, caption=f"Skenario Penuh: {int(inf_row['combined_scenario_total_panels']):,} Panel ({inf_row['combined_scenario_total_kwp']:.1f} kWp)", use_container_width=True)
             else:
