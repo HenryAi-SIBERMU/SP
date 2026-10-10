@@ -94,6 +94,16 @@ Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
 ```
 
+### 📌 Ringkasan 5 Sub-Bab (Hierarkis 2.1 s.d. 2.5):
+
+| No Sub-Bab | Topik Pembahasan | Fokus Utama yang Akan Anda Sampaikan |
+|:---:|:---|:---|
+| **2.1** | **Konversi Luasan Spasial ke Daya & Energi ($m^2 \rightarrow \text{MWp} \ \& \ \text{GWh}$)** | Menunjukkan transformasi $1,47\text{ juta m}^2$ atap layak menjadi daya puncak $307,9\text{ MWp}$ dan panen listrik $407,2\text{ GWh/tahun}$ lintas 13 kategori infrastruktur publik dan simpul transit. |
+| **2.2** | **Profil Iradiasi & Fluktuasi Musiman (PSH & Monthly Yield Profile)** | Membuktikan stabilitas radiasi surya tropis khatulistiwa sepanjang 12 bulan (deviasi musiman hanya $\pm 18\%$), menepis keraguan intermitensi ekstrem khas negara 4 musim. |
+| **2.3** | **Uji Substitusi Beban Konsumsi Kota (Urban Demand Offsetting)** | Menguji komparasi pasokan mandiri vs penjualan listrik PLN: mampu menyuplai $24,7\%$ beban kantor pemda & PJU se-DKI ($>200\%$ seluruh lampu jalan), menghentikan transfer emisi ke desa (*anti-sacrificial zones*). |
+| **2.4** | **Analisis Sensitivitas & Kontrol Parametrik Interaktif** | Mensimulasikan fleksibilitas pengadaan modul (350 Wp s.d. 550 Wp), rasio performa (PR 70% s.d. 85%), serta potensi cadangan Infill celah aman damkar SNI/NFPA ($+70,9\text{ MWp} / +93,8\text{ GWh}$). |
+| **2.5** | **Studi Benchmark Empiris & Ground-Truth Validation** | Memvalidasi akurasi fotogrametri satelit terhadap realisasi fisik PLTS Bandara Soekarno-Hatta (AOCC 241 kWp dan Terminal 2 1,5 MWp) dengan deviasi toleransi rekayasa sangat rendah ($< 10\%$). |
+
 ---
 
 ## 4. Uraian Detail Teknis Per Sub-Bab
@@ -216,24 +226,22 @@ Berikut adalah matriks kepemilikan dan ketergantungan data per sub-bab:
 |:---|:---|:---:|:---|:---|
 | **2.1** | **Konversi Luasan ke Daya & Energi ($m^2 \rightarrow \text{MWp} \& \text{GWh}$)** | ✅ **100% Murni Solar API** | Tidak Ada | 🟢 **Sudah Lengkap di Repositori**<br>`data/processed/calculations/pow_solar_kumulatif_summary.csv` (`max_roof_area_m2`, `max_panels_count`, `installed_capacity_kwp`, `annual_generation_mwh`, breakdown 13 kategori). |
 | **2.2** | **Profil Iradiasi & Fluktuasi Musiman (Jan–Des)** | 🟡 **Hibrida**<br>(Total Jam/Tahun dari Solar API) | **PVGIS (JRC European Commission) & NASA POWER** (Kurva 12 Bulan) | 🟢 **Sudah Lengkap di Repositori**<br>Total PSH tahunan dari Solar API (`sunshine_hours_annual`), kurva distribusi bulanan dari file lokal `data/raw/solar/pvgis_jakarta_monthly.csv` dan `pvgis_jakarta.csv`. |
-| **2.3** | **Uji Substitusi Beban Konsumsi Kota** | 🔴 **Bukan Solar API**<br>(Solar API = Pasokan, PLN = Beban) | **PT PLN (Persero) Statistics & Tarif Dasar Listrik** | 🟡 **Sebagian Sudah Ada, Perlu Ekstraksi Tambahan**<br>Tarif per kWh sudah ada di `data/raw/pln/pln_tariff_2026.csv`. Data total penjualan listrik sektoral Jabodetabek perlu diekstrak ke CSV fisik terstruktur. |
+| **2.3** | **Uji Substitusi Beban Konsumsi Kota** | 🔴 **Bukan Solar API**<br>(Solar API = Pasokan, PLN = Beban) | **PT PLN (Persero) Statistics & Tarif Dasar Listrik** | 🟢 **Sudah Lengkap di Repositori (Terekstraksi via OpenDataLoader)**<br>Berkas PDF resmi di `data/raw/pln/Statistik_PLN_2023.pdf` & `2024.pdf`. Hasil ekstraksi di `data/processed/calculations/pln_konsumsi_sektoral_jabodetabek.csv` lengkap dengan kolom `kalimat_verbatim` di setiap baris. |
 | **2.4** | **Analisis Sensitivitas & Kontrol Parametrik** | 🟡 **Hibrida**<br>(Baseline dari Solar API) | **Engine Simulasi Rekayasa + SNI 8395 / NFPA 1 (Infill Extension)** | 🟢 **Sudah Lengkap di Repositori**<br>Baseline atap dari Solar API; slider Wp/PR dihitung analitis; potensi celah dak tersedia di `data/processed/calculations/pow_solar_gap_infill_extension.csv`. |
-| **2.5** | **Benchmark Empiris & Ground-Truth** | 🟡 **Hibrida**<br>(Model dari Solar API) | **Laporan Tahunan / Keberlanjutan PTBA & PT Angkasa Pura II** | 🟡 **Sebagian Sudah Ada, Perlu Tabel Komparasi**<br>Model satelit Bandara Soetta T3 (`AIR-001` & `AIR-0010`) sudah ada di Solar API. Perlu tabel komparasi terhadap realisasi kontrak aktual AP II (~2 MWp). |
+| **2.5** | **Benchmark Empiris & Ground-Truth** | 🟡 **Hibrida**<br>(Model dari Solar API) | **Laporan Berita & Siaran Pers Resmi PTBA, AP II, dan SEI** | 🟢 **Sudah Lengkap di Repositori (Tervalidasi)**<br>Berkas bukti fisik di `data/raw/sources/plts_soekarno_hatta_ptba_ap2_aocc_official.html` & `plts_soekarno_hatta_t2_sei_ap2_ppi_official.html`. Hasil ekstraksi di `data/processed/references/benchmark_plts_soetta_aktual.csv` memuat kolom `kalimat_verbatim`. |
 
 ---
 
-## 6. Pemetaan Tabel Data yang Perlu Kita Cari & Himpun (Data Acquisition Mapping)
+## 6. Pemetaan Tabel Data yang Telah Dihimpun & Terekstraksi (Data Acquisition Traceability)
 
-Mematuhi aturan ketat `no_hardcoded_data.md` (Pilar 3 & 4: *Auditability & Single Source of Truth*) dan `strict_data_folder_boundary.md` (Pilar 4: *Mandatory Raw Proof*), seluruh angka statistik beban PLN dan benchmark eksternal **DILARANG KERAS ditulis hardcoded di skrip Python**. Berkas fisik wajib diunduh ke `data/raw/` dan diekstrak menjadi CSV terstruktur di `data/processed/`.
+Mematuhi aturan ketat `no_hardcoded_data.md` (Pilar 3 & 4: *Auditability & Single Source of Truth*) dan `strict_data_folder_boundary.md` (Pilar 4: *Mandatory Raw Proof*), seluruh angka statistik beban PLN dan benchmark eksternal **TIDAK DITULIS HARDCODED di skrip Python**, melainkan dibaca langsung dari file CSV terstruktur hasil parsing OpenDataLoader dan berkas fisik bukti di `data/raw/`.
 
-Berikut adalah pemetaan detail tabel data yang perlu dihimpun:
+### A. Tabel Data Eksternal yang Berhasil Diakuisisi & Terekstraksi (Mandatory Proof Datasets)
 
-### A. Tabel Data yang Harus Dicari (Action Items / Missing Datasets)
-
-| No | Nama Dataset Target | Kategori Data | Dokumen Sumber Resmi (*Mandatory Proof*) | Rencana Lokasi Simpan Berkas Asli | Rencana File Hasil Ekstraksi CSV | Struktur Kolom yang Wajib Diekstrak | Kegunaan Spesifik di Page 2 |
+| No | Nama Dataset Target | Kategori Data | Dokumen Sumber Resmi (*Mandatory Proof*) | Lokasi Simpan Berkas Asli | File Hasil Ekstraksi CSV Terstruktur | Kolom Kunci & Kalimat Verbatim | Kegunaan Spesifik di Page 2 |
 |:---:|:---|:---:|:---|:---|:---|:---|:---|
-| **1** | **PLN Statistics Penjualan Listrik Sektoral Jabodetabek** | Beban Energi / Demand | **Laporan Tahunan Statistik PLN 2023 / 2024 (PDF Resmi PT PLN Persero)**<br>(Tabel Penjualan Tenaga Listrik per Golongan Tarif & Unit Distribusi) | `data/raw/pln/PLN_Statistik_2023_2024.pdf` | `data/processed/calculations/pln_konsumsi_sektoral_jabodetabek.csv` | • `uid_distribusi` (UID Jakarta Raya, UID Jawa Barat, UID Banten)<br>• `wilayah_pelayanan` (Jakarta, Bodetabek)<br>• `sektor` (Publik/Pemerintah, Bisnis/Komersial, Industri, Rumah Tangga, Sosial)<br>• `golongan_tarif` (P-1, P-2, P-3, B-2, B-3, R-1, I-3, dll)<br>• `penjualan_gwh`<br>• `jumlah_pelanggan`<br>• `daya_tersambung_mva`<br>• `tahun_data`<br>• `file_bukti_raw` | Menghitung **Rasio Substitusi Mandiri (Sub-Bab 2.3)**:<br>$$\% \text{ Offset} = \frac{\text{Produksi PLTS (GWh)}}{\text{Konsumsi Sektor P (GWh)}} \times 100\%$$ Menggantikan konstanta `78.000 GWh` dengan data resmi terverifikasi. |
-| **2** | **Ground-Truth Benchmark PLTS Eksisting Bandara Soetta T3** | Validasi Empiris | **Sustainability Report PT Bukit Asam Tbk (PTBA) 2023 / Annual Report PT Angkasa Pura II**<br>(Bagian Operasional PLTS Atap Bandara Soekarno-Hatta T3) | `data/raw/sources/ptba_ap2_plts_soetta_annual_report.pdf` | `data/processed/references/benchmark_plts_soetta_aktual.csv` | • `nama_fasilitas` (PLTS Bandara Soetta T3)<br>• `operator_epc` (PTBA / AP II)<br>• `kapasitas_aktual_kwp` (~2.000 kWp / 2 MWp)<br>• `area_pemasangan` (Kanopi Gedung Parkir & Terminal)<br>• `produksi_aktual_mwh_tahun`<br>• `tahun_cod` (Commercial Operation Date)<br>• `model_solarapi_kwp` ($325,2\text{ kWp}$ kanopi dermaga)<br>• `file_bukti_raw`<br>• `halaman_laporan` | Mengisi tabel komparasi **Sub-Bab 2.5** untuk mengukur deviasi antara model fotogrametri satelit vs realisasi teknis lapangan. |
+| **1** | **PLN Statistics Penjualan Listrik Sektoral Jabodetabek** | Beban Energi / Demand | **Statistik PLN 2023 & 2024 (PDF Resmi PT PLN Persero)**<br>(Tabel 6: Energi Terjual per Kelompok Pelanggan Hal 35 & 23) | `data/raw/pln/Statistik_PLN_2023.pdf`<br>`data/raw/pln/Statistik_PLN_2024.pdf` | `data/processed/calculations/pln_konsumsi_sektoral_jabodetabek.csv` (dan Parquet) | • `unit_pln`<br>• `sektor_publik_gwh`<br>• `kantor_pemerintah_gwh`<br>• `pju_gwh`<br>• `kalimat_verbatim` (kutipan verbatim OpenDataLoader)<br>• `file_parsed_opendataloader` | Menghitung **Rasio Substitusi Mandiri (Sub-Bab 2.3)**:<br>$$\% \text{ Offset} = \frac{\text{Produksi PLTS (GWh)}}{\text{Konsumsi Sektor P (GWh)}} \times 100\%$$ Menggantikan angka estimasi dengan data resmi BUMN. |
+| **2** | **Ground-Truth Benchmark PLTS Eksisting Bandara Soetta (AOCC & T2)** | Validasi Empiris | **Publikasi Resmi PTBA, AP II, dan PT Surya Energi Indotama (SEI)**<br>(Operasional PLTS Gedung AOCC 241 kWp & Terminal 2 1,5 MWp) | `data/raw/sources/plts_soekarno_hatta_ptba_ap2_aocc_official.html`<br>`data/raw/sources/plts_soekarno_hatta_t2_sei_ap2_ppi_official.html` | `data/processed/references/benchmark_plts_soetta_aktual.csv` (dan Parquet) | • `nama_fasilitas`<br>• `kapasitas_aktual_kwp`<br>• `solarapi_kapasitas_kwp`<br>• `mape_error_pct`<br>• `kalimat_verbatim`<br>• `url_sumber_terverifikasi` | Mengisi tabel komparasi **Sub-Bab 2.5** untuk membuktikan bahwa deviasi model fotogrametri satelit terhadap realisasi riil BUMN berada pada batas toleransi rekayasa ($< 10\%$). |
 
 ---
 
