@@ -243,36 +243,116 @@ def render_single_asset(row_dict: dict) -> dict:
         except Exception:
             plt.close("all")
 
-    # 6. Segments Overlay
+    # 6. Segments Overlay (Autentik POW 100: Klastering BFS + Hull + Titik Panel + Kotak Eliminasi + Badge Penomoran S0, S1, ...)
     if rgb_arr is not None and (not out_files["segments"].exists() or out_files["segments"].stat().st_size <= 100):
         try:
             with rasterio.open(rgb_path) as src:
                 transformer = Transformer.from_crs("EPSG:4326", src.crs, always_xy=True)
-                fig, ax = plt.subplots(figsize=(7, 7), dpi=140)
+                fig, ax = plt.subplots(figsize=(8, 8), dpi=180)
                 ax.imshow(rgb_arr)
 
-                seg_colors = ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"]
-                for s_idx, seg in enumerate(segs):
-                    seg_panels = [p for p in panels if p.get("segmentIndex") == s_idx]
-                    if not seg_panels:
+                cmap = plt.colormaps['tab20']
+                seg_points = {i: [] for i in range(len(segs))}
+                for p in panels:
+                    s_idx = p.get("segmentIndex", 0)
+                    ux, uy = transformer.transform(p["center"]["longitude"], p["center"]["latitude"])
+                    py, px = src.index(ux, uy)
+                    if 0 <= px < src.width and 0 <= py < src.height:
+                        if s_idx in seg_points:
+                            seg_points[s_idx].append((px, py))
+
+                badge_coords = []
+                for s_idx, pts in seg_points.items():
+                    if not pts:
                         continue
-                    pts = []
-                    for p in seg_panels:
-                        lon = p["center"]["longitude"]
-                        lat = p["center"]["latitude"]
-                        ux, uy = transformer.transform(lon, lat)
-                        py, px = src.index(ux, uy)
-                        if 0 <= px < src.width and 0 <= py < src.height:
-                            pts.append([px, py])
+                    color = cmap(s_idx % 20)
+
+                    # Sub-clustering BFS 40px
                     if len(pts) >= 3:
+                        sub_clusters = []
+                        visited = [False] * len(pts)
+                        for i in range(len(pts)):
+                            if visited[i]:
+                                continue
+                            c_pts = [pts[i]]
+                            visited[i] = True
+                            q = [i]
+                            while q:
+                                curr = q.pop(0)
+                                cx, cy = pts[curr]
+                                for j in range(len(pts)):
+                                    if not visited[j]:
+                                        nx, ny = pts[j]
+                                        if (cx - nx)**2 + (cy - ny)**2 <= 40**2:
+                                            visited[j] = True
+                                            c_pts.append(pts[j])
+                                            q.append(j)
+                            sub_clusters.append(c_pts)
+
+                        for cl_pts in sub_clusters:
+                            if len(cl_pts) >= 3:
+                                cl_arr = np.array(cl_pts)
+                                try:
+                                    hull = ConvexHull(cl_arr)
+                                    hull_pts = cl_arr[hull.vertices]
+                                    poly = Polygon(
+                                        hull_pts, closed=True,
+                                        facecolor=color, edgecolor=color,
+                                        alpha=0.42, linewidth=1.8
+                                    )
+                                    ax.add_patch(poly)
+                                except Exception:
+                                    pass
+
+                    # Plot panel points
+                    for px, py in pts:
+                        ax.plot(px, py, marker="s", markersize=2, color=color, alpha=0.85)
+
+                    pts_in = [p for p in pts if 0 <= p[0] < src.width and 0 <= p[1] < src.height]
+                    if pts_in:
+                        pts_in_arr = np.array(pts_in)
+                        cx = float(np.median(pts_in_arr[:, 0]))
+                        cy = float(np.median(pts_in_arr[:, 1]))
+                        badge_coords.append((s_idx, cx, cy, color))
+
+                # Segmen 0 Panel (Dieliminasi) - Kotak Merah Putus-putus
+                for s_idx, s in enumerate(segs):
+                    if s_idx in seg_points and len(seg_points[s_idx]) > 0:
+                        continue
+                    box = s.get("boundingBox", {})
+                    if box and "sw" in box and "ne" in box and transformer:
                         try:
-                            hull = ConvexHull(pts)
-                            hull_pts = [pts[i] for i in hull.vertices]
-                            col = seg_colors[s_idx % len(seg_colors)]
-                            poly = Polygon(hull_pts, closed=True, facecolor=col, edgecolor="#FFFFFF", linewidth=1.5, alpha=0.45)
-                            ax.add_patch(poly)
+                            sw_ux, sw_uy = transformer.transform(box["sw"]["longitude"], box["sw"]["latitude"])
+                            ne_ux, ne_uy = transformer.transform(box["ne"]["longitude"], box["ne"]["latitude"])
+                            sw_py, sw_px = src.index(sw_ux, sw_uy)
+                            ne_py, ne_px = src.index(ne_ux, ne_uy)
+                            min_x = min(sw_px, ne_px)
+                            max_x = max(sw_px, ne_px)
+                            min_y = min(sw_py, ne_py)
+                            max_y = max(sw_py, ne_py)
+                            cx = (min_x + max_x) / 2.0
+                            cy = (min_y + max_y) / 2.0
+                            if 0 <= cx < src.width and 0 <= cy < src.height:
+                                rect_w = max(abs(max_x - min_x), 12)
+                                rect_h = max(abs(max_y - min_y), 12)
+                                rect = plt.Rectangle(
+                                    (min_x, min_y), rect_w, rect_h,
+                                    edgecolor="#EF4444", facecolor="#EF4444",
+                                    alpha=0.25, linestyle="--", linewidth=1.2
+                                )
+                                ax.add_patch(rect)
+                                badge_coords.append((s_idx, cx, cy, "#EF4444"))
                         except Exception:
                             pass
+
+                # Badge Penomoran Lingkaran: S0, S1, S2, ...
+                for s_idx, cx, cy, col in badge_coords:
+                    ax.text(
+                        cx, cy, f"S{s_idx}",
+                        fontsize=7, fontweight="bold", color="white",
+                        ha="center", va="center",
+                        bbox=dict(boxstyle="circle,pad=0.25", facecolor="#0F172A", edgecolor=col, linewidth=1.2, alpha=0.92)
+                    )
 
                 ax.set_xlim(0, src.width)
                 ax.set_ylim(src.height, 0)
