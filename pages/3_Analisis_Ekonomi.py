@@ -182,7 +182,7 @@ REF_DIR = PROJECT_ROOT / "data" / "processed" / "references"
 RAW_PLN_DIR = PROJECT_ROOT / "data" / "raw" / "pln"
 
 @st.cache_data
-def load_economic_datasets():
+def load_economic_datasets(cache_version: str = "20261010_v2_audited_verbatim"):
     # 1. Master Rekapitulasi Ekonomi Kebijakan (13 Kategori)
     ekonomi_path = CALC_DIR / "pow_solar_ekonomi_kebijakan.csv"
     df_ekonomi = pd.read_csv(ekonomi_path) if ekonomi_path.exists() else pd.DataFrame()
@@ -213,7 +213,7 @@ def load_economic_datasets():
 
     return df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult
 
-df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult = load_economic_datasets()
+df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult = load_economic_datasets("20261010_v2_audited_verbatim")
 
 if df_ekonomi.empty:
     st.error("Error: Dataset ringkasan ekonomi kebijakan tidak ditemukan di `data/processed/calculations/pow_solar_ekonomi_kebijakan.csv`.")
@@ -1258,23 +1258,30 @@ with col_box_j3:
 with st.expander("Lihat Data Mentah : Standar Pengali Multiplier Green Jobs Resmi IESR & IRENA (CSV)"):
     st.markdown("Parameter standar pengali ketenagakerjaan hijau berikut diadopsi dari studi resmi IESR dan kajian ketenagakerjaan IRENA dengan bukti fisik verbatim:")
     
+    desired_cols = [
+        "id_multiplier", "institusi_sumber", "dokumen_sumber", "fase_kegiatan",
+        "tipe_struktur_target", "multiplier_angka", "satuan_multiplier", "basis_metrik_asli",
+        "lokasi_bukti_fisik", "kalimat_verbatim"
+    ]
+    col_mapping = {
+        "id_multiplier": "ID Pengali",
+        "institusi_sumber": "Institusi Sumber",
+        "dokumen_sumber": "Dokumen Sumber",
+        "fase_kegiatan": "Fase Proyek",
+        "tipe_struktur_target": "Struktur Target",
+        "multiplier_angka": "Nilai Pengali",
+        "satuan_multiplier": "Satuan",
+        "basis_metrik_asli": "Basis Metrik Dokumen",
+        "lokasi_bukti_fisik": "Lokasi Bukti Fisik",
+        "kalimat_verbatim": "Kutipan Verbatim Dokumen Asli"
+    }
+    cols_to_use = [c for c in desired_cols if c in df_jobs_mult.columns]
+    if not cols_to_use:
+        cols_to_use = list(df_jobs_mult.columns)
+    rename_to_use = {c: col_mapping[c] for c in cols_to_use if c in col_mapping}
+
     st.dataframe(
-        df_jobs_mult[[
-            "id_multiplier", "institusi_sumber", "dokumen_sumber", "fase_kegiatan",
-            "tipe_struktur_target", "multiplier_angka", "satuan_multiplier", "basis_metrik_asli",
-            "lokasi_bukti_fisik", "kalimat_verbatim"
-        ]].rename(columns={
-            "id_multiplier": "ID Pengali",
-            "institusi_sumber": "Institusi Sumber",
-            "dokumen_sumber": "Dokumen Sumber",
-            "fase_kegiatan": "Fase Proyek",
-            "tipe_struktur_target": "Struktur Target",
-            "multiplier_angka": "Nilai Pengali",
-            "satuan_multiplier": "Satuan",
-            "basis_metrik_asli": "Basis Metrik Dokumen",
-            "lokasi_bukti_fisik": "Lokasi Bukti Fisik",
-            "kalimat_verbatim": "Kutipan Verbatim Dokumen Asli"
-        }),
+        df_jobs_mult[cols_to_use].rename(columns=rename_to_use),
         use_container_width=True,
         hide_index=True
     )
