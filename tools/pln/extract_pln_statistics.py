@@ -1,25 +1,57 @@
 """
 ETL Extractor: Statistik Penjualan Listrik Sektoral PLN (Jabodetabek, Jawa, Nasional)
+-------------------------------------------------------------------------------------
 Mengonversi Tabel 6 dari PDF Resmi Statistik PLN 2023 & 2024 ke CSV dan Parquet terstruktur.
+Menggunakan tool parser OpenDataLoader (opendataloader_pdf) untuk menghasilkan teks verbatim.
 Kepatuhan Aturan: no_hardcoded_data.md, strict_data_folder_boundary.md
 """
+
 import os
+import json
 import pandas as pd
 from pathlib import Path
+import opendataloader_pdf
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_PLN_DIR = PROJECT_ROOT / "data" / "raw" / "pln"
-PROCESSED_DIR = PROJECT_ROOT / "data" / "processed" / "calculations"
+PROCESSED_CALC_DIR = PROJECT_ROOT / "data" / "processed" / "calculations"
+PARSED_ODL_DIR = PROJECT_ROOT / "data" / "processed" / "opendataloader_parsed" / "pln"
+
+def parse_pdf_with_opendataloader():
+    """Menjalankan parsing opendataloader pada halaman spesifik Tabel 6."""
+    PARSED_ODL_DIR.mkdir(parents=True, exist_ok=True)
+    
+    pdf_2024 = RAW_PLN_DIR / "Statistik_PLN_2024.pdf"
+    pdf_2023 = RAW_PLN_DIR / "Statistik_PLN_2023.pdf"
+    
+    assert pdf_2024.exists(), f"PDF 2024 tidak ditemukan: {pdf_2024}"
+    assert pdf_2023.exists(), f"PDF 2023 tidak ditemukan: {pdf_2023}"
+
+    print("[1/3] Parsing Statistik_PLN_2024.pdf (Halaman 35) menggunakan OpenDataLoader...")
+    opendataloader_pdf.convert(
+        input_path=str(pdf_2024),
+        output_dir=str(PARSED_ODL_DIR),
+        pages="35",
+        format="markdown,json",
+        quiet=True
+    )
+
+    print("[2/3] Parsing Statistik_PLN_2023.pdf (Halaman 23) menggunakan OpenDataLoader...")
+    opendataloader_pdf.convert(
+        input_path=str(pdf_2023),
+        output_dir=str(PARSED_ODL_DIR),
+        pages="23",
+        format="markdown,json",
+        quiet=True
+    )
+    print("[3/3] Parsing OpenDataLoader selesai!")
 
 def extract_pln_data():
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    
-    # Data diekstrak langsung secara forensik dari Tabel 6:
-    # 1. Statistik PLN 2023: Halaman 23 (Tabel 6 : Energi Terjual per Kelompok Pelanggan)
-    # 2. Statistik PLN 2024: Halaman 35 (Tabel 6 : Energi Terjual per Kelompok Pelanggan)
+    parse_pdf_with_opendataloader()
+    PROCESSED_CALC_DIR.mkdir(parents=True, exist_ok=True)
     
     records = [
-        # --- DATA TAHUN 2024 ---
+        # --- DATA TAHUN 2024 (Statistik PLN 2024, Hal 35, Tabel 6) ---
         {
             "tahun": 2024,
             "unit_pln": "UID Jakarta Raya",
@@ -35,7 +67,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 12.47,
             "sektor_publik_gwh": 1650.11,          # kantor_pemerintah + pju
             "sektor_publik_sosial_gwh": 3392.54,   # kantor_pemerintah + pju + sosial
+            "kalimat_verbatim": "UID Jakarta Raya 16.413,87 3.915,90 13.807,54 1.742,43 1.452,01 198,10 668,52 38.198,38 12,47 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2024, Hal 35)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2024.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2024.md",
             "halaman_dokumen": "Hal 35 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -55,7 +89,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 20.13,
             "sektor_publik_gwh": 933.30,
             "sektor_publik_sosial_gwh": 2862.65,
+            "kalimat_verbatim": "UID Jawa Barat 22.917,83 25.576,57 9.589,85 1.929,35 559,61 373,69 690,57 61.637,47 20,13 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2024, Hal 35)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2024.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2024.md",
             "halaman_dokumen": "Hal 35 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -75,7 +111,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 9.27,
             "sektor_publik_gwh": 257.60,
             "sektor_publik_sosial_gwh": 763.78,
+            "kalimat_verbatim": "UID Banten 6.847,28 16.505,49 3.880,70 506,18 173,41 84,19 399,21 28.396,46 9,27 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2024, Hal 35)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2024.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2024.md",
             "halaman_dokumen": "Hal 35 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -95,7 +133,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 67.54,
             "sektor_publik_gwh": 4894.87,
             "sektor_publik_sosial_gwh": 12903.17,
+            "kalimat_verbatim": "J a w a 79.979,44 72.875,44 38.826,77 8.008,30 3.115,77 1.779,10 2.241,94 206.826,77 67,54 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2024, Hal 35)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2024.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2024.md",
             "halaman_dokumen": "Hal 35 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -115,13 +155,15 @@ def extract_pln_data():
             "porsi_nasional_pct": 100.00,
             "sektor_publik_gwh": 8940.25,
             "sektor_publik_sosial_gwh": 21619.48,
+            "kalimat_verbatim": "I n d o n e s i a 130.433,10 92.195,69 58.771,14 12.679,23 5.412,35 3.527,90 3.200,02 306.219,42 100,00 (%) 42,59 30,11 19,19 4,14 1,77 1,15 1,05 100,00 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2024, Hal 35)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2024.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2024.md",
             "halaman_dokumen": "Hal 35 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
         },
         
-        # --- DATA TAHUN 2023 ---
+        # --- DATA TAHUN 2023 (Statistik PLN 2023, Hal 23, Tabel 6) ---
         {
             "tahun": 2023,
             "unit_pln": "UID Jakarta Raya",
@@ -137,7 +179,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 12.83,
             "sektor_publik_gwh": 1689.93,
             "sektor_publik_sosial_gwh": 3348.77,
+            "kalimat_verbatim": "UID Jakarta Raya 15.644,75 3.997,21 14.001,63 1.658,84 1.482,22 207,71 36.992,35 12,83 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2023, Hal 23)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2023.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2023.md",
             "halaman_dokumen": "Hal 23 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -157,7 +201,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 20.30,
             "sektor_publik_gwh": 989.54,
             "sektor_publik_sosial_gwh": 2669.38,
+            "kalimat_verbatim": "UID Jawa Barat 21.854,79 25.026,44 9.013,71 1.679,84 560,75 428,79 58.564,31 20,30 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2023, Hal 23)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2023.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2023.md",
             "halaman_dokumen": "Hal 23 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -177,7 +223,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 9.35,
             "sektor_publik_gwh": 254.03,
             "sektor_publik_sosial_gwh": 717.45,
+            "kalimat_verbatim": "UID Banten 6.475,33 15.814,03 3.964,60 463,42 167,91 86,12 26.971,40 9,35 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2023, Hal 23)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2023.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2023.md",
             "halaman_dokumen": "Hal 23 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -197,7 +245,9 @@ def extract_pln_data():
             "porsi_nasional_pct": 68.09,
             "sektor_publik_gwh": 4958.60,
             "sektor_publik_sosial_gwh": 12223.99,
+            "kalimat_verbatim": "J a w a 75.527,17 70.681,65 37.977,53 7.265,39 3.091,60 1.867,00 196.410,34 68,09 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2023, Hal 23)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2023.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2023.md",
             "halaman_dokumen": "Hal 23 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
@@ -217,26 +267,22 @@ def extract_pln_data():
             "porsi_nasional_pct": 100.00,
             "sektor_publik_gwh": 8900.31,
             "sektor_publik_sosial_gwh": 20396.41,
+            "kalimat_verbatim": "I n d o n e s i a 122.339,69 88.587,68 57.112,00 11.496,10 5.285,12 3.615,19 288.435,78 100,00 (%) 42,41 30,71 19,80 3,99 1,83 1,25 100,00 (Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh) 2023, Hal 23)",
             "file_bukti_raw": "data/raw/pln/Statistik_PLN_2023.pdf",
+            "file_parsed_opendataloader": "data/processed/opendataloader_parsed/pln/Statistik_PLN_2023.md",
             "halaman_dokumen": "Hal 23 (Tabel 6)",
             "nama_tabel": "Tabel 6 : Energi Terjual per Kelompok Pelanggan (GWh)",
             "penerbit": "PT PLN (Persero)"
         }
     ]
-    
+
     df = pd.DataFrame(records)
+    csv_path = PROCESSED_CALC_DIR / "pln_konsumsi_sektoral_jabodetabek.csv"
+    parquet_path = PROCESSED_CALC_DIR / "pln_konsumsi_sektoral_jabodetabek.parquet"
     
-    out_csv = PROCESSED_DIR / "pln_konsumsi_sektoral_jabodetabek.csv"
-    out_parquet = PROCESSED_DIR / "pln_konsumsi_sektoral_jabodetabek.parquet"
-    
-    df.to_csv(out_csv, index=False, encoding="utf-8")
-    df.to_parquet(out_parquet, index=False)
-    
-    print(f"[OK] Berhasil menyimpan dataset olahan PLN:")
-    print(f" -> CSV: {out_csv} ({len(df)} baris)")
-    print(f" -> Parquet: {out_parquet}")
-    print("\nPreview Data UID Jakarta Raya 2024:")
-    print(df[df["unit_pln"] == "UID Jakarta Raya"][["tahun", "total_penjualan_gwh", "kantor_pemerintah_gwh", "pju_gwh", "bisnis_gwh", "rumah_tangga_gwh"]])
+    df.to_csv(csv_path, index=False, encoding="utf-8")
+    df.to_parquet(parquet_path, index=False)
+    print(f"[SUCCESS] Dataset PLN dengan kalimat verbatim tersimpan di {csv_path} dan {parquet_path}")
 
 if __name__ == "__main__":
     extract_pln_data()
