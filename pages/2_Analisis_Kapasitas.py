@@ -313,7 +313,7 @@ st.markdown(f"""
     </p>
     <p style="margin-bottom: 0;">
         Penting dicatat bahwa capaian substitusi <b>{pct_substitusi_publik:.1f}%</b> ini baru dihitung berdasarkan batasan <b>sampel {total_assets:,} titik terkurasi</b> yang dialokasikan dalam uji coba fotogrametri Google Solar API. 
-        Berdasarkan laporan sensus komprehensif terhadap bank data OpenStreetMap (OSM) dan data operasional resmi se-Jabodetabek (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>), 
+        Berdasarkan <b>Laporan Sensus Potensi Maksimal Populasi Infrastruktur Publik Jabodetabek (CELIOS, 2026)</b> yang mengaudit bank data geospasial OpenStreetMap (OSM) dan data operasional resmi perkotaan, 
         populasi riil fasilitas fisik beratap bernama mencapai <b>12.397 titik</b> pada fokus fasilitas utama dan koridor BRT (serta meluas hingga <b>19.132 titik</b> bila mencakup seluruh shelter angkutan umum penyangga). 
         Artinya, portofolio riset saat ini baru menyerap <b>~10,4%</b> dari kapasitas fisik riil di lapangan. 
         Jika seluruh populasi 12.397 titik tersebut dioptimalkan, potensi kapasitas melonjak hingga <b>750 s.d. 1.100 MWp</b> dengan estimasi generasi <b>1.050 s.d. 1.540 GWh per tahun</b>—cukup untuk mencapai kemandirian energi publik 100% dan memimpin dekarbonisasi tanpa mengorbankan wilayah pedesaan.
@@ -518,7 +518,7 @@ st.markdown(f"""
     <b>{total_roof_area_m2:,.0f} m²</b> yang tersebar di <b>{total_assets:,} titik infrastruktur strategis</b> se-Jabodetabek. 
     Alokasi {total_assets:,} titik ini merupakan <b>sampel representatif terkurasi</b> dari sensus penuh <b>12.397 titik fasilitas publik beratap bernama</b> 
     (atau 19.132 titik jika menyerap seluruh shelter angkutan feeder) yang terdaftar di bank data OpenStreetMap (OSM) se-Jabodetabek 
-    (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>). 
+    (merujuk temuan <i>Laporan Sensus Potensi Populasi Penuh Infrastruktur Publik Jabodetabek — CELIOS, 2026</i>). 
     Dari total tapak sampel tersebut, algoritma segmentasi fotogrametri mengidentifikasi <b>{usable_roof_area_m2:,.0f} m² 
     ({usable_roof_area_m2/total_roof_area_m2*100:.1f}%)</b> bidang atap yang memenuhi kelayakan geometris struktural 
     dan bebas dari bayangan permanen (<i>shading-free</i>). 
@@ -600,7 +600,7 @@ with col_chart_c2:
 st.markdown(f"""
 <div style="background: #111A24; border: 1px solid #253342; border-left: 4px solid #26A69A; border-radius: 6px; padding: 12px 16px; margin: 14px 0 20px 0; font-size: 0.92rem; color: #CFD8DC; line-height: 1.6;">
     <b>Konteks Penyerapan Kuota Sampel 2.100 Titik terhadap Populasi Riil OpenStreetMap (OSM):</b><br>
-    Berdasarkan audit geospasial populasi penuh (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>), 
+    Berdasarkan <b>Laporan Audit Geospasial Populasi Penuh Infrastruktur Publik (CELIOS, 2026)</b>, 
     sampel 2.100 titik Google Solar API ini memiliki tingkat penyerapan yang berbeda antar-kelompok infrastruktur:
     <ul style="margin: 6px 0 0 0; padding-left: 18px;">
         <li><b>Kelompok Sensus Hampir Penuh (80%–100% Populasi Riil):</b> Kategori transit dan komersial utama—seperti <b>Stasiun KRL (88/88 titik)</b>, <b>Stasiun MRT/LRT (37/37 titik)</b>, <b>Bandara (14/14 titik)</b>, <b>Pusat Perbelanjaan / Mall (85–88 titik)</b>, dan <b>Gedung Parkir MSCP (101 titik)</b>—telah terserap hampir 100% dari seluruh entitas fisik riil di lapangan.</li>
@@ -963,7 +963,7 @@ st.markdown(f"""
     Untuk menguji apakah produksi energi surya ini bernilai signifikan dalam skala metropolitan, hasil pembangkitan 
     <b>{total_gen_gwh:,.2f} GWh/tahun</b> dari <b>sampel 2.100 titik infrastruktur strategis</b> dikomparasikan secara langsung terhadap neraca realisasi penjualan tenaga listrik 
     resmi PT PLN (Persero) tahun 2024 (Tabel 6 Statistik PLN). Dari sampel 2.100 titik ini saja—yang baru menyerap <b>~10,4%</b> dari total 19.132 fasilitas beratap di OpenStreetMap se-Jabodetabek 
-    (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>)—potensi panen surya mandiri telah terbukti mampu <b>menyubstitusi {pct_substitusi_publik:.1f}% ({pct_substitusi_publik:.1f} persen)</b> 
+    (merujuk temuan <i>Laporan Sensus Potensi Populasi Penuh Infrastruktur Publik Jabodetabek — CELIOS, 2026</i>)—potensi panen surya mandiri telah terbukti mampu <b>menyubstitusi {pct_substitusi_publik:.1f}% ({pct_substitusi_publik:.1f} persen)</b> 
     dari total kebutuhan listrik seluruh sektor publik murni (Kantor Pemerintah dinas/kementerian dan Penerangan Jalan Umum / PJU) di DKI Jakarta.
 </p>
 """, unsafe_allow_html=True)
@@ -1069,7 +1069,7 @@ st.markdown(f"""
     <ol style="margin-top: 6px; padding-left: 20px;">
         <li><b>Kemandirian APBD:</b> Penghematan tagihan listrik penerangan jalan dan kantor dinas membebaskan ratusan miliar rupiah belanja operasional daerah untuk dialokasikan ke layanan kesehatan dan pendidikan.</li>
         <li><b>Keadilan Ekologis:</b> Menghasilkan {total_gen_gwh:,.1f} GWh listrik dari atap kota secara langsung mencegah pembakaran <b>~183.000 ton batu bara per tahun</b> di PLTU pesisir Jawa-Banten (berdasarkan intensitas emisi grid Jamali 0,809 kg CO₂/kWh). Hal ini menghentikan praktik kolonialisme energi yang memindahkan abu terbang (fly ash/bottom ash) dan penyakit ISPA ke warga pedesaan di sekitar PLTU.</li>
-        <li><b>Potensi Skala Penuh Populasi OSM vs Kuota Sampel Riset:</b> Angka {pct_substitusi_publik:.1f}% ini baru dicapai dari <b>sampel 2.100 titik</b>. Berdasarkan <code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>:
+        <li><b>Potensi Skala Penuh Populasi OSM vs Kuota Sampel Riset:</b> Angka {pct_substitusi_publik:.1f}% ini baru dicapai dari <b>sampel 2.100 titik</b>. Berdasarkan <b>Laporan Sensus Potensi Maksimal Populasi Infrastruktur Publik (CELIOS, 2026)</b>:
             <ul style="margin-top: 4px; padding-left: 18px;">
                 <li><b>Skenario Sampel 2.100 Titik (Pagu Budget API):</b> Generasi 407,2 GWh/th ➔ Substitusi <b>24,7%</b> sektor publik DKI.</li>
                 <li><b>Skenario Populasi Penuh 12.397 Titik (Fokus Utama OSM):</b> Generasi 1.050 s.d. 1.540 GWh/th ➔ Substitusi <b>63,6% s.d. 93,3%</b> sektor publik DKI.</li>
