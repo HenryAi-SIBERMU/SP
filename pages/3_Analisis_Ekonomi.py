@@ -581,7 +581,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─── DATA LINEAGE & EXPANDER DATA MENTAH ─────────────────────────────────────────
-with st.expander("📋 Data Lineage: Tabel Rincian Finansial Makro 13 Kategori Infrastruktur (CSV)"):
+with st.expander("Lihat Data Mentah : Tabel Rincian Finansial Makro 13 Kategori Infrastruktur (CSV)"):
     st.markdown("Setiap baris data berikut diverifikasi langsung dari output kalkulasi satelit dan standar biaya resmi EPC 2026:")
     
     display_cols = [
@@ -614,13 +614,13 @@ with st.expander("📋 Data Lineage: Tabel Rincian Finansial Makro 13 Kategori I
     with col_dl1:
         csv_bytes = df_ekonomi.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Unduh Dataset Ringkasan Ekonomi (CSV)",
+            label="Unduh Dataset Ringkasan Ekonomi (CSV)",
             data=csv_bytes,
             file_name="pow_solar_ekonomi_kebijakan.csv",
             mime="text/csv"
         )
     with col_dl2:
-        st.info("💡 Berkas fisik bukti kutipan tersimpan di `data/raw/sources/` dan tabel referensi di `data/processed/references/`.")
+        st.info("Berkas fisik bukti kutipan tersimpan di `data/raw/sources/` dan tabel referensi di `data/processed/references/`.")
 
 # ═════════════════════════════════════════════════════════════════════════════════
 # SUB-BAB 3.2: EKUIVALENSI DIVIDEN FISKAL APBD (OPPORTUNITY COST & PUBLIC DIVIDEND)
@@ -945,7 +945,7 @@ with col_box_d3:
     """, unsafe_allow_html=True)
 
 # ─── DATA LINEAGE & TABEL DATA MENTAH 3.2 ────────────────────────────────────────
-with st.expander("📋 Data Lineage: Standar Biaya Layanan Publik Resmi & Bukti Fisik Verbatim (CSV)"):
+with st.expander("Lihat Data Mentah : Standar Biaya Layanan Publik Resmi & Bukti Fisik Verbatim (CSV)"):
     st.markdown("Parameter biaya layanan publik di bawah ini dihimpun dari publikasi resmi pemerintah daerah dan memiliki bukti fisik verbatim di `data/raw/sources/`:")
     
     st.dataframe(
@@ -972,16 +972,16 @@ with st.expander("📋 Data Lineage: Standar Biaya Layanan Publik Resmi & Bukti 
     with col_dl_l1:
         csv_layanan_bytes = df_layanan.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Unduh Standar Biaya Layanan Publik (CSV)",
+            label="Unduh Standar Biaya Layanan Publik (CSV)",
             data=csv_layanan_bytes,
             file_name="standar_biaya_layanan_publik.csv",
             mime="text/csv",
             key="dl_layanan_csv"
         )
     with col_dl_l2:
-        st.caption("🔍 Berkas sumber: `data/processed/references/standar_biaya_layanan_publik.csv` | Dilengkapi tautan bukti HTML/PDF di `data/raw/sources/`.")
+        st.caption("Berkas sumber: `data/processed/references/standar_biaya_layanan_publik.csv` | Dilengkapi tautan bukti HTML/PDF di `data/raw/sources/`.")
 
-with st.expander("📋 Data Lineage: Ekuivalensi Dividen Sosial per 13 Kategori Fasilitas (CSV)"):
+with st.expander("Lihat Data Mentah : Ekuivalensi Dividen Sosial per 13 Kategori Fasilitas (CSV)"):
     st.markdown("Rincian hasil konversi dividen sosial dari penghematan tagihan listrik masing-masing kategori fasilitas publik:")
     
     cols_div_cat = [
@@ -1271,7 +1271,7 @@ with col_box_j3:
     """, unsafe_allow_html=True)
 
 # ─── DATA LINEAGE & TABEL DATA MENTAH 3.3 ────────────────────────────────────────
-with st.expander("📋 Data Lineage: Standar Pengali Multiplier Green Jobs Resmi IESR & IRENA (CSV)"):
+with st.expander("Lihat Data Mentah : Standar Pengali Multiplier Green Jobs Resmi IESR & IRENA (CSV)"):
     st.markdown("Parameter standar pengali ketenagakerjaan hijau berikut diadopsi dari studi resmi IESR dan kajian ketenagakerjaan IRENA dengan bukti fisik verbatim:")
     
     st.dataframe(
@@ -1298,16 +1298,16 @@ with st.expander("📋 Data Lineage: Standar Pengali Multiplier Green Jobs Resmi
     with col_dl_j1:
         csv_jobs_bytes = df_jobs_mult.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="📥 Unduh Standar Pengali Multiplier Green Jobs (CSV)",
+            label="Unduh Standar Pengali Multiplier Green Jobs (CSV)",
             data=csv_jobs_bytes,
             file_name="pow_solar_green_jobs_multiplier.csv",
             mime="text/csv",
             key="dl_jobs_mult_csv"
         )
     with col_dl_j2:
-        st.caption("🔍 Berkas sumber: `data/processed/references/pow_solar_green_jobs_multiplier.csv` | Dilengkapi tautan bukti resmi IESR & IRENA.")
+        st.caption("Berkas sumber: `data/processed/references/pow_solar_green_jobs_multiplier.csv` | Dilengkapi tautan bukti resmi IESR & IRENA.")
 
-with st.expander("📋 Data Lineage: Rincian Serapan Tenaga Kerja Hijau per 13 Kategori Fasilitas (CSV)"):
+with st.expander("Lihat Data Mentah : Rincian Serapan Tenaga Kerja Hijau per 13 Kategori Fasilitas (CSV)"):
     st.markdown("Rincian pembagian tenaga kerja fase konstruksi vs pemeliharaan permanen 25 tahun untuk setiap kategori infrastruktur:")
     
     cols_jobs_cat = [
