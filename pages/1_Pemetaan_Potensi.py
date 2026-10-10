@@ -292,7 +292,7 @@ with col_b4:
             <div class="bento-val" style="color: #42A5F5;">{total_ghg_tons:,.1f} <span style="font-size:1.05rem;color:#BBDEFB;">Ton/th</span></div>
             <div class="bento-desc">Dekarbonisasi setara penghentian pembakaran batu bara di PLTU pesisir Jawa-Banten (Grid Jamali).</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Faktor Emisi Grid Jamali (808,99 kg/MWh)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Google Solar API (carbonOffsetFactor 808,99 kg/MWh)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
