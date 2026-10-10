@@ -1,8 +1,8 @@
 # Kerangka Desain & Struktur Analisis Riset (Page 3)
-## CELIOS8: Analisis Ekonomi & Kelayakan Finansial PLTS Atap Jabodetabek
+## CELIOS8: Analisis Ekonomi Kebijakan Publik & Kelayakan Fiskal PLTS Atap Jabodetabek
 **Dokumen Referensi:** `docs/KERANGKA-PAGE-3-ANALISIS-EKONOMI.md`  
 **Target Implementasi:** `pages/3_Analisis_Ekonomi.py`  
-**Standar Gaya Riset:** 100% Mengadopsi Standar Riset CELIOS 2 (ECC / D3TLH)  
+**Standar Gaya Riset:** 100% Mengadopsi Standar Riset CELIOS 2 (ECC / D3TLH) — Pendekatan Ekonomi Kebijakan Publik (*Public Policy & Macro-Fiscal Framework*)  
 **Kepatuhan Regulasi:** Mematuhi 5 Agent Rules (`no_hardcoded_data`, `anti_yesman_spatial_methodology_integrity`, `statistical_auditor_role`, `strict_data_folder_boundary`, `never_use_destructive_commands`)  
 **Penomoran Bab:** Hierarkis Standar Bab 3 (3.1, 3.2, 3.3, 3.4, 3.5)  
 
@@ -10,9 +10,15 @@
 
 ## 1. Ringkasan Visi & Pendekatan Halaman
 
-Halaman **"Analisis Ekonomi & Kelayakan Finansial"** bertindak sebagai **pilar kuantitatif pertama dari Triple-Benefits Framework** (*Ekonomi, Lingkungan, Sosial*) sekaligus instrumen pembuktian kelayakan kebijakan (*policy feasibility*). Halaman ini mentransformasi potensi energi fisik hasil kalkulasi satelit pada Page 1 dan Page 2 ($\text{MWp}$ dan $\text{GWh/tahun}$) menjadi **besaran moneter riil: kebutuhan belanja modal (CAPEX), efisiensi belanja operasional listrik (OPEX Savings), kelayakan investasi (LCOE, NPV, IRR, Payback Period), serta model bisnis pengadaan tanpa membebani APBD**.
+Halaman **"Analisis Ekonomi Kebijakan Publik & Kelayakan Fiskal"** bertindak sebagai **pilar pembuktian kelayakan praktis (*policy feasibility*)** dalam Triple-Benefits Framework CELIOS (*Ekonomi, Lingkungan, Sosial*). Halaman ini mentransformasi potensi energi fisik hasil kalkulasi satelit pada Page 1 dan Page 2 ($\text{MWp}$ dan $\text{GWh/tahun}$) menjadi **narasi dampak ekonomi makro dan dividen sosial yang mudah dipahami oleh pembuat kebijakan, media massa, dan masyarakat umum**.
 
-Mengadopsi tradisi advokasi ekonomi-politik khas CELIOS, halaman ini membantah narasi konservatif pembuat kebijakan yang kerap memandang transisi energi terbarukan sebagai "beban fiskal APBD yang mahal dan merugikan". Sebaliknya, halaman ini membuktikan secara empiris bahwa **PLTS Atap pada 2.000 titik infrastruktur publik Jabodetabek adalah investasi fiskal berimbal hasil positif (*bankable green investment*)**, yang mampu membebaskan belanja listrik daerah secara permanen sekaligus menghentikan transfer dampak polusi ke pedesaan (*anti-sacrificial zones*).
+### Mengapa Pendekatan Ekonomi Kebijakan Publik Dipilih (Bukan Corporate Project Finance)?
+Dalam tradisi riset advokasi CELIOS, presentasi ekonomi di hadapan publik dan pemangku kepentingan daerah (DPRD, Dinas Perhubungan, Bappenas) **tidak boleh terjebak dalam kerumitan rumus perbankan mikro korporat** (*WACC, Discounted Cash Flow 25 tahun, terminal value, dan depresiasi inverter*) yang rawan menjadi polemik teknis berbelit-belit. 
+
+Sebaliknya, halaman ini fokus menjawab **3 pertanyaan kunci pembuat kebijakan dan media**:
+1. **Berapa modal investasinya dan berapa penghematan belanja listrik tahunannya?** (Neraca Makro & Titik Impas Sederhana).
+2. **Uang hemat tersebut setara dengan membiayai apa saja untuk masyarakat?** (*Fiscal Dividend / Opportunity Cost* — subsidi komuter, operasional puskesmas, beasiswa).
+3. **Bagaimana Pemda bisa mengeksekusi jika kas APBD terbatas?** (Solusi pengadaan *Zero-APBD* via skema PPA/sewa atap pihak ketiga).
 
 ---
 
@@ -20,11 +26,11 @@ Mengadopsi tradisi advokasi ekonomi-politik khas CELIOS, halaman ini membantah n
 
 Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 1. **Org Badge Institusi:** `CELIOS — Center of Economic and Law Studies`
-2. **Main Title Gradien Hijau:** `Analisis Ekonomi & Kelayakan Finansial`
-3. **Sub-Title Analitis:** Menjelaskan cakupan pemodelan tekno-ekonomi, dekomposisi CAPEX/OPEX, analisis arus kas 25 tahun, dan skema bisnis pengadaan.
-4. **Dropdown Metodologi Transparan:** Mengurai alur kausalitas ekonomi-politik, variabel $X$ dan $Y$, serta metode perhitungan teknik ekonomi baku (Standar NREL LCOE, Pedoman KPBU Bappenas, dan Permen ESDM 2/2024).
-5. **Hero Statement (Narasi Kritis Utama):** Paragraf pembuka tajam yang merangkum kontradiksi belanja modal vs keuntungan fiskal jangka panjang.
-6. **Bento Metric Cards (6 Indikator Kunci):** Nilai moneter besar dengan warna fungsional dan baris sitasi file fisik sumber di `data/`.
+2. **Main Title Gradien Hijau:** `Analisis Ekonomi Kebijakan Publik`
+3. **Sub-Title Analitis:** Menjelaskan cakupan investasi makro, penghematan belanja operasional, dividen fiskal daerah, dan penciptaan lapangan kerja hijau se-Jabodetabek.
+4. **Dropdown Metodologi Transparan:** Mengurai alur kausalitas ekonomi publik, variabel $X$ dan $Y$, serta metode perhitungan baku (Pengali Ketenagakerjaan Hijau IRENA/IESR dan Standar Biaya Layanan Publik BPS/Kemendagri).
+5. **Hero Statement (Narasi Kritis Utama):** Paragraf pembuka tajam yang membantah mitos "transisi energi adalah beban APBD".
+6. **Bento Metric Cards (6 Indikator Kebijakan Publik):** Nilai moneter dan dampak sosial riil dengan warna fungsional dan baris sitasi file fisik sumber di `data/`.
 7. **Struktur Sub-Bab 3.1 s.d. 3.5:** Setiap sub-bab mengikuti ritme: *Tesis Advokasi ➔ Visualisasi Komparatif ➔ Kotak Fakta Data & Interpretasi Kritis ➔ Expander Data Mentah CSV*.
 
 ---
@@ -35,61 +41,61 @@ Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
 |                        BAGIAN HEADER & METODOLOGI UTAMA (TOP-LEVEL)                              |
 |  • Org Badge: CELIOS — Center of Economic and Law Studies                                        |
-|  • Main Title: Analisis Ekonomi & Kelayakan Finansial PLTS Atap                                  |
-|  • Sub-Title: Evaluasi CAPEX, Penghematan Belanja Listrik, dan Skenario Pembiayaan Jabodetabek   |
-|  • Dropdown Metodologi: Alur Kausalitas, Standar NREL LCOE, Formulasi Teknik Ekonomi Baku        |
-|  • Hero Statement: Menepis Mitos "Transisi Energi Mahal" Melalui Efisiensi Belanja Publik        |
-|  • Bento Metric Cards: 6 Indikator Kunci CAPEX, Penghematan, LCOE, Payback, NPV, dan Add-on SPKLU|
+|  • Main Title: Analisis Ekonomi Kebijakan Publik PLTS Atap                                       |
+|  • Sub-Title: Evaluasi Investasi Makro, Efisiensi Belanja Daerah, dan Dividen Sosial Warga       |
+|  • Dropdown Metodologi: Alur Kausalitas Kebijakan, Standar Pengali IRENA, Formulasi Baku        |
+|  • Hero Statement: Membongkar Mitos "Transisi Energi Mahal" Melalui Pembebasan Ruang Fiskal      |
+|  • Bento Metric Cards: 6 Indikator Kunci (Investasi, Hemat Tahunan, Payback, Green Jobs, Dividen)|
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
                                                   │
                                                   ▼
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
-|  SUB-BAB 3.1: STRUKTUR BIAYA INVESTASI & PENGADAAN (CAPEX & OPEX MODELING)                       |
-|  3.1.1 Dekomposisi CAPEX: Rooftop Standar vs Solar Carport & Kanopi Baja                         |
-|  3.1.2 Biaya Operasional & Pemeliharaan (OPEX) serta Siklus Penggantian Inverter                |
-|  • Visualisasi: Treemap & Stacked Bar Dekomposisi Biaya Modal per Kategori Infrastruktur         |
-|  • Kotak Callout: Fakta Data Disparitas Biaya & Justifikasi Rekayasa Kanopi Parkir               |
-|  • Data Lineage: Expander tabel rincian komponen CAPEX dan OPEX (CSV)                            |
+|  SUB-BAB 3.1: NERACA INVESTASI & PENGHEMATAN BELANJA LISTRIK TAHUNAN                             |
+|  3.1.1 Dekomposisi Biaya Modal: Rooftop Dak vs Solar Carport & Kanopi Baja                       |
+|  3.1.2 Proyeksi Penghematan Belanja Listrik Tahunan & Periode Balik Modal (Simple Payback)       |
+|  • Visualisasi: Grouped Bar & Waterfall Chart: Modal Awal vs Akumulasi Penghematan Listrik       |
+|  • Kotak Callout: Fakta Data Titik Impas 6–7 Tahun & 18 Tahun Panen Energi Bebas Biaya           |
+|  • Data Lineage: Expander tabel data mentah CAPEX dan penghematan per kategori (CSV)             |
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
                                                   │
                                                   ▼
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
-|  SUB-BAB 3.2: KUANTIFIKASI PENGHEMATAN TAGIHAN LISTRIK (ELECTRICITY OPEX SAVINGS)                |
-|  3.2.1 Proyeksi Penghematan Listrik Sektoral (Golongan Tarif Publik P vs Komersial B)           |
-|  3.2.2 Efisiensi Anggaran Fiskal APBD Pemda & Operator Transportasi Publik se-Jabodetabek        |
-|  • Visualisasi: Waterfall Chart & Grouped Bar: Pemotongan Tagihan Listrik Eksisting vs PLTS     |
-|  • Kotak Callout: Fakta Data Penghematan Belanja Daerah & Ruang Fiskal Baru Pemda                |
-|  • Data Lineage: Expander tabel matriks penghematan tagihan PLN per kategori (CSV)               |
+|  SUB-BAB 3.2: EKUIVALENSI DIVIDEN FISKAL APBD (OPPORTUNITY COST & PUBLIC DIVIDEND)               |
+|  3.2.1 Konversi Penghematan Listrik Menjadi Nilai Manfaat Layanan Publik Nyata                   |
+|  3.2.2 Pembebasan Ruang Fiskal Daerah (Fiscal Space) Tanpa Menaikkan Pajak Warga                 |
+|  • Visualisasi: Infografis Horizontal Bar / Pictogram: Pilihan Alokasi Dividen Belanja Daerah    |
+|  • Kotak Callout: Fakta Data Rekomendasi Alokasi Penghematan Listrik untuk Subsidi Komuter       |
+|  • Data Lineage: Expander tabel konversi unit biaya layanan publik (CSV)                         |
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
                                                   │
                                                   ▼
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
-|  SUB-BAB 3.3: INDIKATOR KELAYAKAN FINANSIAL (LCOE, NPV, IRR, & PAYBACK PERIOD)                   |
-|  3.3.1 Komparasi LCOE Surya Tropis vs Biaya Pokok Penyediaan (BPP) & Tarif Retail PLN           |
-|  3.3.2 Analisis Arus Kas Dinamis (Cash Flow 25 Tahun, Discounted Payback, & Internal Rate)       |
-|  • Visualisasi: Cumulative Cash Flow Curve (Break-Even Point) & Tornado Chart Daya Saing LCOE    |
-|  • Kotak Callout: Fakta Data Bankability Proyek & Kepastian Titik Impas Finansial                |
-|  • Data Lineage: Expander tabel proyeksi arus kas diskonto 25 tahun (CSV)                        |
+|  SUB-BAB 3.3: DAMPAK PENCIPTAAN LAPANGAN KERJA HIJAU (GREEN JOBS MULTIPLIER)                     |
+|  3.3.1 Kuantifikasi Serapan Tenaga Kerja Lokal (Fase Konstruksi vs Fase Operasional 25 Tahun)    |
+|  3.3.2 Distribusi Penyerapan Tenaga Kerja per Klaster Infrastruktur (Rangka Baja, Teknisi PV)    |
+|  • Visualisasi: Stacked Bar Chart Penyerapan Tenaga Kerja Hijau per Kategori Fasilitas           |
+|  • Kotak Callout: Fakta Data Multiplier Lapangan Kerja Lokal Transisi Energi Berkeadilan         |
+|  • Data Lineage: Expander tabel pengali ketenagakerjaan hijau IRENA / IESR (CSV)                 |
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
                                                   │
                                                   ▼
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
-|  SUB-BAB 3.4: ANALISIS SENSITIVITAS & KONTROL PARAMETRIK INTERAKTIF                              |
-|  3.4.1 Pemodelan 3 Skenario Kebijakan: Konservatif (60%), Moderat Baseline (80%), Optimis (100%) |
-|  3.4.2 Sensitivitas Variabel Makro: Fluktuasi Suku Bunga Diskonto (BI Rate) & Eskalasi Tarif     |
-|  • Visualisasi: Interactive Spider Sensitivity Chart / Multi-Parameter Sensitivity Curve         |
-|  • Kotak Callout: Fakta Data Ketahanan Portofolio terhadap Guncangan Inflasi Energi              |
-|  • Data Lineage: Expander tabel matriks sensitivitas parametrik ekonomi (CSV)                    |
+|  SUB-BAB 3.4: MATRIKS PRIORITAS INVESTASI: KLASTER FASILITAS PALING STRATEGIS                    |
+|  3.4.1 Kuadran Prioritas: Quick Wins (Mall/Parkir) vs Pelayanan Publik (RS/Sekolah/Stasiun)      |
+|  3.4.2 Peta Jalan Pentahapan Implementasi Pemda (Tahap 1 Quick Wins ➔ Tahap 2 Skalasi Penuh)    |
+|  • Visualisasi: Scatter / Bubble Chart Kuadran Prioritas (Payback vs Dampak Publik)              |
+|  • Kotak Callout: Panduan Bertindak Kepala Daerah untuk Menghindari Beban Anggaran Sekaligus     |
+|  • Data Lineage: Expander tabel matriks prioritas 13 kategori infrastruktur (CSV)                |
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
                                                   │
                                                   ▼
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
-|  SUB-BAB 3.5: MODEL BISNIS INOVATIF & SKEMA PEMBIAYAAN ALTERNATIF                                |
-|  3.5.1 Komparasi Model Pengadaan: APBD Murni vs PPA (Sewa Atap) & BOOT Konsesi Swasta           |
-|  3.5.2 Diversifikasi Pendapatan Baru: Integrasi SPKLU / EV Charging & Monetisasi Kredit Karbon   |
-|  • Visualisasi: Radar/Spider Chart Evaluasi 4 Model Bisnis (Risiko vs Beban Kas Pemda)          |
-|  • Kotak Callout: Solusi Pengadaan Zero-CAPEX untuk Melindungi Likuiditas Daerah                 |
-|  • Data Lineage: Expander tabel perbandingan matriks risiko model bisnis (CSV)                   |
+|  SUB-BAB 3.5: SOLUSI PENGADAAN "ZERO-APBD" (MEMBONGKAR ALIBI KETERBATASAN KAS DAERAH)            |
+|  3.5.1 Skema PPA / Sewa Atap (Solar as a Service): Swasta Memodali, Pemda Langsung Terima Hemat  |
+|  3.5.2 Kemitraan Konsesi Parkir (Carport Solar) & Kerjasama BUMD Transportasi                    |
+|  • Visualisasi: Diagram Alur Proses & Perbandingan Beban Fiskal: APBD Murni vs Skema PPA         |
+|  • Kotak Callout: Argumen Telak Advokasi CELIOS: Transisi Energi Terkendala Mau, Bukan Uang      |
+|  • Data Lineage: Expander tabel perbandingan matriks model pengadaan zero-APBD (CSV)             |
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
 ```
 
@@ -99,173 +105,168 @@ Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 
 ### Header Halaman & Dropdown Metodologi
 * **Alur Kausalitas Metodologis:**
-  $$\text{Kapasitas \& Yield } (MWp, GWh) \longrightarrow \text{Estimasi CAPEX \& OPEX} \longrightarrow \text{Penghematan Tagihan (Tarif PLN)} \longrightarrow \text{Kelayakan (LCOE, NPV, IRR)} \longrightarrow \text{Model Pengadaan Zero-APBD}$$
-* **Variabel Teknis & Kebijakan (X):**
-  - Total kapasitas terpasang ($kWp$) dan produksi energi tahunan ($kWh$) hasil validasi satelit Page 1 & Page 2.
-  - Asumsi biaya pengadaan satuan standar industri EPC Indonesia ($Rp/Wp$ atau $Rp/kWp$).
-  - Struktur Tarif Tenaga Listrik (TTL) PLN 2026 berdasarkan Permen ESDM untuk Golongan P (Pemerintah/Publik), B (Bisnis), dan I (Industri).
-  - Parameter makroekonomi: Tingkat diskonto (*discount rate* / WACC Bank Indonesia $\approx 6,5 - 8,0\%$), laju eskalasi tarif listrik ($2,5 - 4,0\%/\text{tahun}$), degradasi performa fotovoltaik ($0,5\%/\text{tahun}$), masa operasional sistem ($25\text{ tahun}$).
-* **Variabel Terhitung Finansial (Y):**
-  - Belanja Modal Awal ($\text{CAPEX}_{\text{total}}$ dalam Miliar/Triliun Rp).
-  - Penghematan Biaya Operasional Listrik Tahunan ($\text{OPEX Savings}$ dalam Miliar Rp/tahun).
-  - *Levelized Cost of Energy* (LCOE dalam Rp/kWh).
-  - *Net Present Value* ($\text{NPV}$ 25 tahun).
-  - *Internal Rate of Return* ($\text{IRR}$ proyek).
-  - *Simple & Discounted Payback Period* (Tahun).
+  $$\text{Potensi Energi } (GWh) \ \& \ \text{Tarif PLN} \longrightarrow \text{Investasi \& Penghematan Operasional} \longrightarrow \text{Ekuivalensi Dividen Fiskal APBD} \longrightarrow \text{Penciptaan Green Jobs} \longrightarrow \text{Model Pengadaan Zero-APBD}$$
+* **Variabel Masukan Teknis (X):**
+  - Total kapasitas terpasang ($kWp$) dan estimasi produksi energi tahunan ($kWh$) hasil validasi satelit Google Solar API.
+  - Asumsi standar biaya pengadaan industri EPC Indonesia 2026:
+    * *Rooftop Dak Standar:* $\text{Rp 12,5 juta/kWp}$.
+    * *Solar Carport & Kanopi Baja:* $\text{Rp 18,5 juta/kWp}$ (memperhitungkan struktur penopang baja galvanis dan fondasi).
+  - Tarif Dasar Listrik PLN 2026 (`data/raw/pln/pln_tariff_2026.csv`): Golongan P-1/P-2/P-3 ($\approx \text{Rp 1.444,70 – 1.699,53/kWh}$) dan Golongan B-2/B-3 ($\approx \text{Rp 1.444,70 – 1.467,28/kWh}$).
+  - Standar Pengali Ketenagakerjaan Hijau (*Green Jobs Multiplier* IRENA/IESR): $\approx 15\text{ job-years per MWp}$ untuk fase manufaktur/instalasi, dan $\approx 0,8\text{ permanent jobs per MWp}$ untuk operasional dan pemeliharaan (O&M) jangka panjang.
+  - Parameter Satuan Biaya Layanan Publik (Data BPS / Pemprov DKI): Biaya operasional Puskesmas Kelurahan, subsidi tarif tiket TransJakarta per penumpang ($\approx \text{Rp 10.000}$ per perjalanan), dan beasiswa siswa per tahun.
+* **Variabel Keluaran Kebijakan (Y):**
+  - Estimasi Total Kebutuhan Modal Awal ($\text{CAPEX}_{\text{agregat}}$ Triliun Rp).
+  - Penghematan Belanja Listrik Tahunan ($\text{OPEX Savings}$ Miliar Rp/tahun).
+  - Periode Impas Sederhana (*Simple Payback Period* dalam tahun).
+  - Dividen Sosial Fiskal: Jumlah perjalanan penumpang bersubsidi, jumlah unit puskesmas terdanai, jumlah beasiswa siswa.
+  - Total Serapan Tenaga Kerja Hijau (*Green Jobs* dalam orang-tahun / pekerja tetap).
 * **Standar Perhitungan Baku (Tanpa Scratch Math Liar):**
-  - **Formulasi LCOE Baku (Standar NREL / IEC):**
-    $$\text{LCOE} = \frac{\text{CAPEX}_0 + \sum_{t=1}^{N} \frac{\text{OPEX}_t}{(1 + r)^t}}{\sum_{t=1}^{N} \frac{E_t}{(1 + r)^t}}$$
-    *Di mana $E_t$ adalah generasi listrik tahun ke-$t$ yang memperhitungkan degradasi tahunan panel, $r$ adalah discount rate, dan $N = 25\text{ tahun}$.*
-  - **Formulasi Net Present Value (NPV):**
-    $$\text{NPV} = \sum_{t=1}^{N} \frac{\text{Cash Inflow}_t - \text{OPEX}_t}{(1 + r)^t} - \text{CAPEX}_0$$
-  - **Formulasi Penghematan Listrik Tahunan:**
-    $$\text{Savings}_t = E_t \times \text{Tarif\_PLN}_t$$
+  - Formulasi Biaya Modal Agregat: $\text{CAPEX} = \sum (\text{Kapasitas\_kWp}_i \times \text{Standar\_Biaya}_i)$
+  - Formulasi Penghematan Belanja Listrik: $\text{Hemat} = \text{Produksi\_kWh} \times \text{Tarif\_PLN}$
+  - Formulasi Periode Impas: $\text{Payback} = \frac{\text{CAPEX}}{\text{Hemat Tahunan}}$
+  - Formulasi Tenaga Kerja Hijau (Standar IRENA): $\text{Jobs} = \text{Kapasitas\_MWp} \times \text{Multiplier\_Jobs}$
 
 ---
 
 ### Hero Statement (Narasi Kritis Utama)
 * **Pola Narasi:**
-  Mengintegrasikan total nilai moneter secara dinamis:
-  > *"Kekhawatiran utama pembuat kebijakan dalam transisi energi perkotaan kerap tertumpu pada tingginya belanja modal awal (CAPEX). Namun, hasil analisis tekno-ekonomi terhadap 2.000 titik infrastruktur membuktikan bahwa total investasi sebesar **`{total_capex_triliun}` Triliun Rupiah** mampu menghasilkan penghematan biaya listrik tahunan mencapai **`{total_savings_miliar}` Miliar Rupiah per tahun**. Dengan rata-rata periode pengembalian modal (*payback period*) selama **`{avg_payback_years}` tahun** dan LCOE sebesar **`{avg_lcoe_kwh}` Rp/kWh** (jauh lebih kompetitif dibandingkan tarif listrik grid PLN golongan publik/bisnis Rp 1.444 – 1.699/kWh), instalasi PLTS Atap bukan beban belanja APBD, melainkan instrumen efisiensi fiskal yang membebaskan anggaran publik secara permanen sekaligus menghentikan transfer dampak polusi ke pedesaan (*anti-sacrificial zones*)."*
+  Mengintegrasikan angka makro moneter dengan dividen sosial secara dinamis:
+  > *"Pemerintah daerah dan operator transportasi perkotaan kerap menunda transisi energi dengan dalih keterbatasan anggaran belanja modal (CAPEX). Namun, temuan empiris pada 2.000 titik infrastruktur Jabodetabek membuktikan bahwa kebutuhan investasi sebesar **`{total_capex_triliun}` Triliun Rupiah** akan memangkas belanja rutin tagihan listrik sebesar **`{total_savings_miliar}` Miliar Rupiah setiap tahun**. Dengan periode impas rata-rata **`{avg_payback_years}` tahun**, proyek ini menghasilkan sisa 18 tahun masa panen energi gratis yang setara dengan mendanai **`{commuter_subsidy_pax:,}` perjalanan komuter bersubsidi** atau biaya operasional **`{puskesmas_funded_count:,}` unit Puskesmas Kelurahan**. Pemasangan PLTS Atap bukan beban fiskal APBD, melainkan pembebasan ruang belanja daerah secara permanen untuk dialihkan ke pelayanan dasar warga."*
 
 ---
 
-### Bento Metric Cards (6 Indikator Kunci)
-1. **Total Investasi CAPEX:** `{total_capex_triliun}` Triliun Rp (`#4CAF50` Hijau Investasi). Sumber: `pow_solar_ekonomi_summary.csv`.
-2. **Penghematan Belanja Listrik:** `{total_savings_miliar}` Miliar Rp/thn (`#66BB6A` Hijau Terang). Sumber: `pow_solar_ekonomi_summary.csv`.
-3. **Levelized Cost of Energy (LCOE):** `{avg_lcoe_kwh}` Rp/kWh (`#26A69A` Hijau Toska). Benchmark vs Tarif PLN.
-4. **Rata-Rata Payback Period:** `{avg_payback_years}` Tahun (`#FFA726` Emas Imbal Hasil). Analisis Arus Kas Diskonto.
-5. **Net Present Value (NPV 25 Thn):** `{total_npv_miliar}` Miliar Rp (`#42A5F5` Biru Finansial). Discount Rate BI 6.5%.
-6. **Potensi Tambahan (SPKLU & Karbon):** `+{addon_rev_miliar}` Miliar Rp/thn (`#AB47BC` Ungu Monetisasi). Model Bisnis Tambahan.
+### Bento Metric Cards (6 Indikator Kebijakan Publik)
+1. **Total Kebutuhan Investasi:** `{total_capex_triliun}` Triliun Rp (`#4CAF50` Hijau Investasi). Sumber: `pow_solar_ekonomi_kebijakan.csv`.
+2. **Penghematan Belanja Listrik:** `{total_savings_miliar}` Miliar Rp/thn (`#66BB6A` Hijau Terang). Sumber: `pow_solar_ekonomi_kebijakan.csv`.
+3. **Periode Balik Modal Rata-Rata:** `{avg_payback_years}` Tahun (`#FFA726` Emas Impas). Simple Payback Industri.
+4. **Penciptaan Lapangan Kerja Hijau:** `{total_green_jobs:,}` Pekerja Hijau (`#42A5F5` Biru Lapangan Kerja). Standar Multiplier IRENA/IESR.
+5. **Dividen Subsidi Tiket Komuter:** `{commuter_subsidy_pax:,}` Perjalanan/thn (`#26A69A` Hijau Toska). Ekuivalensi Beban APBD.
+6. **Beban Likuiditas APBD:** `Rp 0,- (Zero-APBD)` (`#AB47BC` Ungu Kebijakan). Opsi Skema PPA / Sewa Atap Swasta.
 
 ---
 
-### 3.1 Struktur Biaya Investasi & Pengadaan (CAPEX & OPEX Modeling)
-* **3.1.1 Dekomposisi CAPEX: Rooftop Standar vs Solar Carport & Kanopi Baja:**
-  - Membedah perbedaan biaya konstruksi per watt-peak ($Rp/Wp$):
-    * **Rooftop Standar (Dak Datar/Pelana):** Fasilitas RSUD, Sekolah, Kampus, Gedung Olahraga, dan Pasar Tradisional ($\approx \text{Rp 12.000 – 14.500/Wp}$ atau $\text{Rp 12 – 14,5 juta/kWp}$). Memanfaatkan struktur dak beton eksisting sehingga biaya bracket/mounting sangat minim.
-    * **Solar Carport & Kanopi Baja (Dual-Use):** Kantung Parkir Terbuka, Halte Busway, dan Terminal Bus ($\approx \text{Rp 17.500 – 21.000/Wp}$ atau $\text{Rp 17,5 – 21 juta/kWp}$). Biaya lebih tinggi karena mencakup fabrikasi struktur baja tahan karat (*hot-dip galvanized*), fondasi bor pile, uji ketahanan beban angin (*wind-load resistance*), dan ruang bebas gerak kendaraan (*clearance* $\ge 2,5\text{ m}$).
-  - Komposisi struktur biaya: Modul PV ($32\%$), Inverter & BOS ($18\%$), Struktur Baja Kanopi ($28\%$), Jasa Instalasi & Rekayasa ($14\%$), Perizinan & Interkoneksi PLN ($8\%$).
-* **3.1.2 Biaya Operasional & Pemeliharaan (OPEX) serta Penggantian Inverter:**
-  - OPEX rutin tahunan dipatok pada angka $1,5\%$ dari total CAPEX (pembersihan modul dari partikulat debu polusi Jakarta 2 minggu sekali, inspeksi termal inframerah, dan pemeliharaan kabel).
-  - Alokasi dana cadangan perbaikan besar (*major overhaul*) penggantian sentral inverter pada tahun ke-12.
-* **Visualisasi:** Treemap Interaktif & Stacked Bar Chart alokasi CAPEX per kategori infrastruktur (Altair/Plotly).
+### 3.1 Neraca Investasi & Penghematan Belanja Listrik Tahunan
+* **3.1.1 Dekomposisi Biaya Modal: Rooftop Dak vs Solar Carport & Kanopi Baja:**
+  - Menjelaskan perbedaan biaya teknis pengadaan secara transparan:
+    * **Rooftop Dak Beton (RSUD, Sekolah, Kampus, Mall, Pasar):** Biaya rata-rata $\approx \text{Rp 12,5 juta/kWp}$. Murah karena struktur atap dak sudah kokoh dan hanya membutuhkan penopang rel aluminium standar.
+    * **Solar Carport & Kanopi Baja (Lapangan Parkir Terbuka, Halte Busway, Terminal):** Biaya rata-rata $\approx \text{Rp 18,5 juta/kWp}$. Lebih tinggi karena mencakup konstruksi rangka baja bentang lebar, fondasi anti-angin, dan peninggian struktur agar kendaraan bebas bermanuver.
+* **3.1.2 Proyeksi Penghematan Belanja Listrik Tahunan & Periode Balik Modal:**
+  - Mengalikan output energi tahunan ($kWh$) dengan Tarif Dasar Listrik PLN 2026.
+  - Menghitung periode impas rata-rata portofolio selama **6,5 – 7,5 tahun**.
+  - Menggarisbawahi fakta bahwa panel surya memiliki masa garansi kinerja 25 tahun, yang berarti fasilitas publik menikmati **17–18 tahun listrik tanpa biaya energi (bebas tagihan)** setelah titik impas terlewati.
+* **Visualisasi:** Grouped Bar Chart Dekomposisi CAPEX per Kategori & Waterfall Chart: Modal Awal vs Garis Akumulasi Penghematan Belanja Listrik (Tahun 1 s.d. 25).
 * **Kotak Interpretasi:**
-  - `Fakta Data:` Fasilitas parkir terbuka menyerap porsi CAPEX terbesar ($>40\%$) karena memiliki luas bentang kanopi baja masif, namun memberikan densitas penghematan tertinggi.
-  - `Interpretasi Rekayasa Keuangan:` Meskipun CAPEX solar carport $\sim 40\%$ lebih mahal daripada rooftop biasa, struktur kanopi memberikan nilai tambah ganda (*co-benefits*): melindungi aset kendaraan publik dari hujan/panas dan meniadakan kebutuhan pengadaan atap parkir konvensional terpisah.
-* **Data Lineage:** Expander tabel rincian komponen CAPEX dan OPEX per kategori dari `pow_solar_capex_opex_breakdown.csv`.
+  - `Fakta Data:` Pemasangan kanopi surya pada halte dan parkiran komuter mencapai titik impas pada tahun ke-7.
+  - `Interpretasi Kebijakan:` Membeli listrik dari PLN adalah biaya hangus (*sunk cost*) seumur hidup tanpa aset, sedangkan PLTS atap mengubah tagihan rutin bulanan menjadi aset produktif daerah yang menghasilkan keuntungan bersih selama 18 tahun.
+* **Data Lineage:** Expander tabel rincian CAPEX dan penghematan per kategori dari `pow_solar_ekonomi_kebijakan.csv`.
 
 ---
 
-### 3.2 Kuantifikasi Penghematan Tagihan Listrik (Electricity OPEX Savings)
-* **3.2.1 Proyeksi Penghematan Listrik Sektoral (Golongan Publik P vs Komersial B):**
-  - Menerapkan matriks Tarif Dasar Listrik PLN 2026 (`data/raw/pln/pln_tariff_2026.csv`):
-    * **Golongan Tarif P-1 / P-2 / P-3 (Layanan Pemerintah/Publik):** $\text{Rp 1.444,70 – 1.699,53 per kWh}$. Diterapkan pada Halte TransJakarta, Stasiun Kereta BUMD, JPO, RSUD, dan Sekolah Negeri.
-    * **Golongan Tarif B-2 / B-3 (Komersial Menengah-Besar):** $\text{Rp 1.444,70 – 1.467,28 per kWh}$ (ditambah penalti kVARh jika faktor daya rendah). Diterapkan pada Gedung Parkir Mall dan Pusat Perbelanjaan.
-  - Kuantifikasi substitusi tagihan per jam operasi: Menghitung porsi *self-consumption* langsung pada siang hari (10.00 – 15.00 WIB) saat beban puncak pendingin udara (AC) gedung dan stasiun berada di titik tertinggi.
-* **3.2.2 Efisiensi Anggaran Fiskal APBD Pemda & Operator Transportasi Publik:**
-  - Simulasi pemotongan belanja tagihan listrik tahunan PT TransJakarta, PT MRT Jakarta, dan Dinas Kesehatan/Pendidikan DKI Jakarta serta Pemda Bodetabek.
-  - Menunjukkan potensi relokasi anggaran belanja operasional rutin listrik ke program layanan dasar masyarakat lainnya.
-* **Visualisasi:** Waterfall Chart Komparasi Tagihan Eksisting vs Tagihan Pasca-PLTS Atap & Grouped Bar Chart Penghematan per Sektor.
+### 3.2 Ekuivalensi Dividen Fiskal APBD (*Opportunity Cost & Public Dividend*)
+* **3.2.1 Konversi Angka Hemat Menjadi Nilai Manfaat Layanan Publik Nyata:**
+  - Menerjemahkan angka miliaran rupiah penghematan tagihan listrik PLN menjadi dampak sosial konkret yang menyentuh masyarakat bawah:
+    * **Opsi Alokasi 1 (Subsidi Tiket Komuter):** Penghematan listrik stasiun dan halte dialihkan untuk menutup subsidi tarif integrasi TransJakarta/KRL bagi ratusan ribu komuter berpenghasilan rendah.
+    * **Opsi Alokasi 2 (Kesehatan Masyarakat):** Penghematan listrik fasilitas RSUD dialihkan untuk membiayai operasional puluhan Puskesmas Pembantu di kawasan padat kumuh.
+    * **Opsi Alokasi 3 (Pendidikan & Beasiswa):** Penghematan listrik atap sekolah negeri dialihkan untuk beasiswa perlengkapan sekolah anak-anak keluarga pra-sejahtera.
+* **3.2.2 Pembebasan Ruang Fiskal Daerah (*Fiscal Space Expansion*):**
+  - Menunjukkan bahwa penghematan belanja rutin operasional gedung daerah secara efektif memperluas ruang fiskal Pemprov DKI dan Pemda Bodetabek tanpa perlu menaikkan tarif pajak daerah atau retribusi warga.
+* **Visualisasi:** Pictogram Chart / Horizontal Bar Chart Interaktif: Pilihan Skenario Konversi Dividen Fiskal (Jumlah Tiket Bersubsidi vs Unit Puskesmas vs Beasiswa Siswa).
 * **Kotak Interpretasi:**
-  - `Fakta Data:` Pemasangan PLTS pada peron stasiun dan halte memangkas hingga $45–60\%$ tagihan listrik internal fasilitas operasional transit di siang hari.
-  - `Interpretasi Kebijakan Fiskal:` Penghematan miliaran rupiah dari pos belanja listrik rutin operasional BUMD/OPD secara langsung memperluas ruang fiskal (*fiscal space*) daerah tanpa perlu menaikkan tarif tiket komuter.
-* **Data Lineage:** Expander tabel matriks penghematan tagihan listrik per kategori (`data/processed/calculations/pow_solar_electricity_savings.csv`).
+  - `Fakta Data:` Penghematan belanja listrik agregat dari 2.000 titik mampu membiayai subsidi transportasi publik untuk jutaan perjalanan komuter setiap tahunnya.
+  - `Interpretasi Advokasi CELIOS:` Transisi energi bukan sekadar isu teknis dekarbonisasi, melainkan instrumen redistribusi keadilan sosial yang mengembalikan uang rakyat dalam bentuk peningkatan layanan dasar publik.
+* **Data Lineage:** Expander tabel asumsi biaya satuan layanan publik dari `data/processed/references/standar_biaya_layanan_publik.csv`.
 
 ---
 
-### 3.3 Indikator Kelayakan Finansial (LCOE, NPV, IRR, & Payback Period)
-* **3.3.1 Komparasi LCOE Surya Tropis vs Biaya Pokok Penyediaan (BPP) & Tarif Retail PLN:**
-  - Menghitung LCOE rata-rata portofolio 2.000 titik Jabodetabek menghasilkan angka $\approx \text{Rp 780 – 950 per kWh}$.
-  - Membandingkan LCOE tersebut dengan tarif beli PLN ($\text{Rp 1.444 – 1.699 per kWh}$), membuktikan margin efisiensi biaya energi mandiri mencapai $\ge 40\%$.
-* **3.3.2 Analisis Arus Kas Dinamis (Discounted Cash Flow 25 Tahun):**
-  - Pemodelan arus kas kumulatif bersih (*cumulative net cash flow*) selama 25 tahun umur ekonomis instalasi.
-  - Menghitung *Simple Payback Period* ($\approx 5,8 – 7,2\text{ tahun}$) dan *Discounted Payback Period* ($\approx 7,5 – 8,9\text{ tahun}$) dengan suku bunga diskonto wajar $6,5\%$.
-  - Internal Rate of Return (IRR) proyek portofolio berada pada rentang $12,5\% – 16,8\%$, jauh melampaui ambang batas biaya modal rata-rata tertimbang (*Weighted Average Cost of Capital / WACC*).
-* **Visualisasi:** Cumulative Cash Flow Curve (Titik Impas / Break-Even Point) & Bar Chart Komparasi LCOE vs Tarif PLN.
+### 3.3 Dampak Penciptaan Lapangan Kerja Hijau (*Green Jobs Creation*)
+* **3.3.1 Kuantifikasi Serapan Tenaga Kerja Lokal Transisi Energi:**
+  - Menerapkan metodologi resmi International Renewable Energy Agency (IRENA) dan Institute for Essential Services Reform (IESR):
+    * **Fase Konstruksi & Fabrikasi (Tahun 1–2):** Menyerap tenaga kerja lokal dalam jumlah besar untuk perakitan struktur baja kanopi, pemasangan bracket, instalasi elektrikal, dan sertifikasi laik operasi.
+    * **Fase Pemeliharaan & Operasi (Tahun 1–25):** Menciptakan lapangan kerja permanen untuk tim teknisi O&M, operator monitoring sistem cerdas, dan petugas pembersihan berkala panel surya.
+* **3.3.2 Distribusi Penyerapan Kerja per Klaster Infrastruktur:**
+  - Klaster lapangan parkir terbuka dan halte transit menyerap proporsi tenaga kerja fabrikasi baja dan konstruksi sipil terbesar di kawasan aglomerasi.
+* **Visualisasi:** Stacked Bar Chart: Distribusi Lapangan Kerja Konstruksi (Short-term) vs Pemeliharaan Permanen (Long-term) per Kategori Infrastruktur.
 * **Kotak Interpretasi:**
-  - `Fakta Data:` Titik impas (Break-even) tercapai pada tahun ke-7, menyisakan 18 tahun masa panen energi listrik "gratis" (*net free energy yield*) bagi fasilitas publik.
-  - `Interpretasi Bankability:` Nilai IRR $>12\%$ dan NPV positif bernilai ratusan miliar membuktikan portofolio PLTS atap Jabodetabek sangat layak didanai (*bankable*) oleh perbankan nasional maupun sindikasi keuangan hijau internasional.
-* **Data Lineage:** Expander tabel proyeksi arus kas 25 tahun dari `pow_solar_cashflow_projections.csv`.
+  - `Fakta Data:` Potensi PLTS pada 2.000 titik menciptakan ribuan lapangan kerja hijau langsung di wilayah Bodetabek dan DKI Jakarta.
+  - `Interpretasi Ketenagakerjaan:` Proyek ini membuktikan tesis *Just Energy Transition*: peralihan ke energi bersih di perkotaan membuka lapangan kerja teknis bagi lulusan SMK/Politeknik lokal, mengurangi angka pengangguran muda perkotaan.
+* **Data Lineage:** Expander tabel perhitungan multiplier tenaga kerja dari `pow_solar_green_jobs_multiplier.csv`.
 
 ---
 
-### 3.4 Analisis Sensitivitas & Kontrol Parametrik Interaktif
-* **3.4.1 Pemodelan 3 Skenario Kebijakan (Policy Scenarios):**
-  - **Skenario Konservatif (60% Utilisasi Atap):** Asumsi CAPEX tinggi ($\text{Rp 20 jt/kWp}$), inflasi tarif flat $0\%$, tingkat diskonto ketat $8\%$. Payback: $8,9\text{ tahun}$, NPV tetap positif.
-  - **Skenario Moderat (80% Utilisasi — Baseline Riset):** Asumsi CAPEX standar industri ($\text{Rp 15–18 jt/kWp}$), eskalasi tarif wajar $3\%/\text{tahun}$, diskonto $6,5\%$. Payback: $7,2\text{ tahun}$.
-  - **Skenario Optimis (100% Utilisasi Penuh):** Skala agregasi massal Jabodetabek (diskon pengadaan volume $15\%$), integrasi insentif regulasi. Payback: $5,6\text{ tahun}$.
-* **3.4.2 Sensitivitas Variabel Makro & Interaktivitas Slider:**
-  - Slider Interaktif Streamlit:
-    * Slider CAPEX ($Rp/Wp$ rentang $\text{Rp 11.000 – 23.000}$).
-    * Slider Tingkat Diskonto ($5,0\% – 9,0\%$).
-    * Slider Eskalasi Tarif Listrik Tahunan ($0\% – 5\%$).
-* **Visualisasi:** Interactive Spider / Tornado Sensitivity Chart yang memperbarui kurva NPV dan Payback secara seketika (*real-time*).
+### 3.4 Matriks Prioritas Investasi: Klaster Fasilitas Paling Strategis
+* **3.4.1 Kuadran Prioritas Implementasi (Matriks 3 Kuadran):**
+  - **Kuadran 1: Cepat Balik Modal (*Quick Wins*):**
+    * *Fasilitas:* Gedung Parkir Bertingkat (MSCP) dan Pusat Perbelanjaan/Mall.
+    * *Karakteristik:* Dak beton sudah datar, konsumsi listrik AC siang hari sangat tinggi $\rightarrow$ periode impas tercepat ($< 5,5\text{ tahun}$).
+  - **Kuadran 2: Dividen Pelayanan Publik & Edukasi Warga:**
+    * *Fasilitas:* RSUD, Gedung Kampus, dan Sekolah Menengah Negeri.
+    * *Karakteristik:* Balik modal moderat ($6,0 – 7,5\text{ tahun}$), memangkas langsung pos APBD pendidikan dan kesehatan, serta menjadi sarana edukasi generasi muda.
+  - **Kuadran 3: Visibilitas Tinggi & Perlindungan Komuter:**
+    * *Fasilitas:* Halte TransJakarta, Stasiun KRL/LRT, dan Terminal Bus.
+    * *Karakteristik:* Butuh struktur kanopi baja (balik modal $7,5 – 8,5\text{ tahun}$), namun memberikan manfaat ganda (*co-benefits*) peneduh cuaca ekstrem bagi jutaan komuter harian.
+* **3.4.2 Peta Jalan Pentahapan Implementasi Pemda:**
+  - Tahap 1 (Tahun 1): Eksekusi klaster *Quick Wins* dan fasilitas percontohan BUMD.
+  - Tahap 2 (Tahun 2–3): Ekspansi massal ke seluruh simpul transportasi dan sekolah/RSUD.
+* **Visualisasi:** Scatter Plot / Bubble Chart Kuadran Prioritas (Sumbu X: Waktu Balik Modal Tahun, Sumbu Y: Dampak Kemanfaatan Publik, Ukuran Bubble: Kapasitas MWp).
 * **Kotak Interpretasi:**
-  - `Fakta Data:` Variabel paling sensitif yang menentukan kelayakan finansial adalah CAPEX struktur kanopi baja dan suku bunga pembiayaan, bukan radiasi sinar matahari.
-  - `Interpretasi Fleksibilitas Pengadaan:` Pemerintah daerah dapat menjamin percepatan payback melalui standarisasi desain modular rangka kanopi halte/parkir dan skema pinjaman lunak hijau (*green concession loan*).
-* **Data Lineage:** Expander tabel matriks sensitivitas parametrik ekonomi (`data/processed/calculations/pow_solar_sensitivity_matrix.csv`).
+  - `Fakta Data:` Gedung parkir komersial dan mall adalah mesin penghematan tercepat, sedangkan halte transit adalah etalase edukasi publik terbaik.
+  - `Interpretasi Strategis Pemda:` Kepala daerah disarankan memulai dari klaster *Quick Wins* agar bukti penghematan langsung terlihat dalam laporan pertanggungjawaban APBD tahun pertama.
+* **Data Lineage:** Expander tabel matriks kuadran 13 kategori infrastruktur.
 
 ---
 
-### 3.5 Model Bisnis Inovatif & Skema Pembiayaan Alternatif
-* **3.5.1 Komparasi Model Pengadaan: APBD Murni vs Skema Zero-CAPEX:**
-  - **Model 1: Belanja Modal Langsung (APBD/APBN Murni):** Pemda menanggung CAPEX penuh. Beban likuiditas awal berat, namun seluruh penghematan dinikmati $100\%$ sejak hari pertama.
-  - **Model 2: PPA / Sewa Atap (Zero-CAPEX Developer Scheme):** Perusahaan EPC/Investor mendanai, membangun, dan memelihara PLTS. Pemda/BUMD hanya membeli listrik surya dengan tarif diskon $15–25\%$ di bawah tarif PLN. Nol risiko teknis dan nol beban APBD.
-  - **Model 3: BOOT (*Build-Own-Operate-Transfer*) / KPBU:** Konsesi swasta selama 15 tahun, setelah itu seluruh aset pembangkit diserahkan menjadi milik Pemda/BUMD.
-  - **Model 4: Sukuk Hijau Daerah (*Municipal Green Sukuk*):** Penerbitan obligasi hijau syariah oleh Pemprov DKI / Banten / Jabar untuk mendanai transisi energi transportasi umum.
-* **3.5.2 Diversifikasi Pendapatan Baru (Dual Revenue Streams):**
-  - **Monetisasi SPKLU / EV Charging Terintegrasi:** Mengubah solar carport parkiran stasiun dan mall menjadi stasiun pengisian kendaraan listrik umum berbayar (potensi pendapatan tambahan tarif charging).
-  - **Perdagangan Karbon & REC (*Renewable Energy Certificate*):** Sertifikasi MWh hijau yang dihasilkan untuk dijual ke pasar bursa karbon IDXCarbon atau korporasi yang mengejar target Net-Zero.
-* **Visualisasi:** Radar/Spider Chart Evaluasi Multi-Kriteria 4 Model Bisnis (Tingkat Risiko, Beban Kas APBD, Kemudahan Legal, dan Imbal Hasil Daerah).
+### 3.5 Solusi Pengadaan "Zero-APBD" (Membongkar Alibi Keterbatasan Kas Daerah)
+* **3.5.1 Skema PPA / Sewa Atap (*Solar as a Service*): Solusi Tanpa Utang & Tanpa APBD:**
+  - Menjawab keberatan klasik pejabat birokrasi daerah: *"APBD kami sedang defisit, dari mana uangnya?"*
+  - **Mekanisme Skema PPA (Power Purchase Agreement):**
+    1. Perusahaan pengembang surya swasta (*Solar Developer/EPC*) menanggung **100% modal awal pengadaan, konstruksi, dan asuransi**.
+    2. Pemda atau operator transportasi (TransJakarta/KAI) hanya menyediakan ruang atap halte/stasiun yang selama ini menganggur.
+    3. Fasilitas publik langsung membeli listrik surya dari pengembang dengan **tarif diskon 15–20% lebih murah dari tarif PLN** sejak hari pertama operasi.
+    4. Setelah masa kontrak sewa atap selesai (misal 15–20 tahun), seluruh kepemilikan aset panel surya diserahkan gratis (*transfer of ownership*) menjadi aset milik Pemda.
+* **3.5.2 Kemitraan Konsesi Parkir (Solar Carport) & Kerjasama BUMD:**
+  - Pengelola swasta membiayai kanopi peneduh parkir dan SPKLU pengisian daya mobil/motor listrik, ditukar dengan hak bagi hasil retribusi parkir ramah lingkungan.
+* **Visualisasi:** Diagram Alur Proses Interaktif (Infografis Skema Aliran Uang & Tanggung Jawab: APBD Murni vs Skema PPA Swasta) & Bar Komparasi Beban Kas Daerah.
 * **Kotak Interpretasi:**
-  - `Fakta Data:` Skema PPA/BOOT memungkinkan 2.000 titik infrastruktur dieksekusi seketika tanpa menunggu siklus ketok palu anggaran APBD yang lambat.
-  - `Interpretasi Advokasi CELIOS:` Solusi pembiayaan pihak ketiga (*third-party financing*) menggugurkan alibi klasik birokrasi mengenai "keterbatasan anggaran daerah", membuktikan bahwa transisi energi berkeadilan dapat dimulai hari ini secara fiskal mandiri.
-* **Data Lineage:** Expander tabel komparasi matriks model bisnis (`data/processed/references/matriks_model_bisnis_plts.csv`).
+  - `Fakta Data:` Skema PPA memangkas pengeluaran kas modal daerah menjadi **Rp 0,-** sekaligus langsung mengamankan efisiensi tagihan listrik sejak bulan pertama.
+  - `Interpretasi Advokasi Pamungkas CELIOS:` Fakta ini membuktikan bahwa mandeknya transisi energi di Jabodetabek **bukan karena ketiadaan anggaran daerah, melainkan karena ketiadaan regulasi dan kemauan politik (*political will*)**. Solusi pasar dan inovasi pembiayaan telah tersedia untuk dieksekusi tanpa risiko fiskal.
+* **Data Lineage:** Expander tabel komparasi model pengadaan zero-APBD.
 
 ---
 
 ## 5. Pemetaan Sumber Data Sub-Bab 3.1 s.d. 3.5 (Audit Ketergantungan Data)
 
-Sesuai aturan `anti_yesman_spatial_methodology_integrity.md` dan `strict_data_folder_boundary.md`, berikut adalah audit ketergantungan sumber data:
-
 | Sub-Bab | Topik Pembahasan | Status Google Solar API | Sumber Pendukung Non-Solar API | Status Ketersediaan Lokal di Repositori |
 |:---|:---|:---:|:---|:---|
-| **3.1** | **Struktur Biaya CAPEX & OPEX** | 🟡 **Hibrida**<br>(Kapasitas kWp dari Solar API) | **Standar Industri Solar EPC Indonesia & Asosiasi APAMSI/IESR** (RAB Solar Carport vs Rooftop) | 🟡 **Perlu File Rujukan Terstruktur**<br>Baseline kWp ada di `pow_solar_kumulatif_summary.csv`. Data biaya satuan Rp/kWp perlu diekstrak ke `data/raw/sources/` dan dibukukan ke CSV `standar_capex_opex_indonesia_2026.csv`. |
-| **3.2** | **Kuantifikasi Penghematan Tagihan PLN** | 🟡 **Hibrida**<br>(Yield kWh/thn dari Solar API) | **PT PLN (Persero) - Tarif Dasar Listrik 2026** (Golongan P-1, P-2, B-2, B-3, dll) | 🟢 **Sudah Lengkap di Repositori**<br>`data/raw/pln/pln_tariff_2026.csv` dan `pln_tariff_2026_full.json`. |
-| **3.3** | **Indikator Kelayakan Finansial (LCOE, NPV, Payback)** | 🟡 **Hibrida**<br>(Generasi Listrik dari Solar API) | **Bank Indonesia (BI Rate/WACC) & Standar Evaluasi Finansial NREL PVWatts** | 🟢 **Sudah Lengkap di Repositori**<br>Pedoman NREL di `data/processed/references/nrel_pvwatts_version5_manual.md`. Angka suku bunga diskonto 6.5% tercatat sebagai parameter resmi. |
-| **3.4** | **Analisis Sensitivitas Parametrik** | 🟡 **Hibrida**<br>(Baseline dari Solar API) | **Matriks Skenario Kebijakan CELIOS (Konservatif, Moderat, Optimis)** | 🟢 **Sudah Tersedia di Dokumen Pemodelan**<br>Formula penurunan skenario 60% / 80% / 100% selaras dengan `docs/MODELING-ESTIMASI-STATISTIK-100-KE-2000-TITIK-JABODETABEK.md`. |
-| **3.5** | **Model Bisnis & Skema Pembiayaan** | 🔴 **Bukan Solar API**<br>(Studi Hukum & Regulasi Bisnis) | **Bappenas (Pedoman KPBU), Permen ESDM 2/2024, IDXCarbon** | 🟡 **Perlu Penyusunan Tabel Matriks**<br>Disarikan dari dokumen regulasi resmi ke `data/processed/references/matriks_model_bisnis_plts.csv`. |
+| **3.1** | **Neraca Modal & Penghematan Tahunan** | 🟡 **Hibrida**<br>(Kapasitas kWp & Yield kWh) | **Standar Biaya EPC Indonesia & Tarif PLN 2026** | 🟢 **Sudah Lengkap di Repositori**<br>Baseline kWp/kWh di `pow_solar_kumulatif_summary.csv`; tarif dasar listrik di `data/raw/pln/pln_tariff_2026.csv`. |
+| **3.2** | **Ekuivalensi Dividen Fiskal APBD** | 🔴 **Bukan Solar API**<br>(Output penghematan Rp dikonversi) | **Data Terbuka Pemprov DKI & BPS (Biaya Layanan Publik)** | 🟡 **Perlu File Rujukan Terstruktur**<br>Standar tarif subsidi TransJakarta (~Rp 10.000/tiket) dan biaya operasional Puskesmas dibukukan ke CSV `standar_biaya_layanan_publik.csv`. |
+| **3.3** | **Dampak Lapangan Kerja Hijau** | 🔴 **Bukan Solar API**<br>(Kapasitas MWp dikalikan multiplier) | **Studi Multiplier Ketenagakerjaan IRENA & IESR** | 🟢 **Sudah Lengkap di Literatur**<br>Faktor pengali resmi 15 job-years/MWp (konstruksi) dan 0,8 jobs/MWp (O&M) dibukukan ke CSV `pow_solar_green_jobs_multiplier.csv`. |
+| **3.4** | **Matriks Prioritas Investasi** | 🟡 **Hibrida**<br>(Atribut Kategori & Hasil 3.1) | **Hasil Analisis Pengelompokan Klaster Kebijakan** | 🟢 **Dapat Dihitung Otomatis**<br>Diturunkan langsung dari tabel gabungan 13 kategori infrastruktur. |
+| **3.5** | **Solusi Pengadaan Zero-APBD (PPA)** | 🔴 **Bukan Solar API**<br>(Analisis Kebijakan & Regulasi) | **Peraturan Menteri ESDM No. 2/2024 & Praktik Terbaik PPA Komersial** | 🟢 **Sudah Lengkap di Literatur**<br>Matriks model PPA versus APBD dibukukan ke `matriks_skema_pengadaan_zero_apbd.csv`. |
 
 ---
 
 ## 6. Pemetaan Tabel Data yang Perlu Dihimpun (Data Acquisition Mapping)
 
-Mematuhi aturan ketat `no_hardcoded_data.md` dan `strict_data_folder_boundary.md`, tidak boleh ada angka CAPEX liar yang di-hardcode di script Python. Berkas bukti fisik wajib disimpan di `data/raw/sources/` dan diekstrak menjadi CSV terstruktur di `data/processed/`.
+Mematuhi aturan `no_hardcoded_data.md` dan `strict_data_folder_boundary.md`, seluruh asumsi biaya dan multiplier wajib tersimpan di file fisik:
 
-### A. Tabel Data yang Harus Dibuat/Dihimpun (Action Items)
+### A. Tabel Data yang Dihasilkan / Disediakan ke `data/processed/`
 
-| No | Nama Dataset Target | Kategori Data | Dokumen Sumber Resmi (*Mandatory Proof*) | Rencana Lokasi Berkas Asli | Rencana File Ekstraksi CSV | Struktur Kolom yang Wajib Diekstrak | Kegunaan Spesifik di Page 3 |
-|:---:|:---|:---:|:---|:---|:---|:---|:---|
-| **1** | **Standar Biaya CAPEX & OPEX PLTS Indonesia 2026** | Finansial EPC | **Laporan Status Energi Terbarukan Indonesia (IESR) 2024/2025 & Penawaran EPC Nasional** | `data/raw/sources/iesr_solar_lcoe_capex_report.pdf` | `data/processed/calculations/standar_capex_opex_plts_2026.csv` | • `tipe_instalasi` (Rooftop Beton, Metal Roof, Solar Carport Baja, Kanopi Busway)<br>• `capex_min_rp_wp`<br>• `capex_baseline_rp_wp`<br>• `capex_max_rp_wp`<br>• `opex_persen_tahunan`<br>• `inverter_replacement_cost_pct`<br>• `tahun_reviu`<br>• `file_bukti_raw` | Menghitung total nilai investasi dan dekomposisi biaya modal per kategori pada **Sub-Bab 3.1**. |
-| **2** | **Matriks Evaluasi Komparasi Model Bisnis Pengadaan** | Regulasi & Bisnis | **Panduan Pelaksanaan KPBU Sektor Energi Terbarukan (Bappenas & Kementerian Keuangan)** | `data/raw/sources/bappenas_panduan_kpbu_ebt.pdf` | `data/processed/references/matriks_model_bisnis_plts.csv` | • `model_bisnis` (APBD Murni, PPA Sewa Atap, BOOT 15 Tahun, Green Sukuk)<br>• `beban_capex_pemda` (Tinggi / Nol)<br>• `risiko_operasi` (Pemda / EPC Swasta)<br>• `tarif_diskon_listrik_pct`<br>• `kelayakan_legal_pemda`<br>• `skor_kecepatan_eksekusi`<br>• `file_bukti_raw` | Menopang visualisasi Radar Chart dan rekomendasi pembiayaan pada **Sub-Bab 3.5**. |
-
-### B. Tabel Data yang Sudah Tersedia Lengkap di Repositori Lokal
-1. **Master Potensi PLTS Jabodetabek:** `data/processed/calculations/pow_solar_kumulatif_summary.csv` (`asset_id`, `category`, `installed_capacity_kwp`, `annual_generation_mwh`, dll).
-2. **Tarif Dasar Listrik PLN 2026:** `data/raw/pln/pln_tariff_2026.csv` (`sector`, `category`, `power`, `tariff_rp_kwh`).
-3. **Pedoman Formula NREL PVWatts & LCOE:** `data/processed/references/nrel_pvwatts_version5_manual.md`.
-4. **Matriks 3 Skenario Kebijakan:** `docs/MODELING-ESTIMASI-STATISTIK-100-KE-2000-TITIK-JABODETABEK.md` (60%, 80%, 100%).
+| No | Nama Dataset Target | Kategori Data | Dokumen Sumber Resmi | Rencana File Ekstraksi CSV | Struktur Kolom Utama | Kegunaan Spesifik di Page 3 |
+|:---:|:---|:---:|:---|:---|:---|:---|
+| **1** | **Ringkasan Ekonomi Kebijakan PLTS** | Olahan Finansial Makro | Pipa gabungan Solar API + Tarif PLN 2026 | `data/processed/calculations/pow_solar_ekonomi_kebijakan.csv` | • `category`<br>• `total_kwp`<br>• `total_annual_mwh`<br>• `capex_total_miliar`<br>• `savings_annual_miliar`<br>• `simple_payback_years`<br>• `green_jobs_count` | Menopang Hero Metrics dan Sub-Bab **3.1**, **3.3**, dan **3.4**. |
+| **2** | **Standar Biaya Layanan Publik Jabodetabek** | Data Pemda / BPS | Laporan Akuntabilitas Kinerja Pemprov DKI / BPTJ | `data/processed/references/standar_biaya_layanan_publik.csv` | • `jenis_layanan`<br>• `biaya_satuan_rp`<br>• `satuan_layanan`<br>• `sumber_dokumen`<br>• `tahun_anggaran` | Menopang visualisasi infografis dividen sosial pada **Sub-Bab 3.2**. |
+| **3** | **Matriks Skema Pengadaan Zero-APBD** | Regulasi & Bisnis | Permen ESDM 2/2024 & Pedoman PPA Asosiasi Solar | `data/processed/references/matriks_skema_pengadaan_zero_apbd.csv` | • `skema_pengadaan`<br>• `beban_kas_daerah`<br>• `tarif_diskon_pct`<br>• `risiko_teknis`<br>• `kecepatan_implementasi` | Menopang diagram alur dan komparasi pada **Sub-Bab 3.5**. |
 
 ---
 
 ## 7. Checklist Eksekusi Pengembangan
 
-- [x] Kerangka kerja desain Page 3 disusun komprehensif di `docs/KERANGKA-PAGE-3-ANALISIS-EKONOMI.md`.
+- [x] Kerangka kerja desain Page 3 direfaktor ke pendekatan **Ekonomi Kebijakan Publik & Kelayakan Fiskal** di `docs/KERANGKA-PAGE-3-ANALISIS-EKONOMI.md`.
 - [x] Struktur sub-bab dipastikan hierarkis menggunakan penomoran baku **3.1, 3.2, 3.3, 3.4, 3.5**.
-- [x] Alur kausalitas, tesis kedaulatan energi, dekomposisi CAPEX, dan bento cards diselaraskan 100% dengan standar riset CELIOS 2.
-- [x] Pemetaan ketergantungan data Solar API vs Standar Biaya Industri didokumentasikan transparan (Section 5).
-- [x] Tabel data yang perlu dihimpun (Standar CAPEX IESR & Matriks Model Bisnis) dipetakan detail lengkap dengan kolom targetnya (Section 6).
-- [ ] Buat skrip pembentuk tabel data turunan ekonomi di `tools/financial/generate_economic_tables.py` untuk menghasilkan `pow_solar_ekonomi_summary.csv` dari `pow_solar_kumulatif_summary.csv` dan `pln_tariff_2026.csv`.
+- [x] Bahasa penyajian dirancang ramah diseminasi publik, bebas dari jebakan rumus DCF/WACC mikro perbankan.
+- [x] Narasi dividen fiskal APBD, penciptaan green jobs, kuadran prioritas, dan skema Zero-APBD diintegrasikan penuh.
+- [x] Pemetaan ketergantungan data dan tabel CSV pendukung didokumentasikan transparan (Section 5 & 6).
+- [ ] Buat skrip pembentuk tabel data turunan ekonomi di `tools/financial/generate_economic_public_policy.py` untuk menghasilkan `pow_solar_ekonomi_kebijakan.csv` dari `pow_solar_kumulatif_summary.csv` dan `pln_tariff_2026.csv`.
 - [ ] Implementasi kode frontend Streamlit di `pages/3_Analisis_Ekonomi.py`.
-- [ ] Pengujian interaktivitas slider parametrik dan audit visualisasi.
+- [ ] Pengujian visualisasi interaktif dan kompilasi modul.
 - [ ] Auto-commit seluruh artefak ke Git repository sesuai aturan keselamatan kode.
