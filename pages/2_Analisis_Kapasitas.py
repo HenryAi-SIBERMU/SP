@@ -521,7 +521,7 @@ st.markdown(f"""
 col_chart_c1, col_chart_c2 = st.columns([3, 2])
 
 with col_chart_c1:
-    st.markdown("###### 📊 Peringkat Kapasitas Terpasang Lintas 13 Kategori (Altair Ranked Bar)")
+    st.markdown("###### Peringkat Kapasitas Terpasang Lintas 13 Kategori (Altair Ranked Bar)")
     chart_cat_adv = alt.Chart(df_cat).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4).encode(
         y=alt.Y("category_display:N", sort="-x", title="", axis=alt.Axis(labelColor="#CFD8DC", labelFontSize=11)),
         x=alt.X("installed_capacity_mwp:Q", title="Kapasitas Puncak Terpasang (MWp)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
@@ -552,7 +552,7 @@ with col_chart_c1:
     st.altair_chart(chart_cat_adv, use_container_width=True)
 
 with col_chart_c2:
-    st.markdown("###### 🧩 Pangsa Daya Kumulatif (Treemap Hierarki)")
+    st.markdown("###### Pangsa Daya Kumulatif (Treemap Hierarki)")
     fig_tree_adv = px.treemap(
         df_cat,
         path=["cluster", "category_display"],
@@ -589,7 +589,7 @@ st.markdown(f"""
 col_char_p1, col_char_p2 = st.columns([3, 2])
 
 with col_char_p1:
-    st.markdown("###### 🔍 Skala Fisik Atap vs Kapasitas Puncak (Bubble Chart Luas & Kelayakan)")
+    st.markdown("###### Skala Fisik Atap vs Kapasitas Puncak (Bubble Chart Luas & Kelayakan)")
     fig_bubble = px.scatter(
         df_cat,
         x="whole_roof_area_m2",
@@ -625,7 +625,7 @@ with col_char_p1:
     st.plotly_chart(fig_bubble, use_container_width=True)
 
 with col_char_p2:
-    st.markdown("###### 📐 Rasio Kelayakan Atap vs Kemiringan Bidang (Pitch Deg)")
+    st.markdown("###### Rasio Kelayakan Atap vs Kemiringan Bidang (Pitch Deg)")
     chart_pitch = alt.Chart(df_cat).mark_circle(size=140).encode(
         x=alt.X("weighted_pitch_deg:Q", title="Kemiringan Rata-rata Atap (Derajat Pitch °)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
         y=alt.Y("suitability_ratio_pct:Q", title="Rasio Kelayakan Atap (%)", scale=alt.Scale(domain=[60, 85]), axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
@@ -659,7 +659,7 @@ st.markdown(f"""
 col_reg1, col_reg2 = st.columns([3, 2])
 
 with col_reg1:
-    st.markdown("###### 🏙️ Distribusi Kapasitas per Kota/Kabupaten (Altair Regional Bar)")
+    st.markdown("###### Distribusi Kapasitas per Kota/Kabupaten (Altair Regional Bar)")
     chart_city_adv = alt.Chart(df_city).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4).encode(
         y=alt.Y("city_regency:N", sort="-x", title="", axis=alt.Axis(labelColor="#CFD8DC", labelFontSize=11)),
         x=alt.X("installed_capacity_mwp:Q", title="Kapasitas Puncak Terpasang (MWp)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
@@ -689,7 +689,7 @@ with col_reg1:
     st.altair_chart(chart_city_adv, use_container_width=True)
 
 with col_reg2:
-    st.markdown("###### 🌐 Pangsa Regional Metropolitan (Donut Chart)")
+    st.markdown("###### Pangsa Regional Metropolitan (Donut Chart)")
     df_reg_pie = pd.DataFrame([
         {"Wilayah": "DKI Jakarta (5 Kota Administrasi)", "Kapasitas (MWp)": dki_mwp, "Titik": dki_assets},
         {"Wilayah": "Bodetabek (8 Kota/Kabupaten Penyangga)", "Kapasitas (MWp)": bodetabek_mwp, "Titik": bodetabek_assets}
@@ -726,7 +726,7 @@ c_box1, c_box2, c_box3 = st.columns(3)
 with c_box1:
     st.markdown(f"""
     <div class="callout-box" style="min-height: 250px;">
-        <b>💡 Fakta Data Kategori Dominan:</b><br>
+        <b>Fakta Data Kategori Dominan:</b><br>
         Tiga kategori teratas—<b>{top_cat_1['category_display']} ({top_cat_1['installed_capacity_mwp']:,.1f} MWp)</b>, 
         <b>{top_cat_2['category_display']} ({top_cat_2['installed_capacity_mwp']:,.1f} MWp)</b>, dan 
         <b>{top_cat_3['category_display']} ({top_cat_3['installed_capacity_mwp']:,.1f} MWp)</b>—membentuk 
@@ -739,7 +739,7 @@ with c_box1:
 with c_box2:
     st.markdown("""
     <div class="callout-box" style="min-height: 250px;">
-        <b>⚙️ Interpretasi Rekayasa Struktur:</b><br>
+        <b>Interpretasi Rekayasa Struktur:</b><br>
         Dak beton horizontal (MSCP, Mall, Terminal Bus) merupakan aset rekayasa paling bernilai karena:
         <ul style="margin-top: 4px; padding-left: 18px; margin-bottom: 0;">
             <li>Sudut datang radiasi zenith optimal sepanjang tahun tanpa penalti azimuth orientasi.</li>
@@ -752,7 +752,7 @@ with c_box2:
 with c_box3:
     st.markdown(f"""
     <div class="callout-box" style="min-height: 250px;">
-        <b>🏛️ Implikasi Kebijakan Pengadaan:</b><br>
+        <b>Implikasi Kebijakan Pengadaan:</b><br>
         Pemda DKI dan Bodetabek disarankan mengadopsi skema pengadaan bertahap berbasis skala ekonomi (<i>economies of scale</i>):
         <ul style="margin-top: 4px; padding-left: 18px; margin-bottom: 0;">
             <li><b>Tahap 1 (Anchor Assets):</b> Prioritaskan aset dengan skala besar (<b>{highest_per_asset['category_display']}</b> dengan rata-rata <b>{highest_per_asset['avg_kwp_per_asset']:,.0f} kWp/titik</b> serta stasiun kereta) untuk meminimalkan CAPEX per watt.</li>
@@ -762,7 +762,7 @@ with c_box3:
     """, unsafe_allow_html=True)
 
 # ─── DATA LINEAGE & TABEL DATA MENTAH CSV ───────────────────────────────────────
-with st.expander("📄 Data Lineage & Tabel Rekapitulasi: 13 Kategori Infrastruktur (CSV)"):
+with st.expander("📄 Lihat Data Mentah: Rekapitulasi 13 Kategori Infrastruktur (CSV)"):
     st.caption("Sumber Berkas: `data/processed/calculations/pow_solar_kumulatif_summary.csv` | Standar Ekstraksi: Google Solar API BASE Tier (0.25 m/pixel)")
     
     df_cat_out = df_cat[[
@@ -792,14 +792,14 @@ with st.expander("📄 Data Lineage & Tabel Rekapitulasi: 13 Kategori Infrastruk
     
     csv_cat = df_cat_out.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Unduh Data Rekapitulasi 13 Kategori (CSV)",
+        label="Unduh Data Rekapitulasi 13 Kategori (CSV)",
         data=csv_cat,
         file_name="celios_rekapitulasi_13_kategori_plts_jabodetabek.csv",
         mime="text/csv",
         key="dl_cat_csv"
     )
 
-with st.expander("📄 Data Lineage & Tabel Rekapitulasi: Sebaran Spasial 13 Wilayah Jabodetabek (CSV)"):
+with st.expander("📄 Lihat Data Mentah: Sebaran Spasial 13 Wilayah Jabodetabek (CSV)"):
     st.caption("Sumber Berkas: `data/processed/calculations/pow_solar_kumulatif_summary.csv` | Wilayah: 5 Kota DKI Jakarta + 8 Wilayah Bodetabek")
     
     df_city_out = df_city[[
@@ -823,7 +823,7 @@ with st.expander("📄 Data Lineage & Tabel Rekapitulasi: Sebaran Spasial 13 Wil
     
     csv_city = df_city_out.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Unduh Data Sebaran Spasial Jabodetabek (CSV)",
+        label="Unduh Data Sebaran Spasial Jabodetabek (CSV)",
         data=csv_city,
         file_name="celios_sebaran_spasial_plts_jabodetabek.csv",
         mime="text/csv",
@@ -899,7 +899,7 @@ if not df_pvgis.empty:
 
     st.markdown(f"""
     <div class="callout-box">
-        <b>☀️ Fakta Data Klimatologis & Keandalan Pasokan:</b><br>
+        <b>Fakta Data Klimatologis & Keandalan Pasokan:</b><br>
         Bulan dengan produksi terendah terjadi pada <b>Bulan {int(min_month_psh['Month'])} (Musim Hujan/Monsun Barat)</b> dengan rata-rata 
         <b>{min_month_psh['Peak_Sun_Hours']:.2f} jam PSH/hari ({min_month_psh['Energy_kWh']:.1f} kWh/kWp/bulan)</b>. 
         Sebaliknya, produksi mencapai puncaknya pada <b>Bulan {int(max_month_psh['Month'])} (Musim Kemarau/Monsun Timur)</b> dengan 
@@ -1026,7 +1026,7 @@ with col_sub2:
 
 st.markdown(f"""
 <div class="callout-box">
-    <b>🏛️ Analisis Kebijakan Publik & Tesis Anti-Sacrificial Zones:</b><br>
+    <b>Analisis Kebijakan Publik & Tesis Anti-Sacrificial Zones:</b><br>
     Substitusi energi sebesar <b>{pct_substitusi_publik:.1f}%</b> terhadap sektor publik perkotaan memiliki implikasi struktural yang mendalam:
     <ol style="margin-top: 6px; padding-left: 20px;">
         <li><b>Kemandirian APBD:</b> Penghematan tagihan listrik penerangan jalan dan kantor dinas membebaskan ratusan miliar rupiah belanja operasional daerah untuk dialokasikan ke layanan kesehatan dan pendidikan.</li>
@@ -1058,7 +1058,7 @@ col_ctrl1, col_ctrl2, col_ctrl3 = st.columns([1, 1, 1.2])
 
 with col_ctrl1:
     sim_wp = st.select_slider(
-        "⚡ Rating Daya Modul Surya (Wp):",
+        "Rating Daya Modul Surya (Wp):",
         options=[350, 400, 450, 500, 550],
         value=400,
         help="Baseline Google Solar API menggunakan modul standar 400 Wp. Modul modern 550 Wp meningkatkan densitas daya tanpa memperluas atap."
@@ -1066,7 +1066,7 @@ with col_ctrl1:
 
 with col_ctrl2:
     sim_pr = st.slider(
-        "🎛️ Performance Ratio (PR %):",
+        "Performance Ratio (PR %):",
         min_value=70,
         max_value=85,
         value=80,
@@ -1076,7 +1076,7 @@ with col_ctrl2:
 
 with col_ctrl3:
     enable_infill = st.checkbox(
-        "🧩 Aktifkan Ekstensi Celah Atap (SNI 8395 Infill)",
+        "Aktifkan Ekstensi Celah Atap (SNI 8395 Infill)",
         value=False,
         help="Mengintegrasikan sisa tapak atap beton yang belum terpaneli dengan tetap mematuhi koridor keselamatan damkar 1,5 meter."
     )
@@ -1167,7 +1167,7 @@ st.altair_chart(chart_heat, use_container_width=True)
 
 st.markdown("""
 <div class="callout-box">
-    <b>⚙️ Fakta Data Sensitivitas & Fleksibilitas Pengadaan EPC:</b><br>
+    <b>Fakta Data Sensitivitas & Fleksibilitas Pengadaan EPC:</b><br>
     Pergeseran teknologi dari modul standar 400 Wp ke modul efisiensi tinggi 550 Wp meningkatkan total kapasitas terpasang dari 
     <b>307,9 MWp menjadi 423,3 MWp (+37,5%)</b> tanpa menambah sehelai pun luasan tapak fisik bangunan. 
     Hal ini membuktikan pemerintah daerah dan operator fasilitas umum memiliki ruang fleksibilitas teknis yang luas: 
@@ -1233,7 +1233,7 @@ if not df_benchmark.empty:
 
     st.markdown(f"""
     <div class="callout-box">
-        <b>🔍 Fakta Validasi Ground-Truth:</b><br>
+        <b>Fakta Validasi Ground-Truth:</b><br>
         {bm1['kesimpulan_audit']}<br>
         Selain fasilitas AOCC, PT Angkasa Pura II bersama PT Pertamina Power Indonesia juga telah mengoperasikan PLTS multi-titik 
         di Terminal 2 sebesar <b>1.506 kWp (~1,5 MWp)</b>. Fakta lapangan ini membuktikan bahwa angka total potensi bandara pada model 
