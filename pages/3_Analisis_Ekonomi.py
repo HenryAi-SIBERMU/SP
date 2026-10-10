@@ -985,6 +985,13 @@ with st.expander("Lihat Data Mentah : Standar Biaya Layanan Publik Resmi & Bukti
     with col_dl_l2:
         st.caption("Berkas sumber: `data/processed/references/standar_biaya_layanan_publik.csv` | Dilengkapi tautan bukti HTML/PDF di `data/raw/sources/`.")
 
+# ═════════════════════════════════════════════════════════════════════════════════
+# SUB-BAB 3.3: DAMPAK PENCIPTAAN LAPANGAN KERJA HIJAU (GREEN JOBS MULTIPLIER)
+# ═════════════════════════════════════════════════════════════════════════════════
+st.markdown("<br><hr>", unsafe_allow_html=True)
+st.markdown(r"### 3.3 Dampak Penciptaan Lapangan Kerja Hijau ($\text{Green Jobs Multiplier}$)")
+st.markdown('<div class="sub-chapter-badge">Sub-Bab 3.3: Kuantifikasi Ketenagakerjaan Hijau Konstruksi vs Operasional 25 Tahun Berbasis Standar IRENA & IESR</div>', unsafe_allow_html=True)
+
 with st.expander("Metodologi 3.3: Formulasi Pengali Ketenagakerjaan Hijau IRENA/IESR & Dekomposisi Siklus Hidup Tenaga Kerja"):
     st.markdown(r"""
     **Prinsip Metodologis Analisis Ketenagakerjaan Hijau (*Green Jobs Accounting*):**
