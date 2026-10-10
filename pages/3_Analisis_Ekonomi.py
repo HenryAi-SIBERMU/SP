@@ -1999,8 +1999,8 @@ col_bench1, col_bench2 = st.columns(2)
 
 with col_bench1:
     st.markdown("""
-    <div class="insight-box" style="border-left: 4px solid #00B0FF; height: 100%;">
-        <div style="font-weight: 700; color: #00B0FF; font-size: 0.95rem; margin-bottom: 0.4rem;">
+    <div class="insight-box" style="border: 1px solid #2E3B4E; border-radius: 8px; height: 100%;">
+        <div style="font-weight: 700; color: #ECEFF1; font-size: 0.95rem; margin-bottom: 0.4rem;">
             Studi Kasus 1: PLTS Atap Gedung AOCC Bandara Soekarno-Hatta (241 kWp)
         </div>
         <div style="color: #CFD8DC; font-size: 0.85rem; line-height: 1.55;">
@@ -2016,8 +2016,8 @@ with col_bench1:
 
 with col_bench2:
     st.markdown("""
-    <div class="insight-box" style="border-left: 4px solid #00E676; height: 100%;">
-        <div style="font-weight: 700; color: #00E676; font-size: 0.95rem; margin-bottom: 0.4rem;">
+    <div class="insight-box" style="border: 1px solid #2E3B4E; border-radius: 8px; height: 100%;">
+        <div style="font-weight: 700; color: #ECEFF1; font-size: 0.95rem; margin-bottom: 0.4rem;">
             Studi Kasus 2: PLTS Jalur Komersial & Kanopi Terminal 2 Bandara Soetta (1.500 kWp / 1,5 MWp)
         </div>
         <div style="color: #CFD8DC; font-size: 0.85rem; line-height: 1.55;">
@@ -2038,26 +2038,26 @@ st.markdown("#### Rencana Aksi Regulasi 4 Langkah Pemprov DKI & Kepala Daerah Bo
 st.markdown("""
 <div style="background: #141A24; border: 1px solid #263238; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-        <div style="background: #1A2332; border-left: 3px solid #00E676; padding: 0.9rem; border-radius: 6px;">
-            <div style="font-weight: 700; color: #00E676; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 1: Regulasi Payung Hukum Standar Sewa Atap (PPA Pergub)</div>
+        <div style="background: #1A2332; border: 1px solid #2E3B4E; padding: 0.9rem; border-radius: 6px;">
+            <div style="font-weight: 700; color: #ECEFF1; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 1: Regulasi Payung Hukum Standar Sewa Atap (PPA Pergub)</div>
             <div style="color: #B0BEC5; font-size: 0.82rem; line-height: 1.5;">
                 Menerbitkan Peraturan Gubernur (Pergub) tentang Tata Cara Pemanfaatan Atap Bangunan Gedung Daerah untuk PLTS Tanpa Beban APBD, mengadopsi klausul baku kontrak BOOT 15–20 tahun dengan diskon tarif minimal 15% dari tarif PLN.
             </div>
         </div>
-        <div style="background: #1A2332; border-left: 3px solid #00B0FF; padding: 0.9rem; border-radius: 6px;">
-            <div style="font-weight: 700; color: #00B0FF; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 2: Bundling Portofolio Dak Gedung Publik Skala Besar</div>
+        <div style="background: #1A2332; border: 1px solid #2E3B4E; padding: 0.9rem; border-radius: 6px;">
+            <div style="font-weight: 700; color: #ECEFF1; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 2: Bundling Portofolio Dak Gedung Publik Skala Besar</div>
             <div style="color: #B0BEC5; font-size: 0.82rem; line-height: 1.5;">
                 Menggabungkan (bundling) aset dak beton 254 RSUD, 667 Sekolah Negeri, dan 188 Kampus menjadi 3 paket lelang investasi PPA skala internasional (masing-masing ~50 MWp) guna memancing penawaran tarif diskon termurah dari konsorsium global.
             </div>
         </div>
-        <div style="background: #1A2332; border-left: 3px solid #FFD600; padding: 0.9rem; border-radius: 6px;">
-            <div style="font-weight: 700; color: #FFD600; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 3: Mandat BUMD Sektor Transportasi & Pasar Sebagai Penggerak</div>
+        <div style="background: #1A2332; border: 1px solid #2E3B4E; padding: 0.9rem; border-radius: 6px;">
+            <div style="font-weight: 700; color: #ECEFF1; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 3: Mandat BUMD Sektor Transportasi & Pasar Sebagai Penggerak</div>
             <div style="color: #B0BEC5; font-size: 0.82rem; line-height: 1.5;">
                 Menugaskan PT Transportasi Jakarta, PT MRT Jakarta, PT LRT Jakarta, dan Perumda Pasar Jaya untuk menandatangani KSP konsesi kanopi halte, depo bus, dan atap pasar tradisional dengan integrasi stasiun charging EV komuter.
             </div>
         </div>
-        <div style="background: #1A2332; border-left: 3px solid #AB47BC; padding: 0.9rem; border-radius: 6px;">
-            <div style="font-weight: 700; color: #AB47BC; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 4: Rekening Khusus Dana Reinvestasi Hijau (Green Social Fund)</div>
+        <div style="background: #1A2332; border: 1px solid #2E3B4E; padding: 0.9rem; border-radius: 6px;">
+            <div style="font-weight: 700; color: #ECEFF1; font-size: 0.88rem; margin-bottom: 0.3rem;">Langkah 4: Rekening Khusus Dana Reinvestasi Hijau (Green Social Fund)</div>
             <div style="color: #B0BEC5; font-size: 0.82rem; line-height: 1.5;">
                 Membuat mekanisme rekening tertutup (closed-loop escrow) di mana selisih penghematan tagihan listrik tahunan otomatis dikreditkan untuk program beasiswa KJP Plus dan subsidi operasional puskesmas kelurahan.
             </div>
@@ -2141,22 +2141,6 @@ with st.expander("Lihat Data Mentah : Benchmark Bukti Empiris PLTS Bandara Soett
     with col_dl_b2:
         st.caption("Berkas sumber: `data/processed/references/benchmark_plts_soetta_aktual.csv` | Diverifikasi dari rilis resmi BUMN PTBA, AP II, PPI & SEI.")
 
-# ═════════════════════════════════════════════════════════════════════════════════
-# BANNER SINTESIS KESIMPULAN RISET BAB 3 (CELIOS ECC STANDARD)
-# ═════════════════════════════════════════════════════════════════════════════════
-st.markdown("<br><hr>", unsafe_allow_html=True)
-st.markdown(f"""
-<div style="background: linear-gradient(135deg, #1B5E20, #0E2A12); border: 1px solid #4CAF50; border-radius: 10px; padding: 1.6rem; text-align: center; margin-bottom: 2rem;">
-    <div style="font-size: 0.8rem; color: #A5D6A7; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem;">
-        Sintesis Hasil Kajian Finansial & Kebijakan Publik (Bab 3)
-    </div>
-    <div style="font-size: 1.4rem; color: #FFFFFF; font-weight: 800; line-height: 1.4; margin-bottom: 0.8rem;">
-        Transisi Energi Bukan Beban Anggaran, Melainkan Mesin Dividen Sosial Warga dan Pembebasan Ruang Fiskal Daerah
-    </div>
-    <div style="color: #E8F5E9; font-size: 0.92rem; max-width: 900px; margin: 0 auto; line-height: 1.6;">
-        Melalui pemanfaatan <b>2.100 titik fasilitas publik</b> se-Jabodetabek, terpasang potensi kapasitas <b>{total_capacity_mwp:.1f} MWp</b> yang menghasilkan efisiensi belanja rutin <b>Rp {savings_total_miliar:.2f} Miliar per tahun</b>, menyerap <b>{int(df_ekonomi['total_green_jobs_orang'].sum()):,} tenaga kerja hijau</b>, dan dapat dieksekusi <b>100% Zero-APBD</b> melalui kontrak kemitraan swasta PPA BOOT dan konsesi KSP BUMD.
-    </div>
-</div>
-""", unsafe_allow_html=True)
+
 
 
