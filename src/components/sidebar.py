@@ -46,6 +46,7 @@ def render_sidebar():
 
         st.markdown('<div class="sidebar-label">Resources</div>', unsafe_allow_html=True)
         st.page_link("pages/8_Dokumentasi_Riset.py",       label="Dokumentasi Riset")
+        st.page_link("pages/9_Glosarium.py",               label="Glosarium")
 
         st.markdown("---")
         st.caption("CELIOS · Solar Dashboard · 2026")
