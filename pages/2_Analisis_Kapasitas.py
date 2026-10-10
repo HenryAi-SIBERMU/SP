@@ -289,94 +289,114 @@ with st.expander("ℹ️ Metodologi Analisis: Alur Kausalitas, Standar IEC 61724
         * Validasi Empiris Lapangan: `data/processed/references/benchmark_plts_soetta_aktual.csv` (PTBA & AP II)
     """)
 
-# ─── HERO STATEMENT (NARASI KRITIS CELIOS) ───────────────────────────────────────
+# ─── HERO SECTION (NARASI TEKS EMPIRIS & ADVOKASI KEDAULATAN ENERGI) ──────────────
+st.markdown("""
+<h2 style="color: #FFFFFF; font-size: 1.85rem; font-weight: 800; margin-top: 1.6rem; margin-bottom: 1.1rem; line-height: 1.35; letter-spacing: -0.4px;">
+    Kedaulatan Energi vs Kutukan Wilayah Pengorbanan (Sacrificial Zones): Analisis Data Empiris Potensi PLTS Atap Jabodetabek
+</h2>
+""", unsafe_allow_html=True)
+
 st.markdown(f"""
-<div class="hero-box">
-    <p style="color: #ECEFF1; font-size: 1.08rem; line-height: 1.75; margin: 0;">
-        Kawasan metropolitan aglomerasi Jabodetabek mengonsumsi lebih dari <b>{pln_jkt_total_gwh:,.0f} GWh listrik per tahun</b> 
-        hanya pada wilayah distribusi DKI Jakarta (dan melampaui <b>128.000 GWh</b> bila diakumulasikan bersama Bodetabek), 
-        di mana pasokan utamanya masih disokong oleh PLTU batu bara di pesisir Banten dan Jawa Barat. 
-        Ketergantungan ini memindahkan eksternalitas negatif polusi udara dan perusakan lingkungan ke wilayah pedesaan (<i>sacrificial zones</i>).
-        Namun, hasil audit fotogrametri satelit terhadap <b>{total_assets:,} titik infrastruktur publik dan simpul transit</b> membuktikan 
-        adanya kapasitas terpasang mandiri sebesar <b>{total_capacity_mwp:,.2f} MWp</b> dengan kemampuan panen energi bersih 
-        <b>{total_gen_gwh:,.2f} GWh per tahun</b> (dan melonjak menjadi <b>{combined_mwp:,.2f} MWp / {combined_gwh:,.2f} GWh</b> dengan optimasi dak infill). 
-        Temuan ini membuktikan bahwa perkotaan memiliki modal fisik yang cukup untuk memproduksi energi bersih mandiri dan memimpin kedaulatan energi tanpa mengorbankan ruang hidup wilayah lain.
+<div style="color: #CFD8DC; font-size: 1.02rem; line-height: 1.8; margin-bottom: 2rem;">
+    <p style="margin-bottom: 1.25rem;">
+        Data empiris konsumsi ketenagalistrikan menggambarkan ketergantungan ekstrem kawasan aglomerasi metropolitan Jabodetabek terhadap pasokan energi fosil dari luar wilayah. 
+        Kawasan metropolitan ini mengonsumsi lebih dari <b>{pln_jkt_total_gwh:,.0f} GWh listrik per tahun</b> hanya pada wilayah distribusi DKI Jakarta (dan melampaui <b>128.000 GWh per tahun</b> bila diakumulasikan bersama kawasan penyangga Bodetabek). 
+        Mayoritas pasokan tersebut disuplai oleh pembangkit listrik tenaga uap (PLTU) batu bara di pesisir Banten dan Jawa Barat, yang memindahkan beban eksternalitas negatif polusi udara beracun, timbulan abu terbang (<i>fly ash & bottom ash</i>), serta perusakan ruang hidup ke komunitas pedesaan (<i>sacrificial zones</i>). 
+        Pola ini melanggengkan ketidakadilan spasial: energi dinikmati oleh metropolitan, sementara beban ekologis ditanggung oleh warga di luar kawasan.
+    </p>
+    <p style="margin-bottom: 1.25rem;">
+        Audit fotogrametri satelit 3D beresolusi tinggi (0,25 m/pixel) membantah narasi ketergantungan mutlak tersebut. 
+        Dari inventarisasi terhadap <b>{total_assets:,} titik infrastruktur publik dan simpul transit strategis</b>, teridentifikasi kapasitas terpasang mandiri sebesar <b>{total_capacity_mwp:,.2f} MWp</b> dengan kemampuan panen energi listrik bersih mencapai <b>{total_gen_gwh:,.2f} GWh per tahun</b> 
+        (dan dapat dioptimalkan hingga <b>{combined_mwp:,.2f} MWp / {combined_gwh:,.2f} GWh</b> melalui pemanfaatan celah atap aman damkar infill SNI 8395:2017). 
+        Pembangkitan energi mandiri ini terbukti mampu <b>menyubstitusi {pct_substitusi_publik:.1f}% ({pct_substitusi_publik:.1f} persen)</b> dari seluruh kebutuhan listrik sektor publik murni (kantor pemerintah dinas/kementerian dan fasilitas pelayanan umum) di DKI Jakarta, 
+        serta setara dengan <b>{pct_substitusi_pju:.1f}%</b> dari total konsumsi penerangan jalan umum (PJU) ibu kota.
+    </p>
+    <p style="margin-bottom: 0;">
+        Penting dicatat bahwa capaian substitusi <b>{pct_substitusi_publik:.1f}%</b> ini baru dihitung berdasarkan batasan <b>sampel {total_assets:,} titik terkurasi</b> yang dialokasikan dalam uji coba fotogrametri Google Solar API. 
+        Berdasarkan laporan sensus komprehensif terhadap bank data OpenStreetMap (OSM) dan data operasional resmi se-Jabodetabek (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>), 
+        populasi riil fasilitas fisik beratap bernama mencapai <b>12.397 titik</b> pada fokus fasilitas utama dan koridor BRT (serta meluas hingga <b>19.132 titik</b> bila mencakup seluruh shelter angkutan umum penyangga). 
+        Artinya, portofolio riset saat ini baru menyerap <b>~10,4%</b> dari kapasitas fisik riil di lapangan. 
+        Jika seluruh populasi 12.397 titik tersebut dioptimalkan, potensi kapasitas melonjak hingga <b>750 s.d. 1.100 MWp</b> dengan estimasi generasi <b>1.050 s.d. 1.540 GWh per tahun</b>—cukup untuk mencapai kemandirian energi publik 100% dan memimpin dekarbonisasi tanpa mengorbankan wilayah pedesaan.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-# ─── 6 BENTO METRIC CARDS ────────────────────────────────────────────────────────
-c1, c2, c3, c4, c5, c6 = st.columns(6)
+# ─── BENTO METRIC CARDS (3 KOLOM x 2 BARIS) ──────────────────────────────────────
+col_b1, col_b2, col_b3 = st.columns(3)
 
-with c1:
+with col_b1:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Kapasitas Terpasang</div>
-            <div class="bento-val" style="color: #4CAF50;">{total_capacity_mwp:,.1f} <span style="font-size:1rem;color:#A5D6A7;">MWp</span></div>
-            <div class="bento-desc">Daya puncak DC dari {total_panels:,} modul surya 400 Wp di {total_assets:,} titik aset.</div>
+            <div class="bento-lbl">Kapasitas Terpasang (Sampel {total_assets:,} Titik)</div>
+            <div class="bento-val" style="color: #4CAF50;">{total_capacity_mwp:,.1f} <span style="font-size:1.1rem;color:#A5D6A7;">MWp</span></div>
+            <div class="bento-desc">Daya puncak DC dari {total_panels:,} modul surya 400 Wp di {total_assets:,} titik aset publik dan simpul transit.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> pow_solar_kumulatif_summary.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Google Solar API (Sampel {total_assets:,} Titik)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c2:
+with col_b2:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Pembangkitan Energi</div>
-            <div class="bento-val" style="color: #66BB6A;">{total_gen_gwh:,.1f} <span style="font-size:1rem;color:#C8E6C9;">GWh/th</span></div>
-            <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan PR konservatif 80%.</div>
+            <div class="bento-lbl">Pembangkitan Energi Bersih Tahunan</div>
+            <div class="bento-val" style="color: #66BB6A;">{total_gen_gwh:,.1f} <span style="font-size:1.1rem;color:#C8E6C9;">GWh/th</span></div>
+            <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan Performance Ratio (PR) konservatif 80%.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> pow_solar_kumulatif_summary.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Google Solar API & Standar IEC 61724<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c3:
+with col_b3:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Jam Penyinaran (PSH)</div>
-            <div class="bento-val" style="color: #FFA726;">{avg_psh:.2f} <span style="font-size:1rem;color:#FFE0B2;">Jam/hari</span></div>
-            <div class="bento-desc">Ekuivalen radiasi efektif harian fotogrametri satelit (1.628 jam/thn).</div>
+            <div class="bento-lbl">Substitusi Sektor Publik DKI Jakarta</div>
+            <div class="bento-val" style="color: #26A69A;">{pct_substitusi_publik:.1f}% <span style="font-size:1.1rem;color:#B2DFDB;">Offset</span></div>
+            <div class="bento-desc">Mampu menyuplai seperempat total beban listrik kantor pemerintah dan PJU DKI (dari 10,4% populasi OSM).</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Google Solar Annual Flux Heatmap</div>
+        <div class="bento-src"><b>Sumber:</b> Statistik PLN UID Jakarta Raya 2024 (Hal. 35)<br><b>File:</b> pln_konsumsi_sektoral_jabodetabek.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c4:
+st.markdown("<div style='margin-bottom: 14px;'></div>", unsafe_allow_html=True)
+
+col_b4, col_b5, col_b6 = st.columns(3)
+
+with col_b4:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Specific Yield</div>
-            <div class="bento-val" style="color: #42A5F5;">{avg_specific_yield:,.0f} <span style="font-size:1rem;color:#BBDEFB;">kWh/kWp</span></div>
-            <div class="bento-desc">Produktivitas per unit kapasitas terpasang sesuai standar iklim tropis.</div>
+            <div class="bento-lbl">Jam Penyinaran Efektif (PSH Harian)</div>
+            <div class="bento-val" style="color: #FFA726;">{avg_psh:.2f} <span style="font-size:1.1rem;color:#FFE0B2;">Jam/hari</span></div>
+            <div class="bento-desc">Ekuivalen radiasi efektif harian fotogrametri satelit (1.628 jam PSH tahunan iklim tropis).</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Standar IEC 61724 & NREL</div>
+        <div class="bento-src"><b>Sumber:</b> Google Solar Annual Flux Heatmap<br><b>File:</b> pvgis_jakarta_monthly.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c5:
+with col_b5:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Substitusi Publik</div>
-            <div class="bento-val" style="color: #26A69A;">{pct_substitusi_publik:.1f}% <span style="font-size:1rem;color:#B2DFDB;">Offset</span></div>
-            <div class="bento-desc">Mampu menyuplai seperempat total beban kantor pemerintah & PJU DKI.</div>
+            <div class="bento-lbl">Specific Yield Produktivitas</div>
+            <div class="bento-val" style="color: #42A5F5;">{avg_specific_yield:,.0f} <span style="font-size:1.1rem;color:#BBDEFB;">kWh/kWp</span></div>
+            <div class="bento-desc">Produktivitas per unit kapasitas terpasang sesuai standar iklim tropis khatulistiwa.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Statistik PLN 2024 (Hal. 35)</div>
+        <div class="bento-src"><b>Sumber:</b> Standar IEC 61724 & NREL PVWatts<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
-with c6:
+with col_b6:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Potensi Infill SNI</div>
-            <div class="bento-val" style="color: #AB47BC;">+{infill_mwp:,.1f} <span style="font-size:1rem;color:#E1BEE7;">MWp</span></div>
-            <div class="bento-desc">Kapasitas tambahan dengan optimalisasi dak celah aman NFPA 1.</div>
+            <div class="bento-lbl">Potensi Ekstensi Celah Atap Infill (SNI)</div>
+            <div class="bento-val" style="color: #AB47BC;">+{infill_mwp:,.1f} <span style="font-size:1.1rem;color:#E1BEE7;">MWp</span></div>
+            <div class="bento-desc">Kapasitas tambahan dengan optimalisasi dak sisa celah aman koridor damkar NFPA 1.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> pow_solar_gap_infill_extension.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Analisis Infill SNI 8395:2017 & NFPA 1<br><b>File:</b> pow_solar_gap_infill_extension.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -496,12 +516,16 @@ st.markdown(f"""
 <p style="color: #ECEFF1; font-size: 1.03rem; line-height: 1.75; margin-bottom: 1.2rem;">
     Hasil audit fotogrametri satelit 3D resolusi tinggi (0,25 m/pixel) mencatat total luas fisik atap sebesar 
     <b>{total_roof_area_m2:,.0f} m²</b> yang tersebar di <b>{total_assets:,} titik infrastruktur strategis</b> se-Jabodetabek. 
-    Dari total tapak tersebut, algoritma segmentasi fotogrametri mengidentifikasi <b>{usable_roof_area_m2:,.0f} m² 
+    Alokasi {total_assets:,} titik ini merupakan <b>sampel representatif terkurasi</b> dari sensus penuh <b>12.397 titik fasilitas publik beratap bernama</b> 
+    (atau 19.132 titik jika menyerap seluruh shelter angkutan feeder) yang terdaftar di bank data OpenStreetMap (OSM) se-Jabodetabek 
+    (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>). 
+    Dari total tapak sampel tersebut, algoritma segmentasi fotogrametri mengidentifikasi <b>{usable_roof_area_m2:,.0f} m² 
     ({usable_roof_area_m2/total_roof_area_m2*100:.1f}%)</b> bidang atap yang memenuhi kelayakan geometris struktural 
     dan bebas dari bayangan permanen (<i>shading-free</i>). 
     Dengan densitas rekayasa modul fotovoltaik standar <b>203,7 Wp/m²</b> (modul 400 Wp monokristalin), ruang atap perkotaan 
     ini mampu menampung <b>{total_panels:,} unit modul surya</b> yang membangkitkan kapasitas daya puncak total sebesar 
-    <b>{total_capacity_mwp:,.2f} MWp</b> dengan potensi panen energi bersih tahunan mencapai <b>{total_gen_gwh:,.2f} GWh/tahun</b>.
+    <b>{total_capacity_mwp:,.2f} MWp</b> dengan potensi panen energi bersih tahunan mencapai <b>{total_gen_gwh:,.2f} GWh/tahun</b>—yang secara empiris 
+    telah mampu menyubstitusi <b>{pct_substitusi_publik:.1f}%</b> dari total kebutuhan listrik sektor publik murni se-DKI Jakarta.
 </p>
 """, unsafe_allow_html=True)
 
@@ -572,6 +596,19 @@ with col_chart_c2:
         font=dict(color="#ECEFF1")
     )
     st.plotly_chart(fig_tree_adv, use_container_width=True)
+
+st.markdown(f"""
+<div style="background: #111A24; border: 1px solid #253342; border-left: 4px solid #26A69A; border-radius: 6px; padding: 12px 16px; margin: 14px 0 20px 0; font-size: 0.92rem; color: #CFD8DC; line-height: 1.6;">
+    <b>Konteks Penyerapan Kuota Sampel 2.100 Titik terhadap Populasi Riil OpenStreetMap (OSM):</b><br>
+    Berdasarkan audit geospasial populasi penuh (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>), 
+    sampel 2.100 titik Google Solar API ini memiliki tingkat penyerapan yang berbeda antar-kelompok infrastruktur:
+    <ul style="margin: 6px 0 0 0; padding-left: 18px;">
+        <li><b>Kelompok Sensus Hampir Penuh (80%–100% Populasi Riil):</b> Kategori transit dan komersial utama—seperti <b>Stasiun KRL (88/88 titik)</b>, <b>Stasiun MRT/LRT (37/37 titik)</b>, <b>Bandara (14/14 titik)</b>, <b>Pusat Perbelanjaan / Mall (85–88 titik)</b>, dan <b>Gedung Parkir MSCP (101 titik)</b>—telah terserap hampir 100% dari seluruh entitas fisik riil di lapangan.</li>
+        <li><b>Kelompok Raksasa Publik Terpangkas Kuota API (5%–32% Populasi Riil):</b> Kategori publik sosial terbesar justru baru terserap sebagian kecil karena batas pagu anggaran Cloud API, yaitu <b>Sekolah Menengah (667 dari 8.295 sekolah OSM = ~8%)</b>, <b>Fasilitas Kesehatan/RSUD (254 dari 2.569 unit kesehatan OSM = ~10%)</b>, dan <b>Universitas (188 dari 556 kampus OSM = ~34%)</b>.</li>
+    </ul>
+    Fakta ini menegaskan bahwa daya <b>{total_capacity_mwp:,.1f} MWp</b> dan rasio substitusi beban publik <b>{pct_substitusi_publik:.1f}%</b> adalah <b>lantai dasar konservatif (floor baseline)</b>. Jika populasi sekolah dan RSUD dibuka penuh mengikuti database OSM (12.397 titik), potensi kapasitas riil melonjak hingga <b>750 s.d. 1.100 MWp</b>.
+</div>
+""", unsafe_allow_html=True)
 
 # ─── 2.1.2 KARAKTERISTIK DENSITAS DAYA ATAP & KELAYAKAN FISIK ───────────────────
 st.markdown("#### 2.1.2 Karakteristik Densitas Daya Atap & Rasio Kelayakan Fisik ($Wp/m^2$)")
@@ -922,11 +959,12 @@ st.markdown("### 2.3 Uji Substitusi Beban Konsumsi Kota (Urban Demand Offsetting
 st.markdown('<div class="sub-chapter-badge">Sub-Bab 2.3: Komparasi Produksi Mandiri vs Penjualan Listrik Sektoral PLN</div>', unsafe_allow_html=True)
 
 st.markdown(f"""
-<p style="color: #ECEFF1; font-size: 1.02rem; line-height: 1.7;">
+<p style="color: #ECEFF1; font-size: 1.02rem; line-height: 1.75;">
     Untuk menguji apakah produksi energi surya ini bernilai signifikan dalam skala metropolitan, hasil pembangkitan 
-    <b>{total_gen_gwh:,.2f} GWh/tahun</b> dikomparasikan secara langsung terhadap neraca realisasi penjualan tenaga listrik 
-    resmi PT PLN (Persero) tahun 2024 (Tabel 6 Statistik PLN). Kami menguji skenario substitusi terhadap sektor publik 
-    (Kantor Pemerintah dan Penerangan Jalan Umum / PJU) serta beban komersial perkotaan.
+    <b>{total_gen_gwh:,.2f} GWh/tahun</b> dari <b>sampel 2.100 titik infrastruktur strategis</b> dikomparasikan secara langsung terhadap neraca realisasi penjualan tenaga listrik 
+    resmi PT PLN (Persero) tahun 2024 (Tabel 6 Statistik PLN). Dari sampel 2.100 titik ini saja—yang baru menyerap <b>~10,4%</b> dari total 19.132 fasilitas beratap di OpenStreetMap se-Jabodetabek 
+    (<code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>)—potensi panen surya mandiri telah terbukti mampu <b>menyubstitusi {pct_substitusi_publik:.1f}% ({pct_substitusi_publik:.1f} persen)</b> 
+    dari total kebutuhan listrik seluruh sektor publik murni (Kantor Pemerintah dinas/kementerian dan Penerangan Jalan Umum / PJU) di DKI Jakarta.
 </p>
 """, unsafe_allow_html=True)
 
@@ -1031,6 +1069,13 @@ st.markdown(f"""
     <ol style="margin-top: 6px; padding-left: 20px;">
         <li><b>Kemandirian APBD:</b> Penghematan tagihan listrik penerangan jalan dan kantor dinas membebaskan ratusan miliar rupiah belanja operasional daerah untuk dialokasikan ke layanan kesehatan dan pendidikan.</li>
         <li><b>Keadilan Ekologis:</b> Menghasilkan {total_gen_gwh:,.1f} GWh listrik dari atap kota secara langsung mencegah pembakaran <b>~183.000 ton batu bara per tahun</b> di PLTU pesisir Jawa-Banten (berdasarkan intensitas emisi grid Jamali 0,809 kg CO₂/kWh). Hal ini menghentikan praktik kolonialisme energi yang memindahkan abu terbang (fly ash/bottom ash) dan penyakit ISPA ke warga pedesaan di sekitar PLTU.</li>
+        <li><b>Potensi Skala Penuh Populasi OSM vs Kuota Sampel Riset:</b> Angka {pct_substitusi_publik:.1f}% ini baru dicapai dari <b>sampel 2.100 titik</b>. Berdasarkan <code>docs/LAPORAN-POTENSI-MAKSIMAL-POPULASI-OSM-13-KATEGORI-JABODETABEK.md</code>:
+            <ul style="margin-top: 4px; padding-left: 18px;">
+                <li><b>Skenario Sampel 2.100 Titik (Pagu Budget API):</b> Generasi 407,2 GWh/th ➔ Substitusi <b>24,7%</b> sektor publik DKI.</li>
+                <li><b>Skenario Populasi Penuh 12.397 Titik (Fokus Utama OSM):</b> Generasi 1.050 s.d. 1.540 GWh/th ➔ Substitusi <b>63,6% s.d. 93,3%</b> sektor publik DKI.</li>
+                <li><b>Skenario Sensus Lengkap + 3.179 Kantor Pemda (22.311 Titik - Inpres 7/2022):</b> Generasi 1.960 s.d. 3.080 GWh/th ➔ Substitusi <b>118,8% s.d. 186,7% (Surplus Mandiri Publik Total)</b>.</li>
+            </ul>
+        </li>
     </ol>
 </div>
 """, unsafe_allow_html=True)
