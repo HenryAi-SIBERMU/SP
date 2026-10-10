@@ -136,6 +136,11 @@ def generate_economic_policy_dataset():
             'ekuivalensi_beasiswa_siswa': kjp_funded,
             'kuadran_prioritas': meta['kuadran'],
             'rekomendasi_kebijakan': meta['rekomendasi'],
+            'id_standar_capex': 'CAPEX-CARPORT-002' if is_carport else 'CAPEX-ROOF-001',
+            'file_bukti_raw_capex': 'data/raw/sources/plts_soekarno_hatta_t2_sei_ap2_ppi_official.html' if is_carport else 'data/raw/sources/cnbc_esdm_biaya_plts_atap_official.html',
+            'file_bukti_raw_tarif': 'data/raw/pln/Statistik_PLN_2024.pdf',
+            'file_sumber_solar': 'data/processed/calculations/pow_solar_kumulatif_summary.csv',
+            'ringkasan_model_tekno_ekonomi': verbatim,
             'kalimat_verbatim': verbatim
         })
         
@@ -220,6 +225,10 @@ def generate_economic_policy_dataset():
             'ekuivalensi_tiket_komuter_pax': pax_subsidized,
             'kuadran_prioritas': meta['kuadran'],
             'rekomendasi_kebijakan': meta['rekomendasi'],
+            'id_standar_capex': 'CAPEX-CARPORT-002' if is_carport else 'CAPEX-ROOF-001',
+            'file_bukti_raw_capex': 'data/raw/sources/plts_soekarno_hatta_t2_sei_ap2_ppi_official.html' if is_carport else 'data/raw/sources/cnbc_esdm_biaya_plts_atap_official.html',
+            'file_bukti_raw_tarif': 'data/raw/pln/Statistik_PLN_2024.pdf',
+            'ringkasan_model_tekno_ekonomi': verbatim,
             'kalimat_verbatim': verbatim
         })
         

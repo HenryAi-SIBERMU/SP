@@ -585,18 +585,29 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─── DATA LINEAGE & EXPANDER DATA MENTAH ─────────────────────────────────────────
-with st.expander("Lihat Data Mentah : Tabel Rincian Finansial Makro 13 Kategori Infrastruktur (CSV)"):
-    st.markdown("Setiap baris data berikut diverifikasi langsung dari output kalkulasi satelit dan standar biaya resmi EPC 2026:")
+with st.expander("Lihat Data Mentah : Tabel Rincian Finansial Makro 13 Kategori & Standar Biaya CAPEX Resmi (CSV)"):
+    st.markdown(
+        "**Jejak Audit & Data Lineage Finansial Makro:**  \n"
+        "1. **Potensi Kapasitas & Energi (kWp & MWh/th):** Diturunkan secara spasial dari fotogrametri satelit 2.100 titik di `data/processed/calculations/pow_solar_kumulatif_summary.csv`.\n"
+        "2. **Tarif Listrik PLN:** Rp 1.467,28/kWh (Golongan P-1/TR dan B-2/TR) merujuk ke `data/raw/pln/Statistik_PLN_2024.pdf`.\n"
+        "3. **Standar Biaya Modal (CAPEX):** Rp 12,5 Juta/kWp (Dak Beton) & Rp 18,5 Juta/kWp (Carport Baja) merujuk ke publikasi resmi Kementerian ESDM & PT SEI di `data/raw/sources/`."
+    )
     
+    st.markdown("#### A. Tabel Rincian Finansial Makro 13 Kategori Infrastruktur (Hasil Model Tekno-Ekonomi)")
     display_cols = [
         "category_display", "total_points", "total_capacity_kwp", "total_annual_generation_mwh",
         "tipe_struktur_plts", "total_capex_miliar", "total_savings_annual_miliar",
         "simple_payback_years", "total_green_jobs_orang", "ekuivalensi_tiket_komuter_pax",
-        "kuadran_prioritas", "kalimat_verbatim"
+        "kuadran_prioritas", "ringkasan_model_tekno_ekonomi", "id_standar_capex", "file_bukti_raw_capex"
     ]
     
+    # Fallback jika kolom baru belum terbaca di memori
+    active_cols = [c for c in display_cols if c in df_ekonomi.columns]
+    if "ringkasan_model_tekno_ekonomi" not in active_cols and "kalimat_verbatim" in df_ekonomi.columns:
+        active_cols.append("kalimat_verbatim")
+        
     st.dataframe(
-        df_ekonomi[display_cols].rename(columns={
+        df_ekonomi[active_cols].rename(columns={
             "category_display": "Kategori Fasilitas",
             "total_points": "Jumlah Titik",
             "total_capacity_kwp": "Kapasitas (kWp)",
@@ -608,23 +619,60 @@ with st.expander("Lihat Data Mentah : Tabel Rincian Finansial Makro 13 Kategori 
             "total_green_jobs_orang": "Green Jobs (Orang)",
             "ekuivalensi_tiket_komuter_pax": "Dividen Tiket (Pax)",
             "kuadran_prioritas": "Kuadran Prioritas",
-            "kalimat_verbatim": "Kutipan Verbatim Bukti Fisik"
+            "ringkasan_model_tekno_ekonomi": "Ringkasan Model Tekno-Ekonomi",
+            "kalimat_verbatim": "Ringkasan Model Tekno-Ekonomi",
+            "id_standar_capex": "ID Standar CAPEX",
+            "file_bukti_raw_capex": "Berkas Bukti Raw CAPEX"
         }),
         use_container_width=True,
         hide_index=True
     )
     
+    st.markdown("---")
+    st.markdown("#### B. Tabel Bukti Mentah & Kutipan Verbatim Standar Biaya CAPEX & OPEX PLTS 2026 (CSV)")
+    st.markdown(
+        "Kutipan kata demi kata (*word-for-word verbatim*) dari pernyataan resmi regulator (Dirjen EBTKE Kementerian ESDM) "
+        "dan kontraktor BUMN pelaksana (PT SEI/Pertamina Power Indonesia) yang menjadi rujukan parameter biaya:"
+    )
+    if not df_capex.empty:
+        capex_display_cols = [
+            "id_standar", "tipe_struktur_plts", "capex_per_kwp_juta", "opex_tahunan_pct_capex",
+            "penerbit_resmi", "dokumen_sumber", "file_bukti_raw", "kalimat_verbatim"
+        ]
+        active_capex_cols = [c for c in capex_display_cols if c in df_capex.columns]
+        st.dataframe(
+            df_capex[active_capex_cols].rename(columns={
+                "id_standar": "ID Standar",
+                "tipe_struktur_plts": "Struktur Rangka",
+                "capex_per_kwp_juta": "CAPEX (Juta Rp/kWp)",
+                "opex_tahunan_pct_capex": "OPEX (%/th)",
+                "penerbit_resmi": "Penerbit Resmi",
+                "dokumen_sumber": "Dokumen Sumber",
+                "file_bukti_raw": "Berkas Bukti Raw (data/raw/)",
+                "kalimat_verbatim": "Kutipan Verbatim Dokumen Asli"
+            }),
+            use_container_width=True,
+            hide_index=True
+        )
+    
     col_dl1, col_dl2 = st.columns(2)
     with col_dl1:
-        csv_bytes = df_ekonomi.to_csv(index=False).encode('utf-8')
+        csv_bytes_eko = df_ekonomi.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="Unduh Dataset Ringkasan Ekonomi (CSV)",
-            data=csv_bytes,
+            data=csv_bytes_eko,
             file_name="pow_solar_ekonomi_kebijakan.csv",
             mime="text/csv"
         )
     with col_dl2:
-        st.info("Berkas fisik bukti kutipan tersimpan di `data/raw/sources/` dan tabel referensi di `data/processed/references/`.")
+        if not df_capex.empty:
+            csv_bytes_capex = df_capex.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="Unduh Standar Biaya CAPEX/OPEX ESDM (CSV)",
+                data=csv_bytes_capex,
+                file_name="standar_capex_opex_plts_2026.csv",
+                mime="text/csv"
+            )
 
 # ═════════════════════════════════════════════════════════════════════════════════
 # SUB-BAB 3.2: EKUIVALENSI DIVIDEN FISKAL APBD (OPPORTUNITY COST & PUBLIC DIVIDEND)
