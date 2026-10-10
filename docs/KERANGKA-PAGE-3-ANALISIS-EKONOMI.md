@@ -99,6 +99,16 @@ Mengadopsi komponen antarmuka yang terbukti tangguh pada CELIOS 2:
 +──────────────────────────────────────────────────────────────────────────────────────────────────+
 ```
 
+### 📌 Ringkasan 5 Sub-Bab Baru (Hierarkis 3.1 s.d. 3.5):
+
+| No Sub-Bab | Topik Pembahasan | Fokus Utama yang Akan Anda Sampaikan |
+|:---:|:---|:---|
+| **3.1** | **Neraca Investasi & Penghematan Listrik Tahunan** | Menunjukkan perbandingan modal awal vs pemotongan tagihan PLN, dengan titik impas 6–7 tahun dan sisa 18 tahun panen energi gratis. |
+| **3.2** | **Ekuivalensi Dividen Fiskal APBD (*Public Dividend*)** | Mengonversi penghematan listrik menjadi manfaat sosial nyata (subsidi tiket transportasi, operasional puskesmas, beasiswa). |
+| **3.3** | **Dampak Penciptaan Lapangan Kerja Hijau (*Green Jobs*)** | Menghitung serapan ribuan tenaga kerja lokal pada fase konstruksi dan pemeliharaan jangka panjang. |
+| **3.4** | **Matriks Prioritas Investasi Klaster Fasilitas** | Memetakan klaster mana yang cepat balik modal (*Quick Wins* di parkir/mall) vs klaster bernilai pelayanan publik (stasiun, RSUD, sekolah). |
+| **3.5** | **Solusi Pengadaan "Zero-APBD"** | Memberikan opsi skema PPA/sewa atap swasta untuk membuktikan bahwa transisi energi tidak terkendala uang, melainkan regulasi dan kemauan politik. |
+
 ---
 
 ## 4. Uraian Detail Teknis Per Sub-Bab
