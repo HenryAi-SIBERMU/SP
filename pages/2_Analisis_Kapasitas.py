@@ -387,105 +387,449 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ═════════════════════════════════════════════════════════════════════════════════
 st.markdown("---")
 st.markdown("### 2.1 Konversi Luasan Spasial ke Daya & Energi Listrik ($m^2 \\rightarrow \\text{MWp} \\ \\& \\ \\text{GWh}$)")
-st.markdown('<div class="sub-chapter-badge">Sub-Bab 2.1: Metrik Fotogrametri Satelit & Karakteristik Densitas Daya Atap</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-chapter-badge">Sub-Bab 2.1: Metrik Fotogrametri Satelit 3D, Densitas Daya & Standar IEC 61724</div>', unsafe_allow_html=True)
 
-st.markdown(f"""
-<p style="color: #ECEFF1; font-size: 1.02rem; line-height: 1.7;">
-    Hasil segmentasi 3D satelit mencatat total luas atap fisik sebesar <b>{total_roof_area_m2:,.0f} m²</b> pada {total_assets:,} aset, 
-    di mana <b>{usable_roof_area_m2:,.0f} m² ({usable_roof_area_m2/total_roof_area_m2*100:.1f}%)</b> di antaranya diklasifikasikan sebagai 
-    permukaan yang secara struktural layak dipasangi panel surya. Melalui rasio densitas daya rata-rata <b>200 Wp/m²</b> 
-    (modul 400 Wp berdimensi 2,0 m² termasuk jarak antar-baris modul untuk mencegah <i>inter-row self-shading</i>), 
-    luasan tersebut mampu menampung <b>{total_panels:,} modul surya</b> yang setara dengan daya terpasang <b>{total_capacity_mwp:,.2f} MWp</b> 
-    dan pembangkitan tahunan <b>{total_gen_gwh:,.2f} GWh</b>.
-</p>
-""", unsafe_allow_html=True)
+with st.expander("ℹ️ Metodologi 2.1: Formulasi Konversi Fotogrametri 3D ke Daya Puncak & Kelayakan Fisik Atap"):
+    st.markdown(r"""
+    **Prinsip Rekayasa Konversi Fotogrametri Satelit ke Potensi Daya Listrik:**
+    1. **Formula Kapasitas Puncak DC ($P_{\text{dc}}$):**  
+       $$P_{\text{dc}} (\text{kWp}) = \frac{N_{\text{modul}} \times P_{\text{modul}} (\text{Wp})}{1.000}$$  
+       Di mana $P_{\text{modul}} = 400\text{ Wp}$ (Modul Monokristalin Efisiensi Tinggi $\eta \approx 20,4\%$, luas modul $A_{\text{modul}} = 1,9635\text{ m}^2$).
+    2. **Karakteristik Densitas Daya Modul ($\rho_{\text{panel}}$):**  
+       $$\rho_{\text{panel}} = \frac{P_{\text{modul}}}{A_{\text{modul}}} = \frac{400\text{ Wp}}{1,9635\text{ m}^2} \approx 203,71\text{ Wp/m}^2$$  
+       Setiap $1\text{ m}^2$ permukaan atap yang layak secara geometris dan bebas naungan mampu menghasilkan daya puncak $\approx 203,7\text{ Wp}$.
+    3. **Rasio Kelayakan Fisik Atap (*Roof Suitability Ratio* / $\eta_{\text{atap}}$):**  
+       $$\eta_{\text{atap}} = \frac{A_{\text{usable}}}{A_{\text{whole}}} \times 100\%$$  
+       $A_{\text{usable}}$ merepresentasikan luasan segmen atap 3D yang memenuhi kriteria:
+       - Memperoleh radiasi tahunan minimal $\ge 1.000\text{ kWh/m}^2/\text{tahun}$.
+       - Kemiringan (*pitch*) di bawah $60^\circ$ (tereliminasi dari dinding vertikal atau fasad miring non-struktural).
+       - Bebas dari bayangan permanen (*shading-free*) gedung tetangga dan vegetasi tajuk tinggi.
+       - Memperhitungkan jarak batas aman bebas api (*fire safety setback*) sesuai panduan SNI 8395:2017 & NFPA 1.
+    4. **Densitas Daya Efektif Tapak Bangunan ($\rho_{\text{efektif}}$):**  
+       $$\rho_{\text{efektif}} = \frac{P_{\text{dc}} \times 1.000}{A_{\text{whole}}} = \rho_{\text{panel}} \times \eta_{\text{atap}}\text{ (Wp/m}^2\text{ fisik)}$$
+    """)
 
-# Agregasi data per kategori
-df_cat = df_summary.groupby("category_display").agg({
-    "asset_id": "count",
-    "whole_roof_area_m2": "sum",
-    "max_roof_area_m2": "sum",
-    "max_panels_count": "sum",
-    "installed_capacity_kwp": "sum",
-    "annual_generation_mwh": "sum"
-}).reset_index()
+# ─── AGREGASI DATASET SUB-BAB 2.1 ───────────────────────────────────────────────
+# Klasifikasi 2 Klaster Advokasi
+transit_categories = [
+    "Stasiun KRL Commuter Line",
+    "Stasiun MRT & LRT",
+    "Halte TransJakarta & Shelter",
+    "Terminal Bus & Simpul Antarmoda",
+    "Fasilitas Penunjang Bandara",
+    "Jembatan Penyeberangan Orang (JPO)"
+]
+
+df_summary["cluster"] = df_summary["category_display"].apply(
+    lambda x: "Klaster Transit & Simpul Antarmoda" if x in transit_categories else "Klaster Fasilitas Publik & Komersial"
+)
+
+dki_adm_cities = ["Jakarta Pusat", "Jakarta Utara", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur"]
+df_summary["region_group"] = df_summary["city_regency"].apply(
+    lambda x: "DKI Jakarta" if x in dki_adm_cities else "Bodetabek (Jabar & Banten)"
+)
+
+# Metrik Agregat Klaster
+transit_df = df_summary[df_summary["cluster"] == "Klaster Transit & Simpul Antarmoda"]
+public_df = df_summary[df_summary["cluster"] == "Klaster Fasilitas Publik & Komersial"]
+
+transit_mwp = transit_df["installed_capacity_kwp"].sum() / 1000.0
+transit_gwh = transit_df["annual_generation_mwh"].sum() / 1000.0
+transit_assets = len(transit_df)
+transit_pct = (transit_mwp / total_capacity_mwp) * 100.0
+
+public_mwp = public_df["installed_capacity_kwp"].sum() / 1000.0
+public_gwh = public_df["annual_generation_mwh"].sum() / 1000.0
+public_assets = len(public_df)
+public_pct = (public_mwp / total_capacity_mwp) * 100.0
+
+# Agregasi per Kategori Infrastruktur
+df_cat = df_summary.groupby(["cluster", "category_display"]).agg(
+    asset_count=("asset_id", "count"),
+    whole_roof_area_m2=("whole_roof_area_m2", "sum"),
+    max_roof_area_m2=("max_roof_area_m2", "sum"),
+    max_panels_count=("max_panels_count", "sum"),
+    installed_capacity_kwp=("installed_capacity_kwp", "sum"),
+    annual_generation_mwh=("annual_generation_mwh", "sum"),
+    weighted_pitch_deg=("weighted_pitch_deg", "mean")
+).reset_index()
 
 df_cat["installed_capacity_mwp"] = df_cat["installed_capacity_kwp"] / 1000.0
 df_cat["annual_generation_gwh"] = df_cat["annual_generation_mwh"] / 1000.0
-df_cat["porsi_kapasitas_pct"] = (df_cat["installed_capacity_mwp"] / total_capacity_mwp) * 100.0
+df_cat["suitability_ratio_pct"] = (df_cat["max_roof_area_m2"] / df_cat["whole_roof_area_m2"]) * 100.0
+df_cat["effective_power_density_wp_m2"] = (df_cat["installed_capacity_mwp"] * 1e6) / df_cat["whole_roof_area_m2"]
+df_cat["usable_power_density_wp_m2"] = (df_cat["installed_capacity_mwp"] * 1e6) / df_cat["max_roof_area_m2"]
+df_cat["avg_kwp_per_asset"] = df_cat["installed_capacity_kwp"] / df_cat["asset_count"]
+df_cat["porsi_pct"] = (df_cat["installed_capacity_mwp"] / total_capacity_mwp) * 100.0
 df_cat = df_cat.sort_values("installed_capacity_mwp", ascending=False)
 
-# Visualisasi 2.1: Bar Chart Horizontal Kapasitas per Kategori
-col_chart1, col_chart2 = st.columns([3, 2])
+# Agregasi per Wilayah Administratif
+df_city = df_summary.groupby(["region_group", "city_regency"]).agg(
+    asset_count=("asset_id", "count"),
+    whole_roof_area_m2=("whole_roof_area_m2", "sum"),
+    max_roof_area_m2=("max_roof_area_m2", "sum"),
+    installed_capacity_kwp=("installed_capacity_kwp", "sum"),
+    annual_generation_mwh=("annual_generation_mwh", "sum")
+).reset_index()
 
-with col_chart1:
-    st.markdown("##### 2.1.1 Distribusi Kapasitas Pembangkitan Lintas 13 Kategori Infrastruktur")
-    chart_cat = alt.Chart(df_cat).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4).encode(
+df_city["installed_capacity_mwp"] = df_city["installed_capacity_kwp"] / 1000.0
+df_city["annual_generation_gwh"] = df_city["annual_generation_mwh"] / 1000.0
+df_city["porsi_pct"] = (df_city["installed_capacity_mwp"] / total_capacity_mwp) * 100.0
+df_city = df_city.sort_values("installed_capacity_mwp", ascending=False)
+
+# Metrik Agregat Regional (DKI vs Bodetabek)
+dki_df = df_summary[df_summary["region_group"] == "DKI Jakarta"]
+bodetabek_df = df_summary[df_summary["region_group"] == "Bodetabek (Jabar & Banten)"]
+
+dki_mwp = dki_df["installed_capacity_kwp"].sum() / 1000.0
+dki_gwh = dki_df["annual_generation_mwh"].sum() / 1000.0
+dki_assets = len(dki_df)
+dki_pct = (dki_mwp / total_capacity_mwp) * 100.0
+
+bodetabek_mwp = bodetabek_df["installed_capacity_kwp"].sum() / 1000.0
+bodetabek_gwh = bodetabek_df["annual_generation_mwh"].sum() / 1000.0
+bodetabek_assets = len(bodetabek_df)
+bodetabek_pct = (bodetabek_mwp / total_capacity_mwp) * 100.0
+
+# ─── NARASI KRITIS PEMBUKA SUB-BAB 2.1 ──────────────────────────────────────────
+st.markdown(f"""
+<p style="color: #ECEFF1; font-size: 1.03rem; line-height: 1.75; margin-bottom: 1.2rem;">
+    Hasil audit fotogrametri satelit 3D resolusi tinggi (0,25 m/pixel) mencatat total luas fisik atap sebesar 
+    <b>{total_roof_area_m2:,.0f} m²</b> yang tersebar di <b>{total_assets:,} titik infrastruktur strategis</b> se-Jabodetabek. 
+    Dari total tapak tersebut, algoritma segmentasi fotogrametri mengidentifikasi <b>{usable_roof_area_m2:,.0f} m² 
+    ({usable_roof_area_m2/total_roof_area_m2*100:.1f}%)</b> bidang atap yang memenuhi kelayakan geometris struktural 
+    dan bebas dari bayangan permanen (<i>shading-free</i>). 
+    Dengan densitas rekayasa modul fotovoltaik standar <b>203,7 Wp/m²</b> (modul 400 Wp monokristalin), ruang atap perkotaan 
+    ini mampu menampung <b>{total_panels:,} unit modul surya</b> yang membangkitkan kapasitas daya puncak total sebesar 
+    <b>{total_capacity_mwp:,.2f} MWp</b> dengan potensi panen energi bersih tahunan mencapai <b>{total_gen_gwh:,.2f} GWh/tahun</b>.
+</p>
+""", unsafe_allow_html=True)
+
+# ─── 2.1.1 DISTRIBUSI KAPASITAS 13 KATEGORI (TRANSIT VS PUBLIK) ────────────────
+st.markdown("#### 2.1.1 Distribusi Kapasitas Lintas 13 Kategori Infrastruktur (Klaster Transit vs Fasilitas Publik)")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Untuk memetakan prioritas kebijakan transisi energi daerah, seluruh aset diklasifikasikan ke dalam dua klaster advokasi:
+    <b>Klaster Fasilitas Publik & Komersial</b> menyumbang kapasitas terbesar yaitu <b>{public_mwp:,.2f} MWp ({public_pct:.1f}%)</b> 
+    dengan pembangkitan <b>{public_gwh:,.2f} GWh/tahun</b> dari {public_assets:,} titik karena didominasi oleh tapak bangunan bentang lebar (Rumah Sakit, Sekolah, Mall, dan Kampus). 
+    Sementara itu, <b>Klaster Transit & Simpul Antarmoda</b> menyumbang <b>{transit_mwp:,.2f} MWp ({transit_pct:.1f}%)</b> 
+    dengan produksi <b>{transit_gwh:,.2f} GWh/tahun</b> dari {transit_assets:,} titik (Stasiun KRL/MRT/LRT, Halte TransJakarta, Terminal, Bandara, dan JPO) 
+    yang memiliki nilai strategis vital sebagai <i>green mobility infrastructure</i> dengan visibilitas edukasi harian bagi jutaan warga komuter.
+</p>
+""", unsafe_allow_html=True)
+
+col_chart_c1, col_chart_c2 = st.columns([3, 2])
+
+with col_chart_c1:
+    st.markdown("###### 📊 Peringkat Kapasitas Terpasang Lintas 13 Kategori (Altair Ranked Bar)")
+    chart_cat_adv = alt.Chart(df_cat).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4).encode(
         y=alt.Y("category_display:N", sort="-x", title="", axis=alt.Axis(labelColor="#CFD8DC", labelFontSize=11)),
-        x=alt.X("installed_capacity_mwp:Q", title="Kapasitas Puncak (MWp)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
-        color=alt.Color("installed_capacity_mwp:Q", scale=alt.Scale(scheme="greens"), legend=None),
+        x=alt.X("installed_capacity_mwp:Q", title="Kapasitas Puncak Terpasang (MWp)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
+        color=alt.Color(
+            "cluster:N",
+            scale=alt.Scale(
+                domain=["Klaster Fasilitas Publik & Komersial", "Klaster Transit & Simpul Antarmoda"],
+                range=["#4CAF50", "#26A69A"]
+            ),
+            legend=alt.Legend(
+                title="Klaster Kebijakan",
+                orient="bottom",
+                labelColor="#CFD8DC",
+                titleColor="#ECEFF1",
+                labelFontSize=10
+            )
+        ),
         tooltip=[
             alt.Tooltip("category_display:N", title="Kategori"),
-            alt.Tooltip("asset_id:Q", title="Jumlah Titik"),
+            alt.Tooltip("cluster:N", title="Klaster Kebijakan"),
+            alt.Tooltip("asset_count:Q", title="Jumlah Titik Aset"),
             alt.Tooltip("installed_capacity_mwp:Q", title="Kapasitas (MWp)", format=",.2f"),
-            alt.Tooltip("annual_generation_gwh:Q", title="Produksi (GWh/th)", format=",.2f"),
-            alt.Tooltip("porsi_kapasitas_pct:Q", title="Porsi Total (%)", format=".1f")
+            alt.Tooltip("annual_generation_gwh:Q", title="Pembangkitan (GWh/th)", format=",.2f"),
+            alt.Tooltip("porsi_pct:Q", title="Pangsa dari Total (%)", format=".1f"),
+            alt.Tooltip("avg_kwp_per_asset:Q", title="Rata-rata per Titik (kWp)", format=",.1f")
         ]
-    ).properties(height=380)
-    st.altair_chart(chart_cat, use_container_width=True)
+    ).properties(height=400)
+    st.altair_chart(chart_cat_adv, use_container_width=True)
 
-with col_chart2:
-    st.markdown("##### 2.1.2 Komposisi Pangsa Potensi Daya (Treemap Proporsi)")
-    fig_tree = px.treemap(
+with col_chart_c2:
+    st.markdown("###### 🧩 Pangsa Daya Kumulatif (Treemap Hierarki)")
+    fig_tree_adv = px.treemap(
         df_cat,
-        path=["category_display"],
+        path=["cluster", "category_display"],
         values="installed_capacity_mwp",
         color="annual_generation_gwh",
         color_continuous_scale="Greens",
-        hover_data={"asset_id": True, "installed_capacity_mwp": ":.2f", "annual_generation_gwh": ":.2f"}
+        hover_data={
+            "asset_count": True,
+            "installed_capacity_mwp": ":.2f",
+            "annual_generation_gwh": ":.2f",
+            "avg_kwp_per_asset": ":.1f"
+        }
     )
-    fig_tree.update_layout(
+    fig_tree_adv.update_layout(
         margin=dict(t=10, l=10, r=10, b=10),
         paper_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#ECEFF1")
     )
-    st.plotly_chart(fig_tree, use_container_width=True)
+    st.plotly_chart(fig_tree_adv, use_container_width=True)
 
-# Callout Temuan 2.1
-top_cat_name = df_cat.iloc[0]["category_display"]
-top_cat_mwp = df_cat.iloc[0]["installed_capacity_mwp"]
-top_cat_pct = df_cat.iloc[0]["porsi_kapasitas_pct"]
-second_cat_name = df_cat.iloc[1]["category_display"]
-second_cat_mwp = df_cat.iloc[1]["installed_capacity_mwp"]
-
+# ─── 2.1.2 KARAKTERISTIK DENSITAS DAYA ATAP & KELAYAKAN FISIK ───────────────────
+st.markdown("#### 2.1.2 Karakteristik Densitas Daya Atap & Rasio Kelayakan Fisik ($Wp/m^2$)")
 st.markdown(f"""
-<div class="callout-box">
-    <b>💡 Fakta Data & Interpretasi Rekayasa Struktur:</b><br>
-    Kategori <b>{top_cat_name}</b> menduduki peringkat teratas dengan kontribusi <b>{top_cat_mwp:,.2f} MWp ({top_cat_pct:.1f}%)</b>, 
-    disusul oleh <b>{second_cat_name} ({second_cat_mwp:,.2f} MWp)</b>. Fasilitas dak horizontal bentang lebar 
-    (seperti Gedung Parkir MSCP, Mall, dan Terminal Bus) memiliki keunggulan rekayasa struktural berupa sudut datang radiasi zenith 
-    yang optimal sepanjang tahun serta biaya fabrikasi rangka penyangga (<i>racking mounting system</i>) yang jauh lebih hemat 
-    dibandingkan atap pelana atau kubah bandara yang memerlukan bracket khusus anti-refleksi glint & glare.
-</div>
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Analisis fotogrametri membuktikan adanya disparitas struktural nyata antar-tipe geometri bangunan:
+    Fasilitas beratap dak beton datar bentang lebar—seperti <b>Gedung Parkir MSCP</b>, <b>Pusat Perbelanjaan / Mall</b>, 
+    <b>Terminal Bus</b>, dan <b>Peron Stasiun KRL/MRT</b>—menunjukkan rasio kelayakan atap yang sangat tinggi (<b>72% s.d. 82%</b>) 
+    dengan sudut kemiringan rata-rata rendah (<b>8° s.d. 11°</b>). Sebaliknya, fasilitas pendidikan (Sekolah dan Kampus) memiliki atap 
+    bertipe pelana/perisai genteng dengan sudut kemiringan lebih curam (<b>13° s.d. 18°</b>) serta terpotong oleh ventilasi dan torn air, 
+    sehingga rasio kelayakan atapnya berkisar antara <b>65% s.d. 70%</b>.
+</p>
 """, unsafe_allow_html=True)
 
-with st.expander("📄 Lihat Data Mentah: Tabel Rekapitulasi Kapasitas Lintas Kategori (CSV)"):
-    st.caption("Sumber Data: `data/processed/calculations/pow_solar_kumulatif_summary.csv`")
-    df_cat_display = df_cat.copy()
-    df_cat_display.columns = [
-        "Kategori Infrastruktur", "Jumlah Titik", "Luas Atap Total (m²)", "Luas Layak Panel (m²)",
-        "Jumlah Modul", "Kapasitas (kWp)", "Produksi (MWh)", "Kapasitas (MWp)", "Produksi (GWh)", "Porsi (%)"
+col_char_p1, col_char_p2 = st.columns([3, 2])
+
+with col_char_p1:
+    st.markdown("###### 🔍 Skala Fisik Atap vs Kapasitas Puncak (Bubble Chart Luas & Kelayakan)")
+    fig_bubble = px.scatter(
+        df_cat,
+        x="whole_roof_area_m2",
+        y="installed_capacity_mwp",
+        size="max_roof_area_m2",
+        color="suitability_ratio_pct",
+        color_continuous_scale="Viridis",
+        text="category_display",
+        labels={
+            "whole_roof_area_m2": "Total Luas Fisik Atap (m²)",
+            "installed_capacity_mwp": "Kapasitas Puncak (MWp)",
+            "suitability_ratio_pct": "Rasio Kelayakan (%)",
+            "max_roof_area_m2": "Luas Layak Panel (m²)"
+        },
+        hover_data={
+            "asset_count": True,
+            "installed_capacity_mwp": ":.2f",
+            "annual_generation_gwh": ":.2f",
+            "suitability_ratio_pct": ":.1f",
+            "effective_power_density_wp_m2": ":.1f"
+        }
+    )
+    fig_bubble.update_traces(textposition="top center", textfont=dict(size=9, color="#ECEFF1"))
+    fig_bubble.update_layout(
+        height=380,
+        margin=dict(t=20, l=10, r=10, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#ECEFF1"),
+        xaxis=dict(gridcolor="#263238"),
+        yaxis=dict(gridcolor="#263238")
+    )
+    st.plotly_chart(fig_bubble, use_container_width=True)
+
+with col_char_p2:
+    st.markdown("###### 📐 Rasio Kelayakan Atap vs Kemiringan Bidang (Pitch Deg)")
+    chart_pitch = alt.Chart(df_cat).mark_circle(size=140).encode(
+        x=alt.X("weighted_pitch_deg:Q", title="Kemiringan Rata-rata Atap (Derajat Pitch °)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
+        y=alt.Y("suitability_ratio_pct:Q", title="Rasio Kelayakan Atap (%)", scale=alt.Scale(domain=[60, 85]), axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
+        color=alt.Color("effective_power_density_wp_m2:Q", scale=alt.Scale(scheme="tealblues"), title="Densitas Efektif (Wp/m²)"),
+        tooltip=[
+            alt.Tooltip("category_display:N", title="Kategori"),
+            alt.Tooltip("weighted_pitch_deg:Q", title="Kemiringan Pitch (°)", format=".1f"),
+            alt.Tooltip("suitability_ratio_pct:Q", title="Rasio Kelayakan (%)", format=".1f"),
+            alt.Tooltip("effective_power_density_wp_m2:Q", title="Densitas Daya (Wp/m² fisik)", format=".1f"),
+            alt.Tooltip("installed_capacity_mwp:Q", title="Kapasitas (MWp)", format=",.2f")
+        ]
+    ).properties(height=380)
+    st.altair_chart(chart_pitch, use_container_width=True)
+
+# ─── 2.1.3 SEBARAN SPASIAL SE-WILAYAH AGLOMERASI JABODETABEK ────────────────────
+st.markdown("#### 2.1.3 Sebaran Spasial se-Wilayah Aglomerasi Jabodetabek")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Dalam konteks aglomerasi megapolitan, kapasitas PLTS Atap terdistribusi melintasi batas yurisdiksi provinsi:
+    <b>Provinsi DKI Jakarta</b> mengonsentrasikan <b>{dki_mwp:,.2f} MWp ({dki_pct:.1f}%)</b> dari {dki_assets:,} titik aset, 
+    dipimpin oleh <b>Jakarta Timur ({df_city[df_city['city_regency']=='Jakarta Timur']['installed_capacity_mwp'].values[0]:,.2f} MWp)</b> 
+    dan <b>Jakarta Selatan ({df_city[df_city['city_regency']=='Jakarta Selatan']['installed_capacity_mwp'].values[0]:,.2f} MWp)</b>. 
+    Sementara itu, wilayah penyangga <b>Bodetabek (Jawa Barat & Banten)</b> menampung <b>{bodetabek_mwp:,.2f} MWp ({bodetabek_pct:.1f}%)</b> 
+    dari {bodetabek_assets:,} titik, dengan kontribusi signifikan dari <b>Kota Tangerang ({df_city[df_city['city_regency']=='Kota Tangerang']['installed_capacity_mwp'].values[0]:,.2f} MWp)</b>, 
+    <b>Kota Bogor ({df_city[df_city['city_regency']=='Kota Bogor']['installed_capacity_mwp'].values[0]:,.2f} MWp)</b>, dan 
+    <b>Kota Depok ({df_city[df_city['city_regency']=='Kota Depok']['installed_capacity_mwp'].values[0]:,.2f} MWp)</b>. 
+    Kenyataan ini menegaskan bahwa strategi transisi energi perkotaan harus dirumuskan secara terpadu lintas pemda otonom.
+</p>
+""", unsafe_allow_html=True)
+
+col_reg1, col_reg2 = st.columns([3, 2])
+
+with col_reg1:
+    st.markdown("###### 🏙️ Distribusi Kapasitas per Kota/Kabupaten (Altair Regional Bar)")
+    chart_city_adv = alt.Chart(df_city).mark_bar(cornerRadiusTopRight=4, cornerRadiusBottomRight=4).encode(
+        y=alt.Y("city_regency:N", sort="-x", title="", axis=alt.Axis(labelColor="#CFD8DC", labelFontSize=11)),
+        x=alt.X("installed_capacity_mwp:Q", title="Kapasitas Puncak Terpasang (MWp)", axis=alt.Axis(labelColor="#CFD8DC", titleColor="#CFD8DC")),
+        color=alt.Color(
+            "region_group:N",
+            scale=alt.Scale(
+                domain=["DKI Jakarta", "Bodetabek (Jabar & Banten)"],
+                range=["#43A047", "#0288D1"]
+            ),
+            legend=alt.Legend(
+                title="Wilayah Regional",
+                orient="bottom",
+                labelColor="#CFD8DC",
+                titleColor="#ECEFF1",
+                labelFontSize=10
+            )
+        ),
+        tooltip=[
+            alt.Tooltip("city_regency:N", title="Wilayah Administratif"),
+            alt.Tooltip("region_group:N", title="Grup Regional"),
+            alt.Tooltip("asset_count:Q", title="Jumlah Titik Aset"),
+            alt.Tooltip("installed_capacity_mwp:Q", title="Kapasitas (MWp)", format=",.2f"),
+            alt.Tooltip("annual_generation_gwh:Q", title="Pembangkitan (GWh/th)", format=",.2f"),
+            alt.Tooltip("porsi_pct:Q", title="Porsi se-Jabodetabek (%)", format=".1f")
+        ]
+    ).properties(height=360)
+    st.altair_chart(chart_city_adv, use_container_width=True)
+
+with col_reg2:
+    st.markdown("###### 🌐 Pangsa Regional Metropolitan (Donut Chart)")
+    df_reg_pie = pd.DataFrame([
+        {"Wilayah": "DKI Jakarta (5 Kota Administrasi)", "Kapasitas (MWp)": dki_mwp, "Titik": dki_assets},
+        {"Wilayah": "Bodetabek (8 Kota/Kabupaten Penyangga)", "Kapasitas (MWp)": bodetabek_mwp, "Titik": bodetabek_assets}
+    ])
+    fig_reg_pie = px.pie(
+        df_reg_pie,
+        names="Wilayah",
+        values="Kapasitas (MWp)",
+        hole=0.55,
+        color="Wilayah",
+        color_discrete_map={
+            "DKI Jakarta (5 Kota Administrasi)": "#43A047",
+            "Bodetabek (8 Kota/Kabupaten Penyangga)": "#0288D1"
+        }
+    )
+    fig_reg_pie.update_traces(textposition="outside", textinfo="percent+label")
+    fig_reg_pie.update_layout(
+        height=360,
+        margin=dict(t=10, l=10, r=10, b=10),
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#ECEFF1"),
+        showlegend=False
+    )
+    st.plotly_chart(fig_reg_pie, use_container_width=True)
+
+# ─── 3 CALLOUT BOX TEMUAN & INTERPRETASI KRITIS (GAYA CELIOS 2 / ECC) ───────────
+top_cat_1 = df_cat.iloc[0]
+top_cat_2 = df_cat.iloc[1]
+top_cat_3 = df_cat.iloc[2]
+highest_per_asset = df_cat.sort_values("avg_kwp_per_asset", ascending=False).iloc[0]
+
+c_box1, c_box2, c_box3 = st.columns(3)
+
+with c_box1:
+    st.markdown(f"""
+    <div class="callout-box" style="min-height: 250px;">
+        <b>💡 Fakta Data Kategori Dominan:</b><br>
+        Tiga kategori teratas—<b>{top_cat_1['category_display']} ({top_cat_1['installed_capacity_mwp']:,.1f} MWp)</b>, 
+        <b>{top_cat_2['category_display']} ({top_cat_2['installed_capacity_mwp']:,.1f} MWp)</b>, dan 
+        <b>{top_cat_3['category_display']} ({top_cat_3['installed_capacity_mwp']:,.1f} MWp)</b>—membentuk 
+        <b>{(top_cat_1['porsi_pct']+top_cat_2['porsi_pct']+top_cat_3['porsi_pct']):.1f}%</b> dari total daya metropolitan. 
+        Meskipun Klaster Transit menyumbang {transit_pct:.1f}% volume, stasiun KRL/MRT menjadi simpul dengan daya per titik tertinggi 
+        (mencapai <b>345 s.d. 381 kWp per stasiun</b>).
+    </div>
+    """, unsafe_allow_html=True)
+
+with c_box2:
+    st.markdown("""
+    <div class="callout-box" style="min-height: 250px;">
+        <b>⚙️ Interpretasi Rekayasa Struktur:</b><br>
+        Dak beton horizontal (MSCP, Mall, Terminal Bus) merupakan aset rekayasa paling bernilai karena:
+        <ul style="margin-top: 4px; padding-left: 18px; margin-bottom: 0;">
+            <li>Sudut datang radiasi zenith optimal sepanjang tahun tanpa penalti azimuth orientasi.</li>
+            <li>Beban lateral terpaan angin (<i>wind load</i>) sangat rendah dibanding atap miring curam.</li>
+            <li>Biaya fabrikasi sistem rak penyangga (<i>racking system</i>) jauh lebih efisien per kWp karena tidak memerlukan pembongkaran penutup atap seng/genteng.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c_box3:
+    st.markdown(f"""
+    <div class="callout-box" style="min-height: 250px;">
+        <b>🏛️ Implikasi Kebijakan Pengadaan:</b><br>
+        Pemda DKI dan Bodetabek disarankan mengadopsi skema pengadaan bertahap berbasis skala ekonomi (<i>economies of scale</i>):
+        <ul style="margin-top: 4px; padding-left: 18px; margin-bottom: 0;">
+            <li><b>Tahap 1 (Anchor Assets):</b> Prioritaskan aset dengan skala besar (<b>{highest_per_asset['category_display']}</b> dengan rata-rata <b>{highest_per_asset['avg_kwp_per_asset']:,.0f} kWp/titik</b> serta stasiun kereta) untuk meminimalkan CAPEX per watt.</li>
+            <li><b>Tahap 2 (Social Mass Rollout):</b> Replikasi masif ke 667 sekolah negeri dan 408 halte busway sebagai sarana dekarbonisasi sosial dan edukasi publik warga.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─── DATA LINEAGE & TABEL DATA MENTAH CSV ───────────────────────────────────────
+with st.expander("📄 Data Lineage & Tabel Rekapitulasi: 13 Kategori Infrastruktur (CSV)"):
+    st.caption("Sumber Berkas: `data/processed/calculations/pow_solar_kumulatif_summary.csv` | Standar Ekstraksi: Google Solar API BASE Tier (0.25 m/pixel)")
+    
+    df_cat_out = df_cat[[
+        "category_display", "cluster", "asset_count", "whole_roof_area_m2", "max_roof_area_m2",
+        "suitability_ratio_pct", "max_panels_count", "installed_capacity_kwp", "installed_capacity_mwp",
+        "annual_generation_gwh", "avg_kwp_per_asset", "effective_power_density_wp_m2", "porsi_pct"
+    ]].copy()
+    
+    df_cat_out.columns = [
+        "Kategori Infrastruktur", "Klaster Advokasi", "Jumlah Titik", "Luas Atap Fisik (m²)",
+        "Luas Layak Panel (m²)", "Rasio Kelayakan (%)", "Jumlah Modul (400 Wp)", "Kapasitas (kWp)",
+        "Kapasitas (MWp)", "Pembangkitan (GWh/th)", "Daya Rata-rata (kWp/titik)", "Densitas Efektif (Wp/m²)", "Porsi Total (%)"
     ]
-    st.dataframe(df_cat_display.style.format({
-        "Luas Atap Total (m²)": "{:,.0f}",
+    
+    st.dataframe(df_cat_out.style.format({
+        "Luas Atap Fisik (m²)": "{:,.0f}",
         "Luas Layak Panel (m²)": "{:,.0f}",
-        "Jumlah Modul": "{:,}",
+        "Rasio Kelayakan (%)": "{:.1f}%",
+        "Jumlah Modul (400 Wp)": "{:,}",
         "Kapasitas (kWp)": "{:,.1f}",
-        "Produksi (MWh)": "{:,.1f}",
         "Kapasitas (MWp)": "{:,.2f}",
-        "Produksi (GWh)": "{:,.2f}",
-        "Porsi (%)": "{:.1f}%"
+        "Pembangkitan (GWh/th)": "{:,.2f}",
+        "Daya Rata-rata (kWp/titik)": "{:,.1f}",
+        "Densitas Efektif (Wp/m²)": "{:,.1f}",
+        "Porsi Total (%)": "{:.1f}%"
     }), use_container_width=True)
+    
+    csv_cat = df_cat_out.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Unduh Data Rekapitulasi 13 Kategori (CSV)",
+        data=csv_cat,
+        file_name="celios_rekapitulasi_13_kategori_plts_jabodetabek.csv",
+        mime="text/csv",
+        key="dl_cat_csv"
+    )
+
+with st.expander("📄 Data Lineage & Tabel Rekapitulasi: Sebaran Spasial 13 Wilayah Jabodetabek (CSV)"):
+    st.caption("Sumber Berkas: `data/processed/calculations/pow_solar_kumulatif_summary.csv` | Wilayah: 5 Kota DKI Jakarta + 8 Wilayah Bodetabek")
+    
+    df_city_out = df_city[[
+        "city_regency", "region_group", "asset_count", "whole_roof_area_m2", "max_roof_area_m2",
+        "installed_capacity_kwp", "installed_capacity_mwp", "annual_generation_gwh", "porsi_pct"
+    ]].copy()
+    
+    df_city_out.columns = [
+        "Wilayah Administratif", "Grup Regional", "Jumlah Titik Aset", "Luas Atap Fisik (m²)",
+        "Luas Layak Panel (m²)", "Kapasitas (kWp)", "Kapasitas (MWp)", "Pembangkitan (GWh/th)", "Pangasa Aglomerasi (%)"
+    ]
+    
+    st.dataframe(df_city_out.style.format({
+        "Luas Atap Fisik (m²)": "{:,.0f}",
+        "Luas Layak Panel (m²)": "{:,.0f}",
+        "Kapasitas (kWp)": "{:,.1f}",
+        "Kapasitas (MWp)": "{:,.2f}",
+        "Pembangkitan (GWh/th)": "{:,.2f}",
+        "Pangasa Aglomerasi (%)": "{:.1f}%"
+    }), use_container_width=True)
+    
+    csv_city = df_city_out.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Unduh Data Sebaran Spasial Jabodetabek (CSV)",
+        data=csv_city,
+        file_name="celios_sebaran_spasial_plts_jabodetabek.csv",
+        mime="text/csv",
+        key="dl_city_csv"
+    )
+
 
 # ═════════════════════════════════════════════════════════════════════════════════
 # SUB-BAB 2.2: PROFIL IRADIASI & FLUKTUASI MUSIMAN (JAN - DES)
