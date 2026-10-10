@@ -1324,14 +1324,384 @@ with st.expander("Lihat Data Mentah : Rincian Serapan Tenaga Kerja Hijau per 13 
     )
 
 # ═════════════════════════════════════════════════════════════════════════════════
-# PLACEHOLDER NAVIGASI SUB-BAB 3.4 S.D. 3.5
+# SUB-BAB 3.4: MATRIKS PRIORITAS INVESTASI & KLASTER FASILITAS STRATEGIS
+# ═════════════════════════════════════════════════════════════════════════════════
+st.markdown("<br><hr>", unsafe_allow_html=True)
+st.markdown(r"### 3.4 Matriks Prioritas Investasi: Klaster Fasilitas Paling Strategis ($\text{Strategic Priority Matrix}$)")
+st.markdown('<div class="sub-chapter-badge">Sub-Bab 3.4: Segmentasi Kuadran Kelayakan Finansial vs Dampak Sosial Warga (Quick Wins, Public Services, Transit)</div>', unsafe_allow_html=True)
+
+with st.expander("Metodologi 3.4: Formulasi Matriks Kuadran Prioritas & Kriteria Segmentasi Klaster"):
+    st.markdown(r"""
+    **Prinsip Metodologis Segmentasi Prioritas Fasilitas PLTS Atap Publik:**
+    
+    1. **Rasionalitas Kebijakan & Pentahapan Fiskal:**  
+       Total kebutuhan modal investasi agregat sebesar **Rp 4,44 Triliun** tidak realistis untuk dibebankan serentak dalam satu tahun anggaran APBD. Oleh karena itu, diperlukan **Matriks Segmentasi Prioritas Strategis** yang memetakan seluruh 13 kategori infrastruktur (2.100 titik) ke dalam tiga kuadran strategis berdasarkan perpaduan antara **kecepatan pengembalian modal (*payback period*)**, **skala dividen sosial warga**, dan **skala visibilitas publik**:
+       
+       * **Kuadran 1 — Quick Wins (Balik Modal Cepat / Skema Komersial Mandiri):**  
+         Kategori fasilitas komersial dan semi-komersial (Pusat Perbelanjaan / Mall, Pasar Tradisional & Modern, Gedung/Lapangan Parkir).  
+         - *Karakteristik:* Memiliki aktivitas ekonomi harian tinggi dan tarif listrik bisnis B-2/TR.  
+         - *Strategi:* Menjadi proyek percontohan (*pilot showcase*) tahap awal (Tahun 1–2) dengan skema pembiayaan swasta murni (PPA / Sewa Atap Swasta) sehingga bernilai **Zero-APBD**.
+         
+       * **Kuadran 2 — Dividen Pelayanan Publik & Edukasi (*Public Services & Human Capital*):**  
+         Kategori fasilitas layanan dasar warga (Rumah Sakit Umum Daerah/RSUD, Sekolah Dasar & Menengah, Kampus & Perguruan Tinggi, Gelanggang Olahraga/Stadion).  
+         - *Karakteristik:* Menguasai dak beton terluas (menghasilkan **49,2% dari total kapasitas listrik surya portofolio**) dengan periode impas moderat (6,4–6,5 tahun).  
+         - *Strategi:* Ditetapkan sebagai **jangkar dividen sosial** (Tahun 2–3) di mana penghematan belanja listrik wajib direinvestasikan secara tertutup (*closed-loop*) untuk subsidi obat puskesmas dan beasiswa siswa KJP Plus.
+         
+       * **Kuadran 3 — Visibilitas Tinggi & Komuter (*High-Visibility Transit & Iconic Hubs*):**  
+         Kategori simpul mobilitas massal perkotaan (Stasiun KRL, Halte TransJakarta, Stasiun MRT & LRT, Terminal Bus, Bandara Soekarno-Hatta, JPO).  
+         - *Karakteristik:* Membutuhkan struktur kanopi rangka baja bentang lebar (*solar carport/canopy*) dengan CAPEX lebih tinggi (Rp 18,5 Juta/kWp) dan payback 9,3–9,7 tahun, namun berinteraksi langsung dengan **jutaan komuter harian**.  
+         - *Strategi:* Berfungsi sebagai kanopi peneduh cuaca ekstrem, ikon komitmen dekarbonisasi metropolitan, dan generator subsidi silang tiket transportasi umum massal (Tahun 3–5).
+
+    2. **Formulasi Koordinat Kuadran:**  
+       Sumbu horizontal merepresentasikan intensitas modal investasi ($\text{CAPEX}$ dalam Miliar Rupiah), sedangkan sumbu vertikal merepresentasikan penghematan belanja listrik tahunan ($\Delta \text{Hemat}$ dalam Miliar Rupiah per tahun), dengan diameter gelembung proporsional terhadap kapasitas terpasang ($\text{kWp}$).
+    """)
+
+# ─── PRA-KALKULASI VARIABEL DINAMIS 3 KUADRAN ──────────────────────────────────
+q1_mask = df_ekonomi["kuadran_prioritas"].str.contains("Quick Wins", na=False)
+q2_mask = df_ekonomi["kuadran_prioritas"].str.contains("Dividen Pelayanan Publik", na=False)
+q3_mask = df_ekonomi["kuadran_prioritas"].str.contains("Visibilitas Tinggi", na=False)
+
+df_q1 = df_ekonomi[q1_mask]
+df_q2 = df_ekonomi[q2_mask]
+df_q3 = df_ekonomi[q3_mask]
+
+# Kuadran 1
+q1_points = int(df_q1["total_points"].sum())
+q1_kwp = float(df_q1["total_capacity_kwp"].sum())
+q1_mwp = q1_kwp / 1000.0
+q1_capex = float(df_q1["total_capex_miliar"].sum())
+q1_savings = float(df_q1["total_savings_annual_miliar"].sum())
+q1_jobs = int(df_q1["total_green_jobs_orang"].sum())
+q1_payback_avg = float(df_q1["simple_payback_years"].mean())
+
+# Kuadran 2
+q2_points = int(df_q2["total_points"].sum())
+q2_kwp = float(df_q2["total_capacity_kwp"].sum())
+q2_mwp = q2_kwp / 1000.0
+q2_capex = float(df_q2["total_capex_miliar"].sum())
+q2_savings = float(df_q2["total_savings_annual_miliar"].sum())
+q2_jobs = int(df_q2["total_green_jobs_orang"].sum())
+q2_payback_avg = float(df_q2["simple_payback_years"].mean())
+
+# Kuadran 3
+q3_points = int(df_q3["total_points"].sum())
+q3_kwp = float(df_q3["total_capacity_kwp"].sum())
+q3_mwp = q3_kwp / 1000.0
+q3_capex = float(df_q3["total_capex_miliar"].sum())
+q3_savings = float(df_q3["total_savings_annual_miliar"].sum())
+q3_jobs = int(df_q3["total_green_jobs_orang"].sum())
+q3_payback_avg = float(df_q3["simple_payback_years"].mean())
+
+# ─── BENTO CARDS: 3 KLASTER STRATEGIS ──────────────────────────────────────────
+col_k1, col_k2, col_k3 = st.columns(3)
+
+with col_k1:
+    st.markdown(f"""
+    <div class="bento-card" style="border-top: 4px solid #00E676;">
+        <div style="font-size: 0.75rem; color: #00E676; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Kuadran 1: Pilot & Efisiensi</div>
+        <div class="metric-value" style="font-size: 1.55rem; color: #E8F5E9;">Quick Wins</div>
+        <div class="metric-sub" style="margin-bottom: 0.8rem;">Mall, Pasar Tradisional & Perparkiran Komersial</div>
+        <div style="background: rgba(0, 230, 118, 0.08); border-radius: 6px; padding: 0.6rem; font-size: 0.82rem; color: #C8E6C9; line-height: 1.5; margin-bottom: 0.8rem;">
+            <b>{q1_points:,} Titik</b> | <b>{q1_mwp:.2f} MWp</b> Kapasitas<br>
+            Hemat Listrik: <b>Rp {q1_savings:.2f} Miliar/tahun</b><br>
+            Biaya Investasi: <b>Rp {q1_capex:.2f} Miliar</b><br>
+            Serapan Tenaga Kerja: <b>{q1_jobs:,} Pekerja</b>
+        </div>
+        <div style="font-size: 0.78rem; color: #90A4AE; border-top: 1px solid #263238; padding-top: 0.5rem;">
+            <b>Strategi Pengadaan:</b> PPA Sewa Atap Swasta / Konsesi BUMD Pasar Jaya. <b>100% Zero-APBD</b>.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_k2:
+    st.markdown(f"""
+    <div class="bento-card" style="border-top: 4px solid #00B0FF;">
+        <div style="font-size: 0.75rem; color: #00B0FF; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Kuadran 2: Jangkar Dividen Sosial</div>
+        <div class="metric-value" style="font-size: 1.55rem; color: #E1F5FE;">Public Services</div>
+        <div class="metric-sub" style="margin-bottom: 0.8rem;">RSUD, Sekolah Negeri, Kampus & Stadion</div>
+        <div style="background: rgba(0, 176, 255, 0.08); border-radius: 6px; padding: 0.6rem; font-size: 0.82rem; color: #B3E5FC; line-height: 1.5; margin-bottom: 0.8rem;">
+            <b>{q2_points:,} Titik</b> | <b>{q2_mwp:.2f} MWp</b> Kapasitas<br>
+            Hemat Listrik: <b>Rp {q2_savings:.2f} Miliar/tahun</b><br>
+            Biaya Investasi: <b>Rp {q2_capex:.2f} Miliar</b><br>
+            Serapan Tenaga Kerja: <b>{q2_jobs:,} Pekerja</b>
+        </div>
+        <div style="font-size: 0.78rem; color: #90A4AE; border-top: 1px solid #263238; padding-top: 0.5rem;">
+            <b>Strategi Pengadaan:</b> Reinvestasi Tertutup APBD untuk beasiswa siswa KJP & subsidi obat puskesmas.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_k3:
+    st.markdown(f"""
+    <div class="bento-card" style="border-top: 4px solid #FFD600;">
+        <div style="font-size: 0.75rem; color: #FFD600; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Kuadran 3: Visibilitas & Ikon Kota</div>
+        <div class="metric-value" style="font-size: 1.55rem; color: #FFFDE7;">High-Visibility Transit</div>
+        <div class="metric-sub" style="margin-bottom: 0.8rem;">Stasiun KRL, Halte TJ, MRT/LRT, Terminal & Bandara</div>
+        <div style="background: rgba(255, 214, 0, 0.08); border-radius: 6px; padding: 0.6rem; font-size: 0.82rem; color: #FFF9C4; line-height: 1.5; margin-bottom: 0.8rem;">
+            <b>{q3_points:,} Titik</b> | <b>{q3_mwp:.2f} MWp</b> Kapasitas<br>
+            Hemat Listrik: <b>Rp {q3_savings:.2f} Miliar/tahun</b><br>
+            Biaya Investasi: <b>Rp {q3_capex:.2f} Miliar</b><br>
+            Serapan Tenaga Kerja: <b>{q3_jobs:,} Pekerja</b>
+        </div>
+        <div style="font-size: 0.78rem; color: #90A4AE; border-top: 1px solid #263238; padding-top: 0.5rem;">
+            <b>Strategi Pengadaan:</b> Solar Carport Baja, konsesi SPKLU charging EV, dan perluasan PSO tiket komuter.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─── VISUALISASI INTERAKTIF SUB-BAB 3.4 ──────────────────────────────────────────
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("#### Pemetaan Visual Matriks Prioritas Strategis (Scatter & Agregat Komparatif)")
+
+tab_scat, tab_bar = st.tabs([
+    "Matriks Kuadran Prioritas (Scatter Bubble)",
+    "Komparasi Kontribusi Agregat 3 Kuadran (Bar)"
+])
+
+with tab_scat:
+    color_map_quad = {
+        "Kuadran 1: Quick Wins (Balik Modal Cepat)": "#00E676",
+        "Kuadran 2: Dividen Pelayanan Publik & Edukasi": "#00B0FF",
+        "Kuadran 3: Visibilitas Tinggi & Komuter": "#FFD600"
+    }
+
+    fig_matrix = px.scatter(
+        df_ekonomi,
+        x="total_capex_miliar",
+        y="total_savings_annual_miliar",
+        size="total_capacity_kwp",
+        color="kuadran_prioritas",
+        color_discrete_map=color_map_quad,
+        hover_name="category_display",
+        text="category_display",
+        labels={
+            "total_capex_miliar": "Kebutuhan Investasi Modal (Rp Miliar)",
+            "total_savings_annual_miliar": "Penghematan Belanja Listrik Tahunan (Rp Miliar/tahun)",
+            "kuadran_prioritas": "Kuadran Strategis",
+            "total_capacity_kwp": "Kapasitas Terpasang (kWp)"
+        },
+        height=620
+    )
+
+    fig_matrix.update_traces(
+        textposition="top center",
+        textfont=dict(family="Inter", size=10, color="#ECEFF1"),
+        marker=dict(opacity=0.88, line=dict(width=1.5, color="#FFFFFF")),
+        hovertemplate=(
+            "<b>%{hovertext}</b><br><br>"
+            "Kuadran: %{marker.color}<br>"
+            "Kebutuhan Modal (CAPEX): Rp %{x:.2f} Miliar<br>"
+            "Penghematan Tahunan: Rp %{y:.2f} Miliar/tahun<br>"
+            "<extra></extra>"
+        )
+    )
+
+    avg_capex = float(df_ekonomi["total_capex_miliar"].median())
+    avg_savings = float(df_ekonomi["total_savings_annual_miliar"].median())
+
+    fig_matrix.add_vline(
+        x=avg_capex, line_width=1, line_dash="dash", line_color="#455A64",
+        annotation_text="Median Investasi Modal (Rp 300,7 Miliar)",
+        annotation_position="top left",
+        annotation_font=dict(size=9, color="#90A4AE")
+    )
+    fig_matrix.add_hline(
+        y=avg_savings, line_width=1, line_dash="dash", line_color="#455A64",
+        annotation_text="Median Penghematan (Rp 36,8 Miliar/tahun)",
+        annotation_position="bottom right",
+        annotation_font=dict(size=9, color="#90A4AE")
+    )
+
+    fig_matrix.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#0E1117",
+        plot_bgcolor="#0E1117",
+        font=dict(family="Inter", color="#ECEFF1"),
+        margin=dict(l=60, r=40, t=50, b=60),
+        xaxis=dict(
+            gridcolor="#263238",
+            title="Kebutuhan Modal Investasi Agregat (Rp Miliar)",
+            title_font=dict(size=12, color="#B0BEC5"),
+            tickfont=dict(size=10, color="#90A4AE")
+        ),
+        yaxis=dict(
+            gridcolor="#263238",
+            title="Penghematan Belanja Listrik Operasional (Rp Miliar / Tahun)",
+            title_font=dict(size=12, color="#B0BEC5"),
+            tickfont=dict(size=10, color="#90A4AE")
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=10)
+        )
+    )
+
+    st.plotly_chart(fig_matrix, use_container_width=True)
+    st.caption("Catatan: Ukuran lingkaran (bubble) merepresentasikan besaran total kapasitas kWp terpasang. Garis putus-putus menunjukkan median distribusi modal dan penghematan.")
+
+with tab_bar:
+    df_quad_agg = pd.DataFrame([
+        {
+            "Kuadran": "Kuadran 1: Quick Wins",
+            "Kapasitas (MWp)": q1_mwp,
+            "Investasi (Rp Triliun)": q1_capex / 1000.0,
+            "Penghematan (Rp Miliar/thn)": q1_savings,
+            "Pekerja Hijau (Orang)": q1_jobs
+        },
+        {
+            "Kuadran": "Kuadran 2: Public Services",
+            "Kapasitas (MWp)": q2_mwp,
+            "Investasi (Rp Triliun)": q2_capex / 1000.0,
+            "Penghematan (Rp Miliar/thn)": q2_savings,
+            "Pekerja Hijau (Orang)": q2_jobs
+        },
+        {
+            "Kuadran": "Kuadran 3: Transit & Ikonik",
+            "Kapasitas (MWp)": q3_mwp,
+            "Investasi (Rp Triliun)": q3_capex / 1000.0,
+            "Penghematan (Rp Miliar/thn)": q3_savings,
+            "Pekerja Hijau (Orang)": q3_jobs
+        }
+    ])
+
+    col_b1, col_b2 = st.columns(2)
+    
+    with col_b1:
+        fig_bar_cap = px.bar(
+            df_quad_agg,
+            x="Kuadran",
+            y="Kapasitas (MWp)",
+            color="Kuadran",
+            color_discrete_sequence=["#00E676", "#00B0FF", "#FFD600"],
+            text="Kapasitas (MWp)",
+            title="Porsi Kapasitas Terpasang per Kuadran (MWp)"
+        )
+        fig_bar_cap.update_traces(
+            texttemplate="%{text:.1f} MWp", textposition="outside",
+            marker=dict(line=dict(width=1, color="#FFFFFF"))
+        )
+        fig_bar_cap.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#0E1117",
+            plot_bgcolor="#0E1117",
+            font=dict(family="Inter", color="#ECEFF1"),
+            showlegend=False,
+            margin=dict(l=40, r=20, t=50, b=40),
+            xaxis=dict(gridcolor="#263238", tickfont=dict(size=10, color="#90A4AE")),
+            yaxis=dict(gridcolor="#263238", tickfont=dict(size=10, color="#90A4AE"))
+        )
+        st.plotly_chart(fig_bar_cap, use_container_width=True)
+        
+    with col_b2:
+        fig_bar_sav = px.bar(
+            df_quad_agg,
+            x="Kuadran",
+            y="Penghematan (Rp Miliar/thn)",
+            color="Kuadran",
+            color_discrete_sequence=["#00E676", "#00B0FF", "#FFD600"],
+            text="Penghematan (Rp Miliar/thn)",
+            title="Porsi Penghematan Belanja Listrik Tahunan (Rp Miliar/tahun)"
+        )
+        fig_bar_sav.update_traces(
+            texttemplate="Rp %{text:.1f} M", textposition="outside",
+            marker=dict(line=dict(width=1, color="#FFFFFF"))
+        )
+        fig_bar_sav.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#0E1117",
+            plot_bgcolor="#0E1117",
+            font=dict(family="Inter", color="#ECEFF1"),
+            showlegend=False,
+            margin=dict(l=40, r=20, t=50, b=40),
+            xaxis=dict(gridcolor="#263238", tickfont=dict(size=10, color="#90A4AE")),
+            yaxis=dict(gridcolor="#263238", tickfont=dict(size=10, color="#90A4AE"))
+        )
+        st.plotly_chart(fig_bar_sav, use_container_width=True)
+
+# ─── CALLOUT TEMUAN UTAMA & PENTAHAPAN STRATEGIS (RITME ECC) ───────────────────
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("#### Rekomendasi Pentahapan Eksekusi Kebijakan Berbasis Kuadran")
+
+st.markdown(f"""
+<div class="insight-box" style="border-left: 4px solid #00E676; margin-bottom: 1rem;">
+    <div style="font-weight: 700; color: #00E676; font-size: 0.95rem; margin-bottom: 0.4rem;">
+        Fase 1 (Tahun 1–2): Mobilisasi Quick Wins Komersial Mandiri ({q1_points:,} Titik | {q1_mwp:.2f} MWp | Rp {q1_savings:.2f} Miliar/thn)
+    </div>
+    <div style="color: #ECEFF1; font-size: 0.88rem; line-height: 1.6;">
+        Pusat Perbelanjaan (Mall), Pasar Tradisional (Pasar Jaya), dan Gedung/Lapangan Parkir harus dieksekusi sebagai prioritas pertama karena <b>memiliki kelayakan finansial komersial tertinggi dengan Simple Payback rata-rata {q1_payback_avg:.1f} tahun</b>. Pemda DKI dan Bodetabek tidak perlu mengalokasikan anggaran APBD sepeser pun (Zero-APBD), melainkan cukup menerbitkan regulasi fasilitasi bagi pengembang swasta melalui kontrak <i>Power Purchase Agreement</i> (PPA) sewa atap dan konsesi fasilitas perparkiran. Fase ini menyerap langsung <b>{q1_jobs:,} tenaga kerja hijau</b> dan membuktikan kredibilitas transisi energi metropolitan kepada pasar.
+    </div>
+</div>
+
+<div class="insight-box" style="border-left: 4px solid #00B0FF; margin-bottom: 1rem;">
+    <div style="font-weight: 700; color: #00B0FF; font-size: 0.95rem; margin-bottom: 0.4rem;">
+        Fase 2 (Tahun 2–3): Penggelaran Masif Fasilitas Pelayanan Publik ({q2_points:,} Titik | {q2_mwp:.2f} MWp | Rp {q2_savings:.2f} Miliar/thn)
+    </div>
+    <div style="color: #ECEFF1; font-size: 0.88rem; line-height: 1.6;">
+        RSUD (254 titik), Sekolah Negeri (667 titik), Kampus Perguruan Tinggi (188 titik), dan Stadion Olahraga (63 titik) merupakan <b>tulang punggung dekarbonisasi perkotaan yang menyumbang {q2_mwp / (total_capacity_mwp) * 100:.1f}% dari seluruh kapasitas energi surya portofolio</b>. Keunggulan struktural atap dak beton rata (flat concrete roof) menekan biaya modal instalasi ke batas terendah (Rp 12,5 Juta/kWp) dengan payback cepat ({q2_payback_avg:.1f} tahun). Penghematan belanja listrik tahunan sebesar <b>Rp {q2_savings:.2f} Miliar/tahun</b> menjadi sumber dividen sosial permanen untuk membiayai operasional puluhan puskesmas dan puluhan ribu beasiswa KJP Plus anak daerah.
+    </div>
+</div>
+
+<div class="insight-box" style="border-left: 4px solid #FFD600; margin-bottom: 1rem;">
+    <div style="font-weight: 700; color: #FFD600; font-size: 0.95rem; margin-bottom: 0.4rem;">
+        Fase 3 (Tahun 3–5): Transformasi Simpul Mobilitas Transit & Ikonik ({q3_points:,} Titik | {q3_mwp:.2f} MWp | Rp {q3_savings:.2f} Miliar/thn)
+    </div>
+    <div style="color: #ECEFF1; font-size: 0.88rem; line-height: 1.6;">
+        Stasiun KRL (88 stasiun), Halte TransJakarta (408 halte), Stasiun MRT/LRT (47 stasiun), Terminal Bus (38 terminal), Bandara Soekarno-Hatta (14 titik), dan JPO (30 jembatan) memiliki periode impas lebih panjang ({q3_payback_avg:.1f} tahun) akibat kebutuhan konstruksi kanopi baja bentang lebar (Rp 18,5 Juta/kWp). Namun, klaster ini memberikan <b>manfaat sosial tak berwujud (*intangible benefits*) tertinggi</b>: kanopi surya berfungsi ganda sebagai peneduh cuaca ekstrem bagi jutaan komuter harian, etalase visual edukasi publik tentang komitmen transisi energi bersih kota, serta menyerap <b>{q3_jobs:,} tenaga kerja kejuruan teknik las dan mekanikal lokal</b>.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ─── DATA LINEAGE & TABEL DATA MENTAH 3.4 ────────────────────────────────────────
+with st.expander("Lihat Data Mentah : Matriks Prioritas Strategis 13 Kategori Infrastruktur (CSV)"):
+    st.markdown("Rincian pembagian matriks kuadran prioritas investasi, kebutuhan modal, efisiensi operasional, dan rekomendasi kebijakan untuk seluruh 13 kategori fasilitas:")
+    
+    cols_matrix = [
+        "category_display", "kuadran_prioritas", "total_points", "total_capacity_kwp",
+        "total_capex_miliar", "total_savings_annual_miliar", "simple_payback_years",
+        "total_green_jobs_orang", "rekomendasi_kebijakan"
+    ]
+    
+    st.dataframe(
+        df_ekonomi[cols_matrix].rename(columns={
+            "category_display": "Kategori Fasilitas",
+            "kuadran_prioritas": "Kuadran Prioritas Strategis",
+            "total_points": "Jumlah Titik",
+            "total_capacity_kwp": "Kapasitas (kWp)",
+            "total_capex_miliar": "Kebutuhan Modal (Rp Miliar)",
+            "total_savings_annual_miliar": "Penghematan Listrik (Rp Miliar/thn)",
+            "simple_payback_years": "Simple Payback (Tahun)",
+            "total_green_jobs_orang": "Pekerja Hijau (Orang)",
+            "rekomendasi_kebijakan": "Rekomendasi Kebijakan Pengadaan"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    col_dl_m1, col_dl_m2 = st.columns(2)
+    with col_dl_m1:
+        csv_matrix_bytes = df_ekonomi[cols_matrix].to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Unduh Matriks Prioritas Strategis (CSV)",
+            data=csv_matrix_bytes,
+            file_name="pow_solar_matriks_prioritas_strategis.csv",
+            mime="text/csv",
+            key="dl_matrix_csv"
+        )
+    with col_dl_m2:
+        st.caption("Berkas sumber: `data/processed/calculations/pow_solar_ekonomi_kebijakan.csv` | Klasifikasi kuadran 100% berbasis data terintegrasi.")
+
+# ═════════════════════════════════════════════════════════════════════════════════
+# PLACEHOLDER NAVIGASI SUB-BAB 3.5
 # ═════════════════════════════════════════════════════════════════════════════════
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("""
 <div style="background: #141A24; border: 1px dashed #37474F; border-radius: 8px; padding: 1.2rem; text-align: center; color: #90A4AE; font-size: 0.9rem;">
-    <b>Sub-Bab Berikutnya dalam Pengembangan Bertahap Sesuai Kerangka Riset CELIOS:</b><br>
-    <span style="color: #4CAF50;">[Sub-Bab 3.4: Matriks Prioritas Quick Wins]</span> &nbsp;•&nbsp; 
-    <span style="color: #4CAF50;">[Sub-Bab 3.5: Solusi Pengadaan Zero-APBD]</span>
+    <b>Sub-Bab Terakhir dalam Pengembangan Bertahap Sesuai Kerangka Riset CELIOS:</b><br>
+    <span style="color: #4CAF50;">[Sub-Bab 3.5: Solusi Pengadaan Zero-APBD (PPA Sewa Atap Swasta vs Konsesi Carport vs Pengadaan APBD Murni)]</span>
 </div>
 """, unsafe_allow_html=True)
 
