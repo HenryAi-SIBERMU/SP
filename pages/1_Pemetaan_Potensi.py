@@ -484,8 +484,8 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Fasilitas (Mast
         mime="text/csv"
     )
 
-    if not df_infill.empty:
-        st.markdown("<hr style='border-color: #1E293B; margin: 24px 0 16px 0;'>", unsafe_allow_html=True)
+if not df_infill.empty:
+    with st.expander(f"🧩 Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap Infill ({len(df_infill)} Fasilitas — Standar SNI 8395:2017 & NFPA 1)", expanded=False):
         st.markdown("#### Skenario Suplemen: Rekayasa Pemanfaatan Celah Atap (*Roof Gap Infill Extension*)")
         st.caption(
             "Hasil simulasi terpisah pemanfaatan ruang celah fisik (atap peron transit, koridor non-segmen) "
@@ -498,10 +498,30 @@ with st.expander(f"Tabel Dropdown Seluruh Data {count_pts} Titik Fasilitas (Mast
         tot_inf_co2 = df_infill["infill_additional_co2_savings_ton"].sum()
 
         c_inf1, c_inf2, c_inf3, c_inf4 = st.columns(4)
-        c_inf1.metric("Tambahan Potensi Infill", f"+{tot_inf_kwp:,.1f} kWp", f"{len(df_infill)} fasilitas gap")
-        c_inf2.metric("Tambahan Modul Surya", f"+{tot_inf_panels:,} unit", "@ 400Wp")
-        c_inf3.metric("Tambahan Listrik Bersih", f"+{tot_inf_mwh:,.1f} MWh/thn", "Ekivalen radiasi lokal")
-        c_inf4.metric("Tambahan Reduksi CO₂", f"+{tot_inf_co2:,.1f} Ton/thn", "Grid Jamali")
+        c_inf1.metric(
+            "Tambahan Potensi Infill", 
+            f"+{tot_inf_kwp:,.1f} kWp", 
+            f"{len(df_infill)} fasilitas gap",
+            help="Total daya puncak DC tambahan dari optimalisasi ruang celah atap dan dak peron yang belum terpasang modul surya di baseline Google."
+        )
+        c_inf2.metric(
+            "Tambahan Modul Surya", 
+            f"+{tot_inf_panels:,} unit", 
+            "@ 400Wp",
+            help="Jumlah modul fotovoltaik Monokristalin Tier-1 (400 Wp, dimensi 1,75 m x 1,02 m) yang dapat dipasang di area celah."
+        )
+        c_inf3.metric(
+            "Tambahan Listrik Bersih", 
+            f"+{tot_inf_mwh:,.1f} MWh/thn", 
+            "Ekivalen radiasi lokal",
+            help="Dihitung dari fluks iradiasi matahari riil lokal fotogrametri satelit Jabodetabek (PSH harian rata-rata ~4,46 jam/hari) dengan Performance Ratio (PR) 80% standar IEC 61724."
+        )
+        c_inf4.metric(
+            "Tambahan Reduksi CO₂", 
+            f"+{tot_inf_co2:,.1f} Ton/thn", 
+            "Grid Jamali",
+            help="Didasarkan pada faktor dekarbonisasi resmi sistem interkoneksi kelistrikan Jawa-Madura-Bali (Jamali) Ditjen Ketenagalistrikan ESDM / PLN sebesar 808,99 kg CO₂/MWh (0,80899 ton CO₂/MWh)."
+        )
 
         infill_disp = df_infill[[
             "asset_name", "category_display", "city_regency",
