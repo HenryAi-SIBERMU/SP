@@ -42,7 +42,7 @@ def render_sidebar():
         st.page_link("pages/2_Analisis_Kapasitas.py",      label="Analisis Kapasitas")
         st.page_link("pages/3_Analisis_Ekonomi.py",        label="Analisis Ekonomi")
         st.page_link("pages/4_Manfaat_Lingkungan.py",      label="Manfaat Lingkungan")
-        st.page_link("pages/5_Manfaat_Sosial.py",          label="Manfaat Sosial")
+        # st.page_link("pages/5_Manfaat_Sosial.py",          label="Manfaat Sosial")  # hidden
 
         st.markdown('<div class="sidebar-label">Resources</div>', unsafe_allow_html=True)
         st.page_link("pages/8_Dokumentasi_Riset.py",       label="Dokumentasi Riset")
