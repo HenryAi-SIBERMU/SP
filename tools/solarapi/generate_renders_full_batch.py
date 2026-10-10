@@ -74,34 +74,25 @@ def render_single_asset(row_dict: dict) -> dict:
         return {"asset_id": aid, "status": "CACHED", "count": len(out_files)}
 
     # Path sumber file mentah
-    bi_candidates = [
-        RAW_SOLAR_DIR / "building_insights" / cat / f"{aid}_insights.json",
-        RAW_SOLAR_DIR / "building_insights" / cat.replace("_", "") / f"{aid}_insights.json",
-    ]
+    folder_candidates = [cat, cat.replace("_", "")]
+    if "mrt" in aid:
+        folder_candidates.extend(["mrt", "mrt_lrt"])
+    if "lrt" in aid:
+        folder_candidates.extend(["lrt", "mrt_lrt"])
+
+    bi_candidates = [RAW_SOLAR_DIR / "building_insights" / c / f"{aid}_insights.json" for c in folder_candidates]
     bi_path = next((p for p in bi_candidates if p.exists()), None)
 
-    rgb_candidates = [
-        RAW_SOLAR_DIR / "data_layers" / "rgb" / cat / f"{aid}_rgb.tif",
-        RAW_SOLAR_DIR / "data_layers" / "rgb" / cat.replace("_", "") / f"{aid}_rgb.tif",
-    ]
+    rgb_candidates = [RAW_SOLAR_DIR / "data_layers" / "rgb" / c / f"{aid}_rgb.tif" for c in folder_candidates]
     rgb_path = next((p for p in rgb_candidates if p.exists()), None)
 
-    dsm_candidates = [
-        RAW_SOLAR_DIR / "data_layers" / "dsm" / cat / f"{aid}_dsm.tif",
-        RAW_SOLAR_DIR / "data_layers" / "dsm" / cat.replace("_", "") / f"{aid}_dsm.tif",
-    ]
+    dsm_candidates = [RAW_SOLAR_DIR / "data_layers" / "dsm" / c / f"{aid}_dsm.tif" for c in folder_candidates]
     dsm_path = next((p for p in dsm_candidates if p.exists()), None)
 
-    mask_candidates = [
-        RAW_SOLAR_DIR / "data_layers" / "mask" / cat / f"{aid}_mask.tif",
-        RAW_SOLAR_DIR / "data_layers" / "mask" / cat.replace("_", "") / f"{aid}_mask.tif",
-    ]
+    mask_candidates = [RAW_SOLAR_DIR / "data_layers" / "mask" / c / f"{aid}_mask.tif" for c in folder_candidates]
     mask_path = next((p for p in mask_candidates if p.exists()), None)
 
-    flux_candidates = [
-        RAW_SOLAR_DIR / "data_layers" / "annual_flux" / cat / f"{aid}_annual_flux.tif",
-        RAW_SOLAR_DIR / "data_layers" / "annual_flux" / cat.replace("_", "") / f"{aid}_annual_flux.tif",
-    ]
+    flux_candidates = [RAW_SOLAR_DIR / "data_layers" / "annual_flux" / c / f"{aid}_annual_flux.tif" for c in folder_candidates]
     flux_path = next((p for p in flux_candidates if p.exists()), None)
 
     if not bi_path or not rgb_path:
