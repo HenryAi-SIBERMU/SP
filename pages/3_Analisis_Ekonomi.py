@@ -619,15 +619,397 @@ with st.expander("📋 Data Lineage: Tabel Rincian Finansial Makro 13 Kategori I
         st.info("💡 Berkas fisik bukti kutipan tersimpan di `data/raw/sources/` dan tabel referensi di `data/processed/references/`.")
 
 # ═════════════════════════════════════════════════════════════════════════════════
-# PLACEHOLDER NAVIGASI SUB-BAB 3.2 S.D. 3.5
+# SUB-BAB 3.2: EKUIVALENSI DIVIDEN FISKAL APBD (OPPORTUNITY COST & PUBLIC DIVIDEND)
+# ═════════════════════════════════════════════════════════════════════════════════
+st.markdown("---")
+st.markdown(r"### 3.2 Ekuivalensi Dividen Fiskal APBD ($\text{Opportunity Cost} \ \text{\&} \ \text{Public Dividend}$)")
+st.markdown('<div class="sub-chapter-badge">Sub-Bab 3.2: Konversi Efisiensi Tagihan Listrik ke Manfaat Sosial & Pembebasan Ruang Fiskal Daerah</div>', unsafe_allow_html=True)
+
+with st.expander("ℹ️ Metodologi 3.2: Formulasi Dividen Sosial Fiskal, Pembebasan Ruang Fiskal (Fiscal Space) & Reinvestasi Sektoral Tertutup"):
+    st.markdown(r"""
+    **Prinsip Metodologis Analisis Dividen Fiskal & Biaya Peluang Publik (*Public Opportunity Cost*):**
+    
+    1. **Konversi Moneter ke Manfaat Sosial Riil:**  
+       Penghematan belanja operasional listrik tahunan ($\Delta \text{Hemat} = \text{Rp } 597,42\text{ Miliar/tahun}$) dikonversi menjadi satuan unit layanan publik nyata berbasis standar biaya resmi yang berlaku di Pemprov DKI Jakarta dan wilayah aglomerasi:
+       * **Subsidi Tiket Komuter TransJakarta (PSO Pemprov DKI):**  
+         $$\text{Dividen Tiket Komuter} (\text{Perjalanan}) = \frac{\Delta \text{Hemat} (\text{Rp})}{\text{Biaya Subsidi per Tiket} (\text{Rp } 10.000/\text{pax})}$$  
+         *Dasar Hukum & Bukti Fisik:* Laporan Kinerja Dinas Perhubungan & PT Transjakarta via Portal Resmi BeritaJakarta.id (Januari 2025). Subsidi PSO sebesar Rp 3,6 – 3,7 Triliun/tahun untuk 371 Juta perjalanan komuter (subsidi bersih $\approx \text{Rp } 9.831 \text{ s.d. Rp } 10.000$ per tiket penumpang).
+       * **Biaya Operasional & Pelayanan Puskesmas Kelurahan:**  
+         $$\text{Dividen Puskesmas} (\text{Unit/Tahun}) = \frac{\Delta \text{Hemat} (\text{Rp})}{\text{Standar Operasional Puskesmas} (\text{Rp } 1,5\text{ Miliar/unit/tahun})}$$  
+         *Dasar Hukum & Bukti Fisik:* Standar Alokasi BLUD Kesehatan Pemprov DKI & Laporan Rehabilitasi Total Puskesmas Sudin Kesehatan Jakarta Timur via BeritaJakarta.id. Mendanai biaya operasional penuh, penyediaan obat esensial, penanganan gizi balita/stunting, dan operasional dokter umum gratis.
+       * **Beasiswa Siswa Sekolah Menengah (KJP Plus SMA/SMK):**  
+         $$\text{Dividen Siswa KJP} (\text{Siswa/Tahun}) = \frac{\Delta \text{Hemat} (\text{Rp})}{\text{Biaya Personal Siswa SMA/SMK} (\text{Rp } 5,16\text{ Juta/siswa/tahun})}$$  
+         *Dasar Hukum & Bukti Fisik:* Pengumuman Resmi UPT P4OP Dinas Pendidikan DKI Jakarta via BeritaJakarta.id. Bantuan personal sebesar Rp 430.000/bulan (rata-rata SMA Rp 420.000 dan SMK Rp 450.000) atau Rp 5,16 Juta/tahun per siswa prasejahtera.
+         
+    2. **Pembebasan Ruang Fiskal Daerah (*Fiscal Space Expansion*):**  
+       $$\text{Rasio Substitusi Pagu APBD} (\%) = \frac{\Delta \text{Hemat Tahunan}}{\text{Pagu Alokasi APBD Tahunan}} \times 100\%$$
+       Mengukur persentase beban pos belanja rutin APBD yang dapat digantikan sepenuhnya oleh penghematan energi surya tanpa perlu menambah penerimaan dari kenaikan tarif pajak daerah atau retribusi masyarakat.
+       
+    3. **Model Reinvestasi Sektoral Tertutup (*Closed-Loop Sectoral Allocation*):**  
+       Menghindari kebocoran alokasi anggaran dengan mengunci (*earmarking*) penghematan tagihan listrik agar kembali ke sektor asalnya:
+       - Penghematan dari Klaster Transit $\longrightarrow$ Dialokasikan untuk subsidi mobilitas warga komuter.
+       - Penghematan dari Klaster Rumah Sakit $\longrightarrow$ Dialokasikan untuk operasional jaringan Puskesmas Kelurahan.
+       - Penghematan dari Klaster Sekolah & Kampus $\longrightarrow$ Dialokasikan untuk dana beasiswa pendidikan siswa prasejahtera.
+    """)
+
+# ─── EKSTRAKSI DATA STANDAR LAYANAN PUBLIK & KALKULASI DIVIDEN ───────────────────
+row_trans = df_layanan[df_layanan['id_layanan'] == 'PUB-TRANS-001'].iloc[0]
+row_health = df_layanan[df_layanan['id_layanan'] == 'PUB-HEALTH-001'].iloc[0]
+row_edu = df_layanan[df_layanan['id_layanan'] == 'PUB-EDU-001'].iloc[0]
+
+biaya_tiket_rp = float(row_trans['biaya_satuan_rp'])
+pagu_trans_miliar = float(row_trans['alokasi_apbd_tahunan_miliar'])
+
+biaya_puskesmas_rp = float(row_health['biaya_satuan_rp'])
+pagu_health_miliar = float(row_health['alokasi_apbd_tahunan_miliar'])
+
+biaya_beasiswa_rp = float(row_edu['biaya_satuan_rp'])
+pagu_edu_miliar = float(row_edu['alokasi_apbd_tahunan_miliar'])
+
+# 1. Alokasi Agregat 100% Portofolio (Rp 597,42 Miliar/tahun)
+dividen_tiket_total = int((total_savings_miliar * 1e9) / biaya_tiket_rp)
+dividen_puskesmas_total = float((total_savings_miliar * 1e9) / biaya_puskesmas_rp)
+dividen_beasiswa_total = int((total_savings_miliar * 1e9) / biaya_beasiswa_rp)
+
+rasio_trans_pct = (total_savings_miliar / pagu_trans_miliar) * 100.0
+rasio_health_pct = (total_savings_miliar / pagu_health_miliar) * 100.0
+rasio_edu_pct = (total_savings_miliar / pagu_edu_miliar) * 100.0
+
+# 2. Reinvestasi Sektoral Tertutup (Sectoral Closed-Loop)
+transit_cats = ['brt', 'krl', 'mrt_lrt', 'terminal', 'parking', 'jpo', 'airport']
+df_trans_cluster = df_ekonomi[df_ekonomi['category'].isin(transit_cats)]
+savings_trans_cluster = float(df_trans_cluster['total_savings_annual_miliar'].sum())
+dividen_tiket_closed = int((savings_trans_cluster * 1e9) / biaya_tiket_rp)
+rasio_trans_closed_pct = (savings_trans_cluster / pagu_trans_miliar) * 100.0
+
+df_health_cluster = df_ekonomi[df_ekonomi['category'] == 'hospital']
+savings_health_cluster = float(df_health_cluster['total_savings_annual_miliar'].sum())
+dividen_puskesmas_closed = float((savings_health_cluster * 1e9) / biaya_puskesmas_rp)
+rasio_health_closed_pct = (savings_health_cluster / pagu_health_miliar) * 100.0
+
+df_edu_cluster = df_ekonomi[df_ekonomi['category'].isin(['school', 'university'])]
+savings_edu_cluster = float(df_edu_cluster['total_savings_annual_miliar'].sum())
+dividen_beasiswa_closed = int((savings_edu_cluster * 1e9) / biaya_beasiswa_rp)
+rasio_edu_closed_pct = (savings_edu_cluster / pagu_edu_miliar) * 100.0
+
+df_comm_cluster = df_ekonomi[df_ekonomi['category'].isin(['mall', 'market', 'stadium'])]
+savings_comm_cluster = float(df_comm_cluster['total_savings_annual_miliar'].sum())
+
+# ─── NARASI TEKS ANALITIS 3.2.1 & 3.2.2 ──────────────────────────────────────────
+st.markdown(f"""
+<p style="color: #ECEFF1; font-size: 1.03rem; line-height: 1.75; margin-bottom: 1.2rem;">
+    Dalam diskursus kebijakan publik, efisiensi anggaran sebesar <b>Rp {total_savings_miliar:,.2f} Miliar setiap tahun</b> seringkali 
+    hanya dipandang sebagai angka pengurang pembukuan teknis. Namun, bagi masyarakat dan pembuat kebijakan anggaran daerah, 
+    angka tersebut merepresentasikan <b>biaya peluang sosial (<i>social opportunity cost</i>)</b> yang sangat besar. 
+    Selama bertahun-tahun, ratusan miliar rupiah dana APBD dibayarkan rutin kepada PT PLN (Persero) untuk melunasi tagihan listrik gedung-gedung publik. 
+    Dengan beralih ke pembangkitan mandiri PLTS Atap, aliran kas yang semula terikat sebagai belanja operasional wajib 
+    berhasil dibebaskan menjadi <b>dividen fiskal daerah (*fiscal dividend*)</b> yang dapat dialokasikan langsung untuk memperluas jaring pengaman sosial warga.
+</p>
+""", unsafe_allow_html=True)
+
+st.markdown("#### 3.2.1 Konversi Penghematan Listrik Menjadi Nilai Manfaat Layanan Publik Nyata")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Menerjemahkan angka penghematan Rp {total_savings_miliar:,.2f} Miliar ke dalam tiga alternatif alokasi layanan publik prioritas membuktikan daya jangkau manfaat sosialnya:
+    <br>• <b>Opsi Alokasi 1 — Subsidi Tarif Mobilitas Komuter TransJakarta:</b> 
+    Dengan standar subsidi operasional <b>Rp {biaya_tiket_rp:,.0f} per perjalanan pelanggan</b> (selisih biaya riil armada Rp 13.500 dengan tarif warga Rp 3.500), 
+    penghematan listrik ini setara dengan membiayai penuh <b>{dividen_tiket_total:,} perjalanan komuter bersubsidi setiap tahun</b>. 
+    Jumlah ini secara langsung menutup <b>{rasio_trans_pct:.1f}%</b> dari total alokasi pagu subsidi PSO tahunan Pemprov DKI Jakarta (Rp {pagu_trans_miliar:,.0f} Miliar), 
+    menjamin mobilitas terjangkau dan mendorong perpindahan massal warga ke transportasi rendah emisi.
+    <br>• <b>Opsi Alokasi 2 — Operasional Jaringan Puskesmas Kelurahan:</b> 
+    Dengan standar biaya operasional pelayanan primer sebesar <b>Rp {biaya_puskesmas_rp/1e9:.1f} Miliar per unit per tahun</b>, 
+    penghematan ini mampu membiayai operasional penuh <b>{dividen_puskesmas_total:,.1f} unit Puskesmas Kelurahan</b>. 
+    Angka ini melampaui 100% total kebutuhan 267 Puskesmas Kelurahan di seluruh wilayah DKI Jakarta (rasio penutupan mencapai <b>{rasio_health_pct:.1f}%</b> dari pagu Rp {pagu_health_miliar:,.0f} Miliar), 
+    memastikan ketersediaan obat-obatan esensial, fasilitas posyandu, dan layanan dokter gratis bagi warga permukiman padat.
+    <br>• <b>Opsi Alokasi 3 — Bantuan Personal Pendidikan (Beasiswa KJP Plus SMA/SMK):</b> 
+    Dengan standar bantuan personal sebesar <b>Rp {biaya_beasiswa_rp/1e6:.2f} Juta per siswa per tahun</b> (Rp 430.000/bulan), 
+    efisiensi tagihan listrik mampu menjamin beasiswa penuh bagi <b>{dividen_beasiswa_total:,} siswa sekolah menengah prasejahtera</b>. 
+    Alokasi ini menyerap <b>{rasio_edu_pct:.1f}%</b> dari total pagu KJP Plus APBD DKI Jakarta (Rp {pagu_edu_miliar:,.0f} Miliar), 
+    secara langsung memutus rantai kemiskinan antargenerasi melalui perlindungan hak pendidikan dasar.
+</p>
+""", unsafe_allow_html=True)
+
+st.markdown("#### 3.2.2 Pembebasan Ruang Fiskal Daerah (*Fiscal Space Expansion*) & Model Reinvestasi Sektoral")
+st.markdown(f"""
+<p style="color: #CFD8DC; font-size: 0.96rem; line-height: 1.65; margin-bottom: 1rem;">
+    Manfaat terbesar bagi kepala daerah dan DPRD adalah terjadinya <b>pembebasan ruang fiskal daerah (*fiscal space expansion*)</b> 
+    secara permanen tanpa harus menaikkan tarif pajak daerah, Pajak Bumi dan Bangunan (PBB), maupun retribusi warga. 
+    Guna mencegah inefisiensi birokrasi, CELIOS merekomendasikan penerapan <b>Model Reinvestasi Sektoral Tertutup (<i>Sectoral Closed-Loop</i>)</b>, 
+    di mana dividen penghematan diikat (*earmarked*) untuk memperkuat sektor yang bersangkutan:
+    <br>1. <b>Sektor Simpul Transit & Mobilitas ({len(df_trans_cluster)} Kategori, Hemat Rp {savings_trans_cluster:,.2f} M/th):</b> 
+    Langsung membiayai <b>{dividen_tiket_closed:,} perjalanan komuter bersubsidi</b> di halte busway dan stasiun kereta api.
+    <br>2. <b>Sektor Rumah Sakit Umum Daerah (RSUD, Hemat Rp {savings_health_cluster:,.2f} M/th):</b> 
+    Langsung membiayai <b>{dividen_puskesmas_closed:,.1f} unit Puskesmas Kelurahan</b> di kantong-kantong kemiskinan perkotaan.
+    <br>3. <b>Sektor Pendidikan & Kampus (Sekolah & Universitas, Hemat Rp {savings_edu_cluster:,.2f} M/th):</b> 
+    Langsung mendanai <b>{dividen_beasiswa_closed:,} beasiswa siswa sekolah menengah</b> dari keluarga desil terbawah.
+</p>
+""", unsafe_allow_html=True)
+
+# ─── DUAL VISUALISASI PLOTLY (KOMPARASI DIVIDEN & SUBSTITUSI APBD) ───────────────
+col_chart_d1, col_chart_d2 = st.columns([3, 2])
+
+with col_chart_d1:
+    st.markdown("###### Tiga Skenario Alokasi Dividen Sosial: Agregat Penuh vs Reinvestasi Sektoral Tertutup")
+    
+    categories_label = [
+        "Subsidi Tiket Komuter<br>(Rp 10.000 / Perjalanan)",
+        "Operasional Puskesmas<br>(Rp 1,5 Miliar / Unit / Th)",
+        "Beasiswa KJP Plus SMA/SMK<br>(Rp 5,16 Juta / Siswa / Th)"
+    ]
+    
+    fig_dividen = go.Figure()
+    
+    # Trace 1: Reinvestasi Sektoral Tertutup (Closed-Loop)
+    fig_dividen.add_trace(go.Bar(
+        y=categories_label,
+        x=[savings_trans_cluster, savings_health_cluster, savings_edu_cluster],
+        name='Reinvestasi Sektoral Tertutup (Closed-Loop)',
+        orientation='h',
+        marker=dict(color='#26A69A', line=dict(color='#80CBC4', width=1)),
+        text=[
+            f"Rp {savings_trans_cluster:,.1f} M ({dividen_tiket_closed/1e6:.1f} Jt Tiket)",
+            f"Rp {savings_health_cluster:,.1f} M ({dividen_puskesmas_closed:.1f} Puskesmas)",
+            f"Rp {savings_edu_cluster:,.1f} M ({dividen_beasiswa_closed:,} Beasiswa)"
+        ],
+        textposition='auto',
+        hoverinfo='text',
+        hovertext=[
+            f"Klaster Transit (BRT, KRL, MRT, Terminal, Parkir): Hemat Rp {savings_trans_cluster:,.2f} M/th -> {dividen_tiket_closed:,} tiket",
+            f"Klaster RSUD: Hemat Rp {savings_health_cluster:,.2f} M/th -> {dividen_puskesmas_closed:.1f} unit Puskesmas terdanai penuh",
+            f"Klaster Sekolah & Kampus: Hemat Rp {savings_edu_cluster:,.2f} M/th -> {dividen_beasiswa_closed:,} beasiswa siswa KJP Plus"
+        ]
+    ))
+    
+    # Trace 2: Alokasi Agregat 100% Portofolio
+    fig_dividen.add_trace(go.Bar(
+        y=categories_label,
+        x=[total_savings_miliar, total_savings_miliar, total_savings_miliar],
+        name=f'Alokasi Agregat 100% Portofolio (Rp {total_savings_miliar:,.1f} M)',
+        orientation='h',
+        marker=dict(color='#4CAF50', line=dict(color='#81C784', width=1)),
+        text=[
+            f"Rp {total_savings_miliar:,.1f} M ({dividen_tiket_total/1e6:.1f} Jt Tiket)",
+            f"Rp {total_savings_miliar:,.1f} M ({dividen_puskesmas_total:.1f} Puskesmas)",
+            f"Rp {total_savings_miliar:,.1f} M ({dividen_beasiswa_total:,} Beasiswa)"
+        ],
+        textposition='outside',
+        hoverinfo='text',
+        hovertext=[
+            f"Jika 100% dialokasikan ke Transportasi: {dividen_tiket_total:,} perjalanan bersubsidi",
+            f"Jika 100% dialokasikan ke Kesehatan: {dividen_puskesmas_total:.1f} unit Puskesmas terdanai penuh",
+            f"Jika 100% dialokasikan ke Pendidikan: {dividen_beasiswa_total:,} beasiswa siswa KJP Plus"
+        ]
+    ))
+    
+    fig_dividen.update_layout(
+        barmode='group',
+        height=480,
+        margin=dict(l=10, r=40, t=30, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='#CFD8DC', size=11)
+        ),
+        xaxis=dict(
+            title=dict(text='Nilai Belanja Listrik yang Dialokasikan (Miliar Rupiah / Tahun)', font=dict(color='#B0BEC5', size=11)),
+            tickfont=dict(color='#90A4AE'),
+            gridcolor='#263238'
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#ECEFF1', size=11)
+        )
+    )
+    st.plotly_chart(fig_dividen, use_container_width=True)
+
+with col_chart_d2:
+    st.markdown("###### Rasio Pembebasan Ruang Fiskal APBD (% Substitusi Beban Belanja Rutin Daerah)")
+    
+    substitusi_labels = [
+        "Subsidi PSO TransJakarta",
+        "Operasional Puskesmas",
+        "Beasiswa Siswa KJP Plus"
+    ]
+    substitusi_ratios = [rasio_trans_pct, rasio_health_pct, rasio_edu_pct]
+    pagu_labels = [
+        f"{rasio_trans_pct:.1f}% (Pagu Rp {pagu_trans_miliar:,.0f} M)",
+        f"{rasio_health_pct:.1f}% (Pagu Rp {pagu_health_miliar:,.0f} M)",
+        f"{rasio_edu_pct:.1f}% (Pagu Rp {pagu_edu_miliar:,.0f} M)"
+    ]
+    
+    fig_sub = go.Figure()
+    fig_sub.add_trace(go.Bar(
+        y=substitusi_labels,
+        x=substitusi_ratios,
+        orientation='h',
+        marker=dict(
+            color=['#26A69A', '#66BB6A', '#42A5F5'],
+            line=dict(color=['#80CBC4', '#A5D6A7', '#90CAF9'], width=1)
+        ),
+        text=pagu_labels,
+        textposition='outside',
+        hoverinfo='text',
+        hovertext=[
+            f"Subsidi PSO TransJakarta: Rp {total_savings_miliar:,.1f} M dari pagu Rp {pagu_trans_miliar:,.0f} M ({rasio_trans_pct:.2f}%)",
+            f"Operasional Puskesmas: Rp {total_savings_miliar:,.1f} M dari pagu Rp {pagu_health_miliar:,.0f} M ({rasio_health_pct:.2f}% - Melampaui Penuh!)",
+            f"Beasiswa KJP Plus: Rp {total_savings_miliar:,.1f} M dari pagu Rp {pagu_edu_miliar:,.0f} M ({rasio_edu_pct:.2f}%)"
+        ]
+    ))
+    
+    # 100% threshold line
+    fig_sub.add_vline(
+        x=100.0,
+        line_dash="dash",
+        line_color="#FFA726",
+        annotation_text="100% Pagu Terpenuhi Penuh",
+        annotation_position="bottom right",
+        annotation_font=dict(color="#FFA726", size=10)
+    )
+    
+    fig_sub.update_layout(
+        height=480,
+        margin=dict(l=20, r=40, t=30, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis=dict(
+            title=dict(text='Rasio Substitusi Terhadap Pagu Anggaran APBD (%)', font=dict(color='#B0BEC5', size=11)),
+            tickfont=dict(color='#90A4AE'),
+            gridcolor='#263238',
+            range=[0, 160]
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#ECEFF1', size=11)
+        ),
+        showlegend=False
+    )
+    st.plotly_chart(fig_sub, use_container_width=True)
+
+# ─── 3 KOTAK CALLOUT TEMUAN & INTERPRETASI KRITIS CELIOS ─────────────────────────
+col_box_d1, col_box_d2, col_box_d3 = st.columns(3)
+
+with col_box_d1:
+    st.markdown(f"""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #4CAF50; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            1. Fakta Data Dividen Sosial Agregat
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Penghematan belanja listrik sebesar <b>Rp {total_savings_miliar:,.2f} Miliar/tahun</b> dari 2.000 titik aset publik membuktikan bahwa energi surya menghasilkan dividen sosial konkret:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li>Mampu membiayai <b>{dividen_tiket_total:,} perjalanan komuter bersubsidi</b> TransJakarta per tahun.</li>
+                <li>Mampu membiayai operasional penuh <b>{dividen_puskesmas_total:,.1f} unit Puskesmas Kelurahan</b> se-Jabodetabek.</li>
+                <li>Mampu menjamin beasiswa perlengkapan sekolah penuh bagi <b>{dividen_beasiswa_total:,} siswa SMA/SMK</b> keluarga prasejahtera.</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_box_d2:
+    st.markdown("""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #26A69A; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            2. Tesis Keadilan Sosial CELIOS (Social Equalizer)
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Transisi energi perkotaan bukan sekadar agenda teknokratis mitigasi krisis iklim, melainkan <b>instrumen redistribusi keadilan sosial (<i>social equalizer</i>)</b>:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li>Menghentikan ketergantungan belanja daerah terhadap tagihan listrik konvensional yang menyerap kas APBD secara terus-menerus.</li>
+                <li>Mengalirkan kembali efisiensi belanja energi langsung ke kantong masyarakat berpenghasilan rendah dalam wujud layanan dasar yang terjangkau.</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_box_d3:
+    st.markdown("""
+    <div class="callout-box" style="min-height: 275px;">
+        <div style="font-weight: 700; color: #42A5F5; font-size: 1.02rem; margin-bottom: 0.4rem;">
+            3. Rekomendasi Fiskal: Green Reinvestment Fund
+        </div>
+        <div style="color: #ECEFF1; font-size: 0.91rem; line-height: 1.65;">
+            Untuk menjamin dividen fiskal tidak menguap menjadi belanja birokrasi non-produktif atau mengendap sebagai SiLPA, Pemda didesak:
+            <ul style="margin: 4px 0 0 0; padding-left: 16px;">
+                <li>Menerbitkan Perkada pembentukan <b>Dana Reinvestasi Hijau Daerah (<i>Green Reinvestment Fund</i>)</b>.</li>
+                <li>Mewajibkan pemotongan tagihan PLN di-<i>earmark</i> langsung ke unit layanan sosial asal (RSUD ke Puskesmas, Terminal ke Subsidi Penumpang).</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─── DATA LINEAGE & TABEL DATA MENTAH 3.2 ────────────────────────────────────────
+with st.expander("📋 Data Lineage: Standar Biaya Layanan Publik Resmi & Bukti Fisik Verbatim (CSV)"):
+    st.markdown("Parameter biaya layanan publik di bawah ini dihimpun dari publikasi resmi pemerintah daerah dan memiliki bukti fisik verbatim di `data/raw/sources/`:")
+    
+    st.dataframe(
+        df_layanan[[
+            "id_layanan", "jenis_layanan", "kategori_sektor", "biaya_satuan_rp",
+            "satuan_layanan", "alokasi_apbd_tahunan_miliar", "cakupan_wilayah",
+            "penerbit_resmi", "kalimat_verbatim"
+        ]].rename(columns={
+            "id_layanan": "ID Layanan",
+            "jenis_layanan": "Jenis Layanan Publik",
+            "kategori_sektor": "Sektor Kebijakan",
+            "biaya_satuan_rp": "Biaya Satuan (Rp)",
+            "satuan_layanan": "Satuan Layanan",
+            "alokasi_apbd_tahunan_miliar": "Pagu APBD (Miliar Rp)",
+            "cakupan_wilayah": "Cakupan Wilayah",
+            "penerbit_resmi": "Penerbit Dokumen Resmi",
+            "kalimat_verbatim": "Kutipan Verbatim Bukti Fisik"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    col_dl_l1, col_dl_l2 = st.columns(2)
+    with col_dl_l1:
+        csv_layanan_bytes = df_layanan.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Unduh Standar Biaya Layanan Publik (CSV)",
+            data=csv_layanan_bytes,
+            file_name="standar_biaya_layanan_publik.csv",
+            mime="text/csv",
+            key="dl_layanan_csv"
+        )
+    with col_dl_l2:
+        st.caption("🔍 Berkas sumber: `data/processed/references/standar_biaya_layanan_publik.csv` | Dilengkapi tautan bukti HTML/PDF di `data/raw/sources/`.")
+
+with st.expander("📋 Data Lineage: Ekuivalensi Dividen Sosial per 13 Kategori Fasilitas (CSV)"):
+    st.markdown("Rincian hasil konversi dividen sosial dari penghematan tagihan listrik masing-masing kategori fasilitas publik:")
+    
+    cols_div_cat = [
+        "category_display", "total_points", "total_savings_annual_miliar",
+        "ekuivalensi_tiket_komuter_pax", "ekuivalensi_puskesmas_unit", "ekuivalensi_beasiswa_siswa",
+        "rekomendasi_kebijakan"
+    ]
+    
+    st.dataframe(
+        df_ekonomi[cols_div_cat].rename(columns={
+            "category_display": "Kategori Fasilitas",
+            "total_points": "Jumlah Titik",
+            "total_savings_annual_miliar": "Penghematan (Miliar Rp/th)",
+            "ekuivalensi_tiket_komuter_pax": "Dividen Tiket Komuter (Pax)",
+            "ekuivalensi_puskesmas_unit": "Dividen Puskesmas (Unit)",
+            "ekuivalensi_beasiswa_siswa": "Dividen Beasiswa (Siswa)",
+            "rekomendasi_kebijakan": "Rekomendasi Reinvestasi Kebijakan"
+        }),
+        use_container_width=True,
+        hide_index=True
+    )
+
+# ═════════════════════════════════════════════════════════════════════════════════
+# PLACEHOLDER NAVIGASI SUB-BAB 3.3 S.D. 3.5
 # ═════════════════════════════════════════════════════════════════════════════════
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("""
 <div style="background: #141A24; border: 1px dashed #37474F; border-radius: 8px; padding: 1.2rem; text-align: center; color: #90A4AE; font-size: 0.9rem;">
     <b>Sub-Bab Berikutnya dalam Pengembangan Bertahap Sesuai Kerangka Riset CELIOS:</b><br>
-    <span style="color: #4CAF50;">[Sub-Bab 3.2: Ekuivalensi Dividen Fiskal APBD]</span> &nbsp;•&nbsp; 
     <span style="color: #4CAF50;">[Sub-Bab 3.3: Dampak Penciptaan Green Jobs]</span> &nbsp;•&nbsp; 
     <span style="color: #4CAF50;">[Sub-Bab 3.4: Matriks Prioritas Quick Wins]</span> &nbsp;•&nbsp; 
     <span style="color: #4CAF50;">[Sub-Bab 3.5: Solusi Pengadaan Zero-APBD]</span>
 </div>
 """, unsafe_allow_html=True)
+
