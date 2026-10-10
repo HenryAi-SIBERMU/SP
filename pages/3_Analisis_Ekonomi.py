@@ -499,8 +499,7 @@ with col_chart_e1:
             font=dict(color='#CFD8DC', size=11)
         ),
         xaxis=dict(
-            title='Nilai Finansial (Miliar Rupiah)',
-            titlefont=dict(color='#B0BEC5', size=11),
+            title=dict(text='Nilai Finansial (Miliar Rupiah)', font=dict(color='#B0BEC5', size=11)),
             tickfont=dict(color='#90A4AE'),
             gridcolor='#263238'
         ),
@@ -548,16 +547,14 @@ with col_chart_e2:
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(
-            title='Tahun Operasional (Tahun 0 s.d. 25)',
-            titlefont=dict(color='#B0BEC5', size=11),
+            title=dict(text='Tahun Operasional (Tahun 0 s.d. 25)', font=dict(color='#B0BEC5', size=11)),
             tickfont=dict(color='#90A4AE'),
             gridcolor='#263238',
             tickvals=[0, 5, 7.43, 10, 15, 20, 25],
             ticktext=['Th 0', 'Th 5', 'Impas 7,4', 'Th 10', 'Th 15', 'Th 20', 'Th 25']
         ),
         yaxis=dict(
-            title='Net Cumulative Cash (Miliar Rp)',
-            titlefont=dict(color='#B0BEC5', size=11),
+            title=dict(text='Net Cumulative Cash (Miliar Rp)', font=dict(color='#B0BEC5', size=11)),
             tickfont=dict(color='#90A4AE'),
             gridcolor='#263238'
         ),
