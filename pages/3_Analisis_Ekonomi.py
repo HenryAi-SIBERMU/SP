@@ -1004,7 +1004,7 @@ with st.expander("Lihat Data Mentah : Standar Biaya Layanan Publik Resmi & Bukti
         df_layanan[[
             "id_layanan", "jenis_layanan", "kategori_sektor", "biaya_satuan_rp",
             "satuan_layanan", "alokasi_apbd_tahunan_miliar", "cakupan_wilayah",
-            "penerbit_resmi", "kalimat_verbatim"
+            "penerbit_resmi", "file_bukti_raw", "kalimat_verbatim"
         ]].rename(columns={
             "id_layanan": "ID Layanan",
             "jenis_layanan": "Jenis Layanan Publik",
@@ -1014,6 +1014,7 @@ with st.expander("Lihat Data Mentah : Standar Biaya Layanan Publik Resmi & Bukti
             "alokasi_apbd_tahunan_miliar": "Pagu APBD (Miliar Rp)",
             "cakupan_wilayah": "Cakupan Wilayah",
             "penerbit_resmi": "Penerbit Dokumen Resmi",
+            "file_bukti_raw": "Dokumen Sumber (HTML/PDF)",
             "kalimat_verbatim": "Kutipan Verbatim Bukti Fisik"
         }),
         use_container_width=True,
@@ -1047,21 +1048,19 @@ with st.expander("Metodologi 3.3: Formulasi Pengali Ketenagakerjaan Hijau IRENA/
     1. **Adopsi Standar Pengali Resmi IRENA & IESR Berbasis Bukti Fisik di Repositori:**  
        Kuantifikasi penyerapan tenaga kerja mengacu secara ketat pada dokumen bukti fisik resmi yang tersimpan di repositori (`data/raw/sources/`):
        * **Bukti Fisik 1 — Laporan Resmi IRENA (*International Renewable Energy Agency*):**  
-         *Berkas Fisik:* `data/raw/sources/irena_leveraging_local_capacity_solar_pv_official.pdf` (32 Halaman, ISBN 978-92-9260-030-3).  
-         *Hasil Parsing OpenDataLoader:* `data/processed/opendataloader_parsed/sources/irena_leveraging_local_capacity_solar_pv_official.md`.  
+         *Dokumen PDF Sumber Langsung:* `data/raw/sources/irena_leveraging_local_capacity_solar_pv_official.pdf` (Laporan Resmi IRENA, 32 Halaman, ISBN 978-92-9260-030-3).  
          - **Fase Instalasi & Konstruksi (Halaman 22, Section 2.4 & Tabel 5):**  
            Total kebutuhan tenaga kerja instalasi mencapai **39.380 person-days per 50 MWp** (setara **787,6 person-days per MWp**).  
-           *Kutipan Verbatim:*  
+           *Kutipan Verbatim Dokumen Asli:*  
            > *"Installing and connecting a 50 MW solar plant takes about 39,380 person-days of labour. The most labour-intensive activity is site preparation and civil works, which accounts for more than half of the total (16,600 person-days). This activity is always sourced domestically, creating many opportunities for employment, especially for low- to medium-skilled workers."*  
            *Konversi FTE:* Berdasarkan standar ketenagakerjaan 260 hari kerja/tahun, instalasi langsung menyerap **3,03 FTE/MWp**, atau **6,89 job-years per MWp** jika menyerap rantai pasok perakitan dan fabrikasi lokal.
          - **Fase Operasional & Pemeliharaan / O&M 25 Tahun (Halaman 24–25, Section 2.5 & Tabel 7):**  
            Kebutuhan tenaga kerja pemeliharaan mencapai rata-rata **13.560 person-days per tahun untuk 50 MWp** (setara **271,2 person-days per MWp per tahun**).  
-           *Kutipan Verbatim:*  
+           *Kutipan Verbatim Dokumen Asli:*  
            > *"Operating and maintaining a 50 MW solar PV plant requires an average of 13,560 person-days for every year of the lifetime of the facility. Close to 86 percent for maintenance (between 9,950 and 13,300 person-days per year) and 14 percent of the labour is needed for operations (over 1,900 person-days per year)."*  
            *Konversi FTE:* Setara dengan **1,04 hingga 1,8 pekerja tetap per MWp** sepanjang 25 tahun operasional penuh.
        * **Bukti Fisik 2 — Kajian IESR (*Institute for Essential Services Reform*) & AESI:**  
-         *Berkas Fisik:* `data/raw/sources/iesr_dunia_energi_plts_ekonomi_official.html` (100,5 KB).  
-         *Hasil Parsing OpenDataLoader:* `data/processed/opendataloader_parsed/sources/iesr_dunia_energi_plts_ekonomi_official.md`.  
+         *Dokumen Publikasi Sumber Langsung:* `data/raw/sources/iesr_dunia_energi_plts_ekonomi_official.html` (Publikasi Resmi Dunia Energi / Kajian Pasar IESR & AESI 2021).  
          *Kutipan Verbatim Direktur Eksekutif IESR & Ketum AESI (Fabby Tumiwa, 28 Juli 2021, Paragraf 9):*  
          > *"Instalasi kumulatif 1 GWp PLTS atap dapat menyerap tenaga kerja langsung 20.000 – 30.000 orang per tahun (angka konservatif) serta menurunkan emisi GRK hingga 1,05 juta ton per tahun. Pengembangan PLTS atap ini akan berguna bagi pemerintah Indonesia dalam memulihkan ekonomi pasca Covid-19."*  
          *Dekomposisi Metrik:*  
@@ -1320,7 +1319,7 @@ with st.expander("Lihat Data Mentah : Standar Pengali Multiplier Green Jobs Resm
     desired_cols = [
         "id_multiplier", "institusi_sumber", "dokumen_sumber", "fase_kegiatan",
         "tipe_struktur_target", "multiplier_angka", "satuan_multiplier", "basis_metrik_asli",
-        "lokasi_bukti_fisik", "kalimat_verbatim"
+        "file_bukti_raw", "lokasi_bukti_fisik", "kalimat_verbatim"
     ]
     col_mapping = {
         "id_multiplier": "ID Pengali",
@@ -1331,6 +1330,7 @@ with st.expander("Lihat Data Mentah : Standar Pengali Multiplier Green Jobs Resm
         "multiplier_angka": "Nilai Pengali",
         "satuan_multiplier": "Satuan",
         "basis_metrik_asli": "Basis Metrik Dokumen",
+        "file_bukti_raw": "Dokumen Sumber (PDF/HTML)",
         "lokasi_bukti_fisik": "Lokasi Bukti Fisik",
         "kalimat_verbatim": "Kutipan Verbatim Dokumen Asli"
     }
