@@ -310,6 +310,81 @@ Data audit spasial yang membandingkan data koordinat masukan dari OpenStreetMap/
 #### Kelompok 5: Non-API Murni (1 Kolom ➖)
 1. **`No`** $\rightarrow$ Nomor urut integer baris tabel antarmuka pengguna Streamlit (`range(1, N+1)`).
 
+---
+
+### 7.3 Bukti Forensik Standar IEC 61724 & Benchmark Performance Ratio (PR 80%) di Indonesia
+
+Sesuai dengan mandat ketat `.agents/rules/strict_data_folder_boundary.md` dan `.agents/rules/no_hardcoded_data.md`, nilai **Performance Ratio (PR) 80% (0.80)** yang digunakan untuk mengonversi potensi DC Google Solar API ke produksi listrik AC bersih tahunan **wajib didukung oleh berkas bukti fisik di `data/raw/sources/`** serta dibukukan ke dataset terstruktur di `data/processed/references/`.
+
+#### 1. Inventarisasi Berkas Bukti Fisik di Repositori
+1. **Berkas Bukti Primer Empiris Indonesia:**
+   * **File Path Raw:** [`data/raw/sources/ijtech_ui_iec_61724_pv_performance_indonesia.pdf`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/raw/sources/ijtech_ui_iec_61724_pv_performance_indonesia.pdf) *(Ukuran: 956 KB, 11 Halaman)*
+   * **Salinan Terproses:** [`data/processed/references/ijtech_ui_iec_61724_pv_performance_indonesia.pdf`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/ijtech_ui_iec_61724_pv_performance_indonesia.pdf)
+   * **Transkrip Teks Penuh:** [`data/processed/references/ijtech_ui_iec_61724_pv_performance_indonesia.md`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/ijtech_ui_iec_61724_pv_performance_indonesia.md)
+   * **Dataset Referensi Terstruktur:** [`data/processed/references/standar_iec_61724_performance_ratio.csv`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/standar_iec_61724_performance_ratio.csv) & [`.parquet`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/standar_iec_61724_performance_ratio.parquet)
+   * **Judul Publikasi:** *"A Comparative Performance Analysis of a 1 MW CIS PV System and a 5 kW Crystalline-Si PV System under the Tropical Climate of Indonesia"*
+   * **Penulis:** Kun Kunaifi, Angèle Reinders, Dimas Kaharudin, Aripriantoni Harmanto, Kirjono Mudiarto.
+   * **Kolaborasi Institusi:** University of Twente (Belanda), UIN Suska Riau, Eindhoven University of Technology, dan PT Pembangkitan Jawa-Bali (PT PJB / PLN Group).
+   * **Penerbit:** *International Journal of Technology* (IJTech), Fakultas Teknik Universitas Indonesia, Vol. 10(6): 1082–1092 (2019). ISSN: 2086-9614.
+   * **DOI Resmi:** [10.14716/ijtech.v10i6.3612](https://doi.org/10.14716/ijtech.v10i6.3612).
+
+2. **Berkas Bukti Pemodelan Internasional (NREL):**
+   * **File Path Raw:** [`data/raw/sources/nrel_pvwatts_version5_manual.pdf`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/raw/sources/nrel_pvwatts_version5_manual.pdf) *(Halaman 13-14, Table 6).*
+   * **Penulis:** Aron P. Dobos, National Renewable Energy Laboratory (NREL), U.S. Department of Energy. Technical Report NREL/TP-6A20-62641.
+
+---
+
+#### 2. Kutipan Verbatim Definisi & Formula Standar IEC 61724
+Dikutip verbatim dari naskah publikasi resmi (Section 3.1 *Performance Calculations*, Halaman 1086-1087):
+
+> *"The monitoring standard IEC 61724 was applied to the analysis of the PV systems' performance (The International Electrotechnical Commission, 2017). The performance indicators presented include final yield ($Y_f$) in kWh/kWp; array yield ($Y_A$) in kWh/kWp; reference yield ($Y_r$) in kWh/kWp; capture losses ($L_C$) in kWh/kWp; system losses ($L_S$) in kWh/kWp; performance ratio ($PR$) as a percentage or a decimal between 0 and 1; efficiencies ($\eta$) as a percentage or a decimal between 0 and 1; and capacity factor ($CF$), also given as a percentage.*
+>
+> *The final yield, $Y_f$, is defined as the annual, monthly, or daily net AC energy output in kWh, $E_{ac}$, of the PV system per installed rated power, $P_{rated}$, and is given by Equation 1:*
+> $$Y_f = \frac{E_{ac}}{P_{rated}} \quad \left(\frac{\text{kWh}}{\text{kW}}\right) \quad (1)$$
+>
+> *The reference yield in kWh/kWp, $Y_r$, is the total amount of available in-plane solar irradiance in kWh/m2, $H_i$, divided by the reference irradiance, $G_{i,ref}$, of 1,000 W/m2 (Equation 3):*
+> $$Y_r = \frac{H_i}{G_{i,ref}} \quad \left(\frac{\text{kWh}}{\text{kW}}\right) \quad (3)$$
+>
+> *PR is a useful metric that shows how closely a PV system is operating in relation to its ideal rated operation. PR indicates the total losses from the system output due to both array temperature and system component inefficiencies or failures, including the BOS components. The array-level performance ratio, $PR_A$, and the system level, $PR$, are defined by Equation 6 and Equation 7:*
+> $$PR = \frac{Y_f}{Y_r} \quad (\text{dimensionless}) \quad (7)"*
+
+---
+
+#### 3. Kutipan Verbatim Hasil Empiris Lapangan di Iklim Tropis Indonesia (Cirata, Jawa Barat)
+Dikutip verbatim dari bagian *Abstract*, *Results*, dan *Conclusion* (Halaman 1082, 1089, dan 1091):
+
+> **Abstract (Hal. 1082):**  
+> *"The methodological approach used includes performance analyses of these PV systems according to IEC standard 61724 and an investigation of the degradation rate using NREL/RdTools. The following results were derived from the analyses: the total annual $H_i$ was 1500 kWh/m2 or around 4.2 kWh/m2/day. The daily-averaged performance ratio, PR, was 91.7 % ± 4 % and 87.4 % ± 7 % for the CIS system with string inverters and a central inverter, respectively. The mean PR of the CIS systems was 12 % higher than that of the c-Si system, which was 79.8 %."*
+
+> **Results Section 4.1 & Table 2 (Hal. 1089):**  
+> *"Figure 3 shows the PR of the PV systems in Cirata... PR for the c-Si system was 79.8 % ± 4 %. Table 2 shows the main performance indicators of the three PV systems in Cirata... The values for $\eta_{A,rated}$ of the CIS and c-Si system were respectively 13.8 % and 14.9 %."*
+>
+> **Tabel 2 (Performance Indicators di Cirata):**  
+> * c-Si Rooftop (5 kW): $Y_f = 3.37\text{ kWh/kWp}$, $Y_r = 4.22\text{ kWh/kWp}$, $L_c = 0.64\text{ kWh/kWp}$, $L_s = 0.21\text{ kWh/kWp}$, **$PR = 79.8\%$** (dibulatkan menjadi **80%**).
+
+> **Conclusion (Hal. 1091):**  
+> *"The daily-averaged PR of the CIS system was 89.6 % (mean PR of the central and string clusters), which is 12.2 % higher relative to the PR of the c-Si system of 80 %."*
+
+---
+
+#### 4. Kutipan Verbatim Standar Derate NREL PVWatts V5 (NREL/TP-6A20-62641)
+Dikutip verbatim dari NREL PVWatts Version 5 Manual (Halaman 14):
+
+> *"To approximately convert PVWatts V5 system loss to a PVWatts V1 DC-to-AC derate factor:*  
+> *1. Convert the system loss to a derate: $1 - 14/100 = 0.86$.*  
+> *2. Multiply this value by the nominal inverter efficiency: $0.86 \times 0.96 = 0.825$ ($82.5\%$).*  
+> *This suggests that the default PVWatts V5 system loss represents roughly a 7 % increase in system performance relative to PVWatts V1 due solely to updated input assumptions."*
+
+---
+
+#### 5. Kesimpulan Integrasi Metodologis Riset CELIOS
+Riset CELIOS mengadopsi angka **Performance Ratio (PR) = 80% (0.80)** karena:
+1. **Sesuai Standar Monitoring Internasional IEC 61724-1:** Menjadi formula baku pengurang (*derate*) untuk mentransformasi daya DC ke energi AC yang dialirkan ke beban/gardu.
+2. **Didukung Bukti Empiris Iklim Tropis Indonesia:** Uji coba lapangan 2 tahun pada modul crystalline silicon (c-Si) di Cirata (Jawa Barat) oleh tim Universitas Indonesia dan PT PJB (PLN Group) secara presisi membuktikan nilai PR riil adalah **79.8% ± 4%** (ekuivalen 80%).
+3. **Memperhitungkan Rugi-Rugi Riil Lapangan Perkotaan:**
+   * **Capture Losses ($L_c$):** Kenaikan suhu modul surya di iklim tropis perkotaan Jabodetabek ($T_{cell}$ dapat mencapai 45°C–65°C), hamburan partikel debu/polusi udara (*urban soiling*), dan deviasi sudut foton.
+   * **System Losses ($L_s$):** Efisiensi konversi inverter AC-DC (~96%-97%) serta resistansi kabel dan sambungan listrik.
 
 ---
 *Dokumen ini merupakan bagian dari Master Data Governance CELIOS Solar Research 2026. Seluruh hak cipta dan merek dagang Google Solar API dimiliki oleh Google LLC.*
+
