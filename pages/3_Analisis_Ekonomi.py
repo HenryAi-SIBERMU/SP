@@ -393,11 +393,11 @@ with col_b6:
     st.markdown(f"""
     <div class="bento-card">
         <div>
-            <div class="bento-lbl">Beban Likuiditas Kas APBD</div>
-            <div class="bento-val" style="color: #AB47BC;">Rp 0,- <span style="font-size:1.1rem;color:#E1BEE7;">Zero-APBD</span></div>
-            <div class="bento-desc">Opsi skema Sewa Atap Swasta (PPA): 100% CAPEX swasta, Pemda langsung terima diskon listrik.</div>
+            <div class="bento-lbl">Belanja Modal APBD (CAPEX)</div>
+            <div class="bento-val" style="color: #AB47BC;">Rp 0,- <span style="font-size:1.1rem;color:#E1BEE7;">(Opsi PPA Swasta)</span></div>
+            <div class="bento-desc">Skema Sewa Atap (BOOT): 100% modal awal (Rp 4,44 T) ditanggung investor swasta. APBD dialihkan ke pos belanja operasional listrik berdiskon 15–20%.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Permen ESDM No. 2/2024 & Perpres 11/2023<br><b>File:</b> matriks_skema_pengadaan_zero_apbd.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Permendagri No. 19/2016 (KSP BMD) & Model Tim<br><b>File:</b> matriks_skema_pengadaan_zero_apbd.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1840,14 +1840,14 @@ with col_sc1:
         <div class="metric-value" style="font-size: 1.5rem; color: #E8F5E9;">PPA Sewa Atap Swasta</div>
         <div class="metric-sub" style="margin-bottom: 0.8rem;">Solar as a Service (BOOT Tenor 15–20 Tahun)</div>
         <div style="background: rgba(0, 230, 118, 0.08); border-radius: 6px; padding: 0.6rem; font-size: 0.82rem; color: #C8E6C9; line-height: 1.5; margin-bottom: 0.8rem;">
-            Beban Kas Daerah: <b>Rp 0,- (Zero-APBD)</b><br>
+            Beban Modal Awal (CAPEX): <b>Rp 0,- (Zero Initial CAPEX)</b><br>
             Diskon Tagihan Listrik: <b>15,0% s.d. 20,0%</b><br>
             Kecepatan Eksekusi: <b>Sangat Cepat (3–6 Bulan)</b><br>
             Risiko Pemeliharaan: <b>100% Ditanggung Investor</b><br>
             Kepemilikan Akhir: <b>Hibah Gratis Menjadi Milik Pemda</b>
         </div>
         <div style="font-size: 0.78rem; color: #90A4AE; border-top: 1px solid #263238; padding-top: 0.5rem;">
-            <b>Payung Hukum:</b> Permen ESDM No. 2/2024 & Perpres No. 11/2023. Ideal untuk RSUD, Sekolah, Mall & Kampus.
+            <b>Payung Hukum:</b> Permendagri No. 19/2016 (Pemanfaatan BMD) & Perpres No. 38/2015 (KPBU). Ideal untuk RSUD, Sekolah, Mall & Kampus.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -2164,7 +2164,7 @@ with st.expander("Lihat Data Mentah : Matriks Evaluasi Komparatif Skema Pengadaa
             key="dl_zero_csv"
         )
     with col_dl_z2:
-        st.caption("Berkas sumber: `data/processed/references/matriks_skema_pengadaan_zero_apbd.csv` | Dilengkapi sitasi Permen ESDM No. 2/2024 & Permendagri No. 19/2016.")
+        st.caption("Berkas sumber: `data/processed/references/matriks_skema_pengadaan_zero_apbd.csv` | Dilengkapi sitasi Permendagri No. 19/2016 (KSP BMD) & Perpres No. 38/2015 (KPBU).")
 
 with st.expander("Lihat Data Mentah : Benchmark Bukti Empiris PLTS Bandara Soetta Aktual (CSV)"):
     st.markdown("Rekam jejak instalasi PLTS aktual yang beroperasi komersial penuh di kawasan Bandara Internasional Soekarno-Hatta:")
