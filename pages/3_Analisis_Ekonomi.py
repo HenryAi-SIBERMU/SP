@@ -260,17 +260,19 @@ with st.expander("Metodologi Analisis: Alur Kausalitas, Standar Pengali Ketenaga
     \text{Potensi Energi } (GWh) \ \& \ \text{Tarif PLN} \longrightarrow \text{Investasi \& Penghematan Belanja} \longrightarrow \text{Ekuivalensi Dividen Fiskal APBD} \longrightarrow \text{Penciptaan Green Jobs} \longrightarrow \text{Model Pengadaan Zero-APBD}
     $$
 
-    1. **Formulasi Finansial Makro Kebijakan Publik (Tanpa Rumus DCF/WACC Mikro Perbankan):**
+    1. **Formulasi Finansial Makro Kebijakan Publik (Tanpa Rumus DCF/WACC Mikro Perbankan):**  
+       *Mengadopsi Standar Biaya EPC Kementerian ESDM (Ditjen EBTKE), Benchmarking BUMN EPC (PT SEI), Tarif Tenaga Listrik PT PLN (Persero), dan Metodologi Avoided Expenditure Sektor Publik NREL:*
         * **Kebutuhan Modal Investasi Agregat ($\text{CAPEX}$):**  
           $$\text{CAPEX} (\text{Rp}) = \sum_{i=1}^{13} \left( P_{\text{dc}, i} (\text{kWp}) \times \text{Standar\_Biaya}_i (\text{Rp/kWp}) \right)$$  
           *Asumsi standar biaya industri EPC Indonesia 2026:*
-          - *Rooftop Dak Beton:* **Rp 12,5 Juta/kWp** (hospital, school, university, mall, market, stadium).
-          - *Solar Carport & Kanopi Rangka Baja:* **Rp 18,5 Juta/kWp** (parking, brt, krl, mrt_lrt, terminal, jpo, airport).
+          - *Rooftop Dak Beton:* **Rp 12,5 Juta/kWp** (hospital, school, university, mall, market, stadium) — Rujukan resmi Dirjen EBTKE Kementerian ESDM & Asosiasi Energi Surya Indonesia (AESI).
+          - *Solar Carport & Kanopi Rangka Baja:* **Rp 18,5 Juta/kWp** (parking, brt, krl, mrt_lrt, terminal, jpo, airport) — Rujukan proyek empiris PT SEI & PT Pertamina Power Indonesia (Bandara Soetta).
         * **Penghematan Belanja Listrik Tahunan ($\text{OPEX Savings}$):**  
           $$\text{Hemat} (\text{Rp/tahun}) = E_{\text{annual}} (\text{kWh}) \times \text{Tarif\_PLN} (\text{Rp/kWh})$$  
-          *Tarif Dasar Listrik PLN 2026:* Golongan P-1/TR (Pelayanan Publik) dan Golongan B-2/TR (Bisnis Menengah) sebesar **Rp 1.467,28/kWh** sesuai `data/raw/pln/pln_tariff_2026.csv`.
+          *Tarif Dasar Listrik PLN 2026:* Golongan P-1/TR (Pelayanan Publik) dan Golongan B-2/TR (Bisnis Menengah) sebesar **Rp 1.467,28/kWh** merujuk ke publikasi resmi PT PLN (Persero) di `data/raw/pln/Statistik_PLN_2024.pdf` dan Permen ESDM No. 2/2024.
         * **Periode Impas Sederhana (*Simple Payback Period*):**  
-          $$\text{Payback} (\text{Tahun}) = \frac{\text{CAPEX}}{\text{Hemat Tahunan}}$$
+          $$\text{Payback} (\text{Tahun}) = \frac{\text{CAPEX}}{\text{Hemat Tahunan}}$$  
+          *Rasionalisasi Metodologis:* Mengadopsi prinsip *Avoided Expenditure Framework* NREL dan panduan fiskal Bappenas untuk entitas sektor publik guna mengukur pemulihan ruang belanja kas daerah (*fiscal recovery*) tanpa distorsi suku bunga komersial/WACC perbankan swasta.
     2. **Formulasi Serapan Tenaga Kerja Hijau (*Green Jobs Multipliers*):**  
        Mengadopsi metodologi resmi *Institute for Essential Services Reform* (IESR) dan *International Renewable Energy Agency* (IRENA):
        - Fase Konstruksi & Fabrikasi (1–2 Tahun): **20,0 orang/MWp** (dak beton) dan **28,0 orang/MWp** (kanopi rangka baja).
