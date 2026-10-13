@@ -199,109 +199,117 @@ if dl_resp.status_code == 200:
 
 ---
 
-## 7. Pemetaan Lengkap Data Lineage Tabel Master Dashboard (Return Solar API vs Derived/Kalkulasi)
+## 7. Pemetaan Lengkap Data Lineage Tabel Master Dashboard (Return Solar API vs API Lain vs Kalkulasi ETL)
 
 Bagian ini memetakan secara mendalam seluruh **31 kolom data** yang disajikan pada **Tabel Dropdown Seluruh Data 2.100 Titik Fasilitas (Master Data Layers & Building Insights)** di Halaman 1 Dashboard ([`pages/1_Pemetaan_Potensi.py`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/pages/1_Pemetaan_Potensi.py)). 
 
-Setiap baris kolom diaudit secara ketat untuk membedakan antara **data mentah yang di-return langsung oleh Google Solar API (Native/Raw)** dengan **data hasil kalkulasi turunan pipeline ETL, penerapan standar rekayasa ketenagalistrikan (IEC 61724 / SNI), maupun metadata registri eksternal**.
+Seluruh kolom diaudit berdasarkan asal-usul perolehan datanya:
+1. **Direct Return Asli (Google Solar API & API Eksternal Lainnya)** diberi tanda centang hijau (**✅**) dengan mencantumkan nama API dan nama field spesifiknya.
+2. **Kalkulasi ETL / Turunan Sekunder yang mengambil bahan dari return Solar API atau API lainnya** juga diberi tanda centang hijau (**✅**) dengan mencantumkan formula kalkulasi serta field data API yang menjadi bahannya.
+3. **Data Murni Non-API** (hanya kolom nomor urut tabel UI `No`) diberi tanda (**➖**).
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│             KOMPOSISI DATA LINEAGE TABEL MASTER DASHBOARD             │
-├────────────────────────────────────────────────────────────────────────┤
-│  Total Kolom Ditampilkan : 31 Kolom                                    │
-│  ├─ ✅ Direct Return Asli Google Solar API : 12 Kolom (38.7%)          │
-│  ├─ ⚙️ Parameter Turunan (Derived ETL/SNI) : 16 Kolom (51.6%)          │
-│  └─ 🌐 Metadata Registri POI Eksternal    :  3 Kolom (9.7%)           │
-└────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│             KOMPOSISI DATA LINEAGE TABEL MASTER DASHBOARD (BERBASIS API)              │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  Total Kolom Ditampilkan                     : 31 Kolom                                │
+│  ├─ ✅ Direct Return Asli Google Solar API   : 12 Kolom (38.7%)                        │
+│  ├─ ✅ Direct Return API Eksternal (OSM/Nom) :  3 Kolom  (9.7%)                        │
+│  ├─ ✅ Kalkulasi ETL Bahan Google Solar API  : 13 Kolom (41.9%)                        │
+│  ├─ ✅ Kalkulasi ETL Bahan Multi-API         :  2 Kolom  (6.5%)                        │
+│  └─ ➖ Non-API (Hanya Auto-Index UI)         :  1 Kolom  (3.2%)                        │
+│                                                                                        │
+│  TOTAL BERBASIS API (DIRECT RETURN + KALKULASI DARI API) = 30 DARI 31 KOLOM (96.8% ✅) │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ### 7.1 Matriks Audit Data Lineage Seluruh Kolom Tabel Master Dashboard
 
-Tabel berikut menyajikan pemetaan lengkap baris per baris untuk setiap kolom di tabel master:
-
-| No | Nama Kolom di Tabel UI Dashboard | Nama Field di DataFrame / CSV (`pow_solar_kumulatif_summary.csv`) | Tipe Data | Klasifikasi Data Lineage | Sumber Asli / Formula Kalkulasi Teknis | Justifikasi Ilmiah & Metodologis |
+| No | Nama Kolom di UI Dashboard | Nama Field di CSV / DataFrame | Tipe Data | Klasifikasi Data Lineage | Sumber API Asal & Formula Kalkulasi Teknis | Keterangan & Peran Metodologis |
 | :-: | :--- | :--- | :---: | :---: | :--- | :--- |
-| 1 | **No** | `No` | `Integer` | ⚙️ **Derived (UI Index)** | `range(1, len(master_table) + 1)` | Penomoran urut dinamis baris tabel pada antarmuka Streamlit untuk kemudahan pelaporan. |
-| 2 | **Kategori** | `category_display` | `String` | 🌐 **Metadata POI Eksternal** | Registri 13 Tipologi Fasilitas Publik CELIOS (`target_2000_titik.csv`) | Klasifikasi sektoral fasilitas (KRL, MRT/LRT, BRT, RSUD, Sekolah, Mall, Pasar, dsb.) berbasis POI OpenStreetMap & BPS. |
-| 3 | **Infrastruktur** | `asset_name` | `String` | 🌐 **Metadata POI Eksternal** | Kolom `asset_name` registri fasilitas CELIOS | Nama resmi gedung/titik infrastruktur publik (misal: *"RSUD Pasar Minggu"*, *"Halte CSW"*). |
-| 4 | **Wilayah** | `city_regency` | `String` | 🌐 **Metadata POI Eksternal** | Batas Administrasi Geospasial Kemendagri / BIG | Entitas daerah administratif tingkat II (5 Kota DKI Jakarta + 8 Daerah Bodetabek). |
-| 5 | **Kode Pos** | `postal_code` | `String` | ✅ **Direct Return Solar API** | `bi_data["postalCode"]` | Kode pos resmi lokasi bangunan yang diidentifikasi secara otomatis oleh sistem geospasial Google Maps. |
-| 6 | **Total Fisik Atap (m²)** | `whole_roof_area_m2` | `Float` | ✅ **Direct Return Solar API** | `solarPotential.wholeRoofStats.areaMeters2` | Luas total penampang fisik 3D seluruh bidang atap gedung hasil rekonstruksi fotogrametri satelit Google. |
-| 7 | **Atap Layak PLTS (m²)** | `max_roof_area_m2` | `Float` | ✅ **Direct Return Solar API** | `solarPotential.maxArrayAreaMeters2` | Luas efektif bidang atap yang memenuhi ambang insolasi radiasi minimal Google dan bebas dari bayangan permanen (*shading*). |
-| 8 | **Rasio Kelayakan (%)** | `roof_suitability_ratio_pct` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | `(max_roof_area_m2 / whole_roof_area_m2) * 100` | Proporsi luas bidang atap yang layak dipasangi panel terhadap total fisik atap keseluruhan. |
-| 9 | **Tapak Bangunan (m²)** | `building_footprint_m2` | `Float` | ✅ **Direct Return Solar API** | `solarPotential.buildingStats.areaMeters2` | Luas area proyeksi tapak dasar poligon bangunan (*ground footprint*) di atas permukaan tanah. |
-| 10 | **Cakupan Atap (%)** | `roof_coverage_ratio_pct` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | `(whole_roof_area_m2 / building_footprint_m2) * 100` | Rasio luas atap tersegmentasi terhadap tapak dasar; mengukur kelengkapan fotogrametri satelit dalam mengenali overhanging kanopi. |
-| 11 | **Celah Non-Segmen (m²)** | `gap_unsegmented_m2` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | `max(0.0, building_footprint_m2 - whole_roof_area_m2)` | Selisih tapak bangunan dengan atap tersegmentasi (mencerminkan dak peron/selasar datar tak bersekat). |
-| 12 | **Total Celah (m²)** | `total_gap_m2` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | `max(0.0, building_footprint_m2 - max_roof_area_m2)` | Total ruang fisik atap/tapak yang belum termanfaatkan modul di baseline Google (dasar Skenario Infill SNI 8395). |
-| 13 | **Kondisi Celah** | `gap_category` | `String` | ⚙️ **Derived (Aturan CELIOS)** | Rule-based thresholding pada `roof_coverage_ratio_pct` | Taksonomi ruang celah atap: `Gap Sedikit` ($\ge 80\%$), `Gap Sedang` ($70\% - 80\%$), atau `Gap Besar` ($< 70\%$). |
-| 14 | **Total Segmen** | `total_segments` | `Integer` | ✅ **Direct Return Solar API** | `len(solarPotential.roofSegmentStats)` | Total jumlah bidang poligon miring 3D individual yang menyusun struktur arsitektur atap bangunan. |
-| 15 | **Segmen Terisi** | `active_segments` | `Integer` | ⚙️ **Derived (Analisis Spasial)** | Count segmen di `solarPanels[]` dengan `panels_count > 0` | Jumlah bidang segmen atap yang teralokasi minimal 1 modul surya di dalam konfigurasi Google. |
-| 16 | **Rentang Kemiringan (Min – Max)** | `pitch_range` | `String` | ✅ **Direct Return Solar API** | Agregasi `pitchDegrees` dari `roofSegmentStats[]` | Nilai sudut kemiringan lereng atap terendah dan tertinggi (format: `min° – max°`). |
-| 17 | **Bobot Kemiringan** | `weighted_pitch_deg` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | $\frac{\sum (\text{pitchDegrees}_i \times \text{area}_i)}{\sum \text{area}_i}$ | Sudut kemiringan rata-rata tertimbang (*weighted average pitch*) berdasarkan luas masing-masing segmen atap. |
-| 18 | **Total Panel (unit)** | `max_panels_count` | `Integer` | ✅ **Direct Return Solar API** | `solarPotential.maxArrayPanelsCount` | Jumlah modul surya maksimum yang dapat dipasang di atas atap layak menurut model tata letak Google. |
-| 19 | **Kapasitas (kWp)** | `installed_capacity_kwp` | `Float` | ⚙️ **Derived (Standar Modul)** | `(maxArrayPanelsCount * 400 Wp) / 1000` | Kapasitas daya puncak DC sistem; mengalikan jumlah modul Google dengan kapasitas standar industri mono-PERC (400 Wp). |
-| 20 | **Jam Sinar (jam/thn)** | `sunshine_hours_annual` | `Float` | ✅ **Direct Return Solar API** | `solarPotential.maxSunshineHoursPerYear` | Jam penyinaran puncak ekuivalen per tahun (*Peak Sun Hours* / PSH) di titik geospasial gedung target. |
-| 21 | **Potensi DC Google (MWh)** | `google_dc_mwh` | `Float` | ✅ **Direct Return Solar API** | `solarPanelConfigs[-1].yearlyEnergyDcKwh / 1000` | Total produksi listrik DC mentah tahunan dari skenario konfigurasi panel maksimum bawaan kalkulasi Google. |
-| 22 | **Listrik AC Bersih (MWh)** | `annual_generation_mwh` | `Float` | ⚙️ **Derived (Standar IEC 61724)**| $\frac{\text{kWp} \times \text{PSH} \times 0.80}{1000}$ | Produksi energi listrik AC bersih riil setelah memperhitungkan susut inverter, kabel, dan suhu tropis (*Performance Ratio* 80%). |
-| 23 | **Rata² kWh/Panel** | `prod_per_panel_kwh` | `Float` | ⚙️ **Derived (Kalkulasi ETL)** | `annual_generation_kwh / max_panels_count` | Rata-rata hasil panen energi listrik bersih per 1 modul per tahun (indikator efisiensi insolasi lokal). |
-| 24 | **Faktor CO₂ (kg/MWh)** | `carbon_offset_factor` | `Float` | ✅ **Direct Return Solar API** | `solarPotential.carbonOffsetFactorKgPerMwh` | Faktor emisi karbon grid interkoneksi regional bawaan Google Cloud Platform (**808.999 kg CO₂/MWh** untuk Grid Jamali). |
-| 25 | **Reduksi CO₂ (Ton/thn)** | `ghg_reduction_tons_co2` | `Float` | ⚙️ **Derived (Kalkulasi Emisi)**| $\frac{\text{annual\_generation\_mwh} \times 808.999}{1000}$ | Estimasi volume pengurangan emisi gas rumah kaca tahunan dalam satuan Metrik Ton $CO_2$ ekuivalen. |
-| 26 | **Drift (m)** | `spatial_drift_meters` | `Float` | ⚙️ **Derived (Formula Geodesi)** | `haversine_distance(raw_coord, google_center)` | Jarak pergeseran spasial antara pin titik POI masukan dengan titik tengah atap gedung (*centroid*) hasil Google. |
-| 27 | **Status Spasial** | `drift_status` | `String` | ⚙️ **Derived (Audit Spasial)** | `VALID (< 30m)` jika drift $\le 30$ m, else `REVIEW` | Klasifikasi validasi spasial geocoding untuk menjamin akurasi fotogrametri pada gedung target yang tepat. |
-| 28 | **Tgl Citra Satelit** | `imagery_date` | `String` | ✅ **Direct Return Solar API** | `imageryDate` `{year}-{month:02d}-{day:02d}` | Tanggal akuisisi pemotretan udara satelit resolusi tinggi yang digunakan dalam pemodelan fotogrametri 3D. |
-| 29 | **Kualitas Citra** | `res_tier` | `String` | ⚙️ **Derived (Format String)** | `f"0.25 m/px ({imageryQuality})"` | Tingkat resolusi spasial citra satelit (0.25 m/piksel) dipadukan dengan tier kualitas Google (`BASE`). |
-| 30 | **Google Building ID** | `google_building_id` | `String` | ✅ **Direct Return Solar API** | `bi_data["name"]` (`buildings/{place_id}`) | Pengenal unik resmi bangunan pada basis data geospasial Google Maps Platform. |
-| 31 | **URL Verifikasi Google Maps** | `google_maps_url` | `String` | ⚙️ **Derived (URL Generator)** | `f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"` | Tautan navigasi web resmi ke Google Maps Satelit untuk verifikasi visual langsung oleh auditor/peneliti. |
+| 1 | **No** | `No` | `Integer` | ➖ **Non-API (UI Counter)** | Generator Python UI: `range(1, len(table) + 1)` | Nomor urut baris dinamis antarmuka Streamlit (tidak memerlukan panggilan jaringan). |
+| 2 | **Kategori** | `category_display` | `String` | ✅ **Direct Return / Filter API** | **OpenStreetMap Overpass API**<br>Query tags: `amenity=*`, `railway=*`, `highway=*`, `shop=*` | Klasifikasi sektoral fasilitas publik & komersial (KRL, BRT, RSUD, Sekolah, Mall, Pasar, dsb.). |
+| 3 | **Infrastruktur** | `asset_name` | `String` | ✅ **Direct Return API** | **OSM Overpass & Nominatim Reverse API**<br>Field: `tags.name` / `display_name` | Nama resmi fasilitas/bangunan publik yang diekstraksi dari katalog OpenStreetMap. |
+| 4 | **Wilayah** | `city_regency` | `String` | ✅ **Direct Return API** | **Nominatim Reverse Geocoding API**<br>Field: `address.city` / `address.county` / `address.city_district` | Wilayah administrasi tingkat II (5 Kota DKI Jakarta + 8 Wilayah Bodetabek). |
+| 5 | **Kode Pos** | `postal_code` | `String` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `bi_data["postalCode"]` | Kode pos resmi lokasi bangunan yang diidentifikasi secara otomatis oleh sistem geospasial Google Maps. |
+| 6 | **Total Fisik Atap (m²)** | `whole_roof_area_m2` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.wholeRoofStats.areaMeters2` | Luas fisik 3D seluruh bidang atap gedung hasil fotogrametri satelit resolusi tinggi. |
+| 7 | **Atap Layak PLTS (m²)** | `max_roof_area_m2` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.maxArrayAreaMeters2` | Luas atap efektif yang lolos ambang insolasi radiasi surya minimal & bebas dari bayangan permanen. |
+| 8 | **Rasio Kelayakan (%)** | `roof_suitability_ratio_pct` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | `(max_roof_area_m2 / whole_roof_area_m2) * 100`<br>Bahan: `maxArrayAreaMeters2` & `wholeRoofStats.areaMeters2` | Persentase proporsi bidang atap yang layak dipasangi panel terhadap total fisik atap keseluruhan. |
+| 9 | **Tapak Bangunan (m²)** | `building_footprint_m2` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.buildingStats.areaMeters2` | Luas proyeksi dasar tapak bangunan (*ground footprint*) di atas permukaan tanah. |
+| 10 | **Cakupan Atap (%)** | `roof_coverage_ratio_pct` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | `(whole_roof_area_m2 / building_footprint_m2) * 100`<br>Bahan: `wholeRoofStats.areaMeters2` & `buildingStats.areaMeters2` | Rasio luas atap tersegmentasi terhadap tapak dasar; mengukur kelengkapan fotogrametri satelit terhadap struktur bangunan. |
+| 11 | **Celah Non-Segmen (m²)** | `gap_unsegmented_m2` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | `max(0.0, building_footprint_m2 - whole_roof_area_m2)`<br>Bahan: `buildingStats.areaMeters2` & `wholeRoofStats.areaMeters2` | Selisih tapak bangunan dengan atap tersegmentasi (mencerminkan dak peron/selasar datar tak bersekat). |
+| 12 | **Total Celah (m²)** | `total_gap_m2` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | `max(0.0, building_footprint_m2 - max_roof_area_m2)`<br>Bahan: `buildingStats.areaMeters2` & `maxArrayAreaMeters2` | Total luasan tapak bangunan yang belum dimanfaatkan modul (dasar ruang untuk Skenario Infill SNI 8395). |
+| 13 | **Kondisi Celah** | `gap_category` | `String` | ✅ **Kalkulasi ETL (Bahan Solar API)** | Klasifikasi rule-based pada `roof_coverage_ratio_pct`<br>Bahan: Rasio atap hasil Google Solar API | Kategori celah atap: `Gap Sedikit` ($\ge 80\%$), `Gap Sedang` ($70\% - 80\%$), atau `Gap Besar` ($< 70\%$). |
+| 14 | **Total Segmen** | `total_segments` | `Integer` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `len(solarPotential.roofSegmentStats)` | Total jumlah bidang poligon miring 3D individual yang menyusun struktur arsitektur atap bangunan. |
+| 15 | **Segmen Terisi** | `active_segments` | `Integer` | ✅ **Kalkulasi ETL (Bahan Solar API)** | Count segmen di mana `panelsCount > 0`<br>Bahan: `solarPanels[].segmentIndex` & `roofSegmentSummaries[]` | Jumlah bidang segmen atap yang teralokasi minimal 1 modul surya di konfigurasi Google. |
+| 16 | **Rentang Kemiringan (Min – Max)** | `pitch_range` | `String` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `min/max(roofSegmentStats[].pitchDegrees)` | Rentang sudut kemiringan lereng atap terendah dan tertinggi terhadap bidang datar (format: `min° – max°`). |
+| 17 | **Bobot Kemiringan** | `weighted_pitch_deg` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | $\frac{\sum (\text{pitchDegrees}_i \times \text{area}_i)}{\sum \text{area}_i}$<br>Bahan: `roofSegmentStats[].pitchDegrees` & `stats.areaMeters2` | Sudut kemiringan rata-rata tertimbang (*weighted average pitch*) berdasarkan luas masing-masing segmen atap. |
+| 18 | **Total Panel (unit)** | `max_panels_count` | `Integer` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.maxArrayPanelsCount` | Jumlah modul surya maksimum yang dapat dipasang di atap layak menurut model tata letak Google. |
+| 19 | **Kapasitas (kWp)** | `installed_capacity_kwp` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | $\frac{\text{maxArrayPanelsCount} \times 400\,\text{Wp}}{1000}$<br>Bahan: `solarPotential.maxArrayPanelsCount` & `panelCapacityWatts` (400Wp) | Kapasitas daya puncak DC sistem; mengalikan jumlah modul Google dengan kapasitas modul standar 400 Wp. |
+| 20 | **Jam Sinar (jam/thn)** | `sunshine_hours_annual` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.maxSunshineHoursPerYear` | Jam penyinaran puncak ekuivalen per tahun (*Peak Sun Hours* / PSH) di titik geospasial gedung target. |
+| 21 | **Potensi DC Google (MWh)** | `google_dc_mwh` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPanelConfigs[-1].yearlyEnergyDcKwh / 1000` | Total estimasi listrik DC kotor tahunan dari simulasi konfigurasi panel maksimum bawaan Google. |
+| 22 | **Listrik AC Bersih (MWh)** | `annual_generation_mwh` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | $\frac{\text{kWp} \times \text{PSH} \times 0.80}{1000}$<br>Bahan: `maxArrayPanelsCount` & `maxSunshineHoursPerYear` + IEC 61724 | Estimasi produksi listrik AC bersih riil setelah susut inverter, kabel, dan suhu tropis (*Performance Ratio* 80%). |
+| 23 | **Rata² kWh/Panel** | `prod_per_panel_kwh` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | $\frac{\text{annual\_generation\_kwh}}{\text{max\_panels\_count}}$<br>Bahan: `annual_generation_kwh` & `maxArrayPanelsCount` | Rata-rata hasil panen energi listrik bersih per 1 keping modul per tahun (indikator efisiensi insolasi lokal). |
+| 24 | **Faktor CO₂ (kg/MWh)** | `carbon_offset_factor` | `Float` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `solarPotential.carbonOffsetFactorKgPerMwh` | Faktor intensitas emisi karbon grid regional bawaan Google Cloud (**808.999 kg CO₂/MWh** untuk Grid Jamali). |
+| 25 | **Reduksi CO₂ (Ton/thn)** | `ghg_reduction_tons_co2` | `Float` | ✅ **Kalkulasi ETL (Bahan Solar API)** | $\frac{\text{annual\_generation\_mwh} \times \text{carbonOffsetFactor}}{1000}$<br>Bahan: `annual_generation_mwh` & `carbonOffsetFactorKgPerMwh` | Estimasi volume pengurangan emisi gas rumah kaca tahunan dalam satuan Metrik Ton $CO_2$ ekuivalen. |
+| 26 | **Drift (m)** | `spatial_drift_meters` | `Float` | ✅ **Kalkulasi ETL (Bahan Multi-API)** | `haversine_distance(raw_poi, google_center)`<br>Bahan: Koordinat OSM/Nominatim vs `center` Google Solar API | Jarak pergeseran spasial antara pin titik POI masukan dengan titik tengah atap gedung (*centroid*) hasil Google. |
+| 27 | **Status Spasial** | `drift_status` | `String` | ✅ **Kalkulasi ETL (Bahan Multi-API)** | Kondisi: `VALID (< 30m)` jika drift $\le 30$ m, else `REVIEW`<br>Bahan: Jarak drift hasil kalkulasi koordinat API | Validasi kepresisian geospasial untuk memastikan bahwa fotogrametri satelit tepat mengunci atap gedung target. |
+| 28 | **Tgl Citra Satelit** | `imagery_date` | `String` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `imageryDate` (`year`, `month`, `day`) | Tanggal akuisisi pemotretan udara satelit resolusi tinggi yang mendasari analisis fotogrametri 3D. |
+| 29 | **Kualitas Citra** | `res_tier` | `String` | ✅ **Kalkulasi ETL (Bahan Solar API)** | Format string: `f"0.25 m/px ({imageryQuality})"`<br>Bahan: `bi_data["imageryQuality"]` (yaitu `BASE`) | Tingkat resolusi spasial citra satelit (0.25 m/piksel) dipadukan dengan tier kualitas Google. |
+| 30 | **Google Building ID** | `google_building_id` | `String` | ✅ **Direct Return Solar API** | **Google Solar API (Building Insights)**<br>Field: `bi_data["name"]` (`buildings/{place_id}`) | Pengenal unik resmi bangunan pada basis data geospasial Google Maps Platform. |
+| 31 | **URL Verifikasi Google Maps** | `google_maps_url` | `String` | ✅ **Kalkulasi ETL (Bahan Solar API)** | URL generator: `https://www.google.com/maps/search/?api=1&query={lat},{lon}`<br>Bahan: `center.latitude` & `center.longitude` Google Solar API | Tautan navigasi web resmi ke Google Maps Satelit untuk verifikasi visual langsung oleh auditor/peneliti. |
 
 ---
 
-### 7.2 Rekapitulasi Komparasi Berdampingan: Parameter Murni Google vs Parameter Turunan
+### 7.2 Klasifikasi Lengkap per Kategori API
 
-#### Kelompok A: 12 Parameter Murni Hasil Return Google Solar API (Native)
-Parameter pada kelompok ini diperoleh langsung secara murni dari respons JSON Google Solar API tanpa melalui rumus konversi atau intervensi eksternal:
+#### Kelompok 1: Direct Return Asli Google Solar API (12 Kolom ✅)
+Data mentah yang diambil langsung dari atribut JSON respons Google Solar API:
+1. **`Kode Pos`** $\rightarrow$ `postalCode`
+2. **`Total Fisik Atap (m²)`** $\rightarrow$ `solarPotential.wholeRoofStats.areaMeters2`
+3. **`Atap Layak PLTS (m²)`** $\rightarrow$ `solarPotential.maxArrayAreaMeters2`
+4. **`Tapak Bangunan (m²)`** $\rightarrow$ `solarPotential.buildingStats.areaMeters2`
+5. **`Total Segmen`** $\rightarrow$ `len(solarPotential.roofSegmentStats)`
+6. **`Rentang Kemiringan (Min – Max)`** $\rightarrow$ `roofSegmentStats[].pitchDegrees` (min & max)
+7. **`Total Panel (unit)`** $\rightarrow$ `solarPotential.maxArrayPanelsCount`
+8. **`Jam Sinar (jam/thn)`** $\rightarrow$ `solarPotential.maxSunshineHoursPerYear`
+9. **`Potensi DC Google (MWh)`** $\rightarrow$ `solarPanelConfigs[-1].yearlyEnergyDcKwh / 1000`
+10. **`Faktor CO₂ (kg/MWh)`** $\rightarrow$ `solarPotential.carbonOffsetFactorKgPerMwh` (**808,999 kg/MWh**)
+11. **`Tgl Citra Satelit`** $\rightarrow$ `imageryDate` (`year`, `month`, `day`)
+12. **`Google Building ID`** $\rightarrow$ `name` (`buildings/{place_id}`)
 
-| No | Nama Kolom di Dashboard | Key JSON Google Solar API | Satuan Asli | Arti & Peran dalam Analisis |
-| :-: | :--- | :--- | :---: | :--- |
-| 1 | **Kode Pos** | `postalCode` | Teks | Wilayah pos administratif bangunan. |
-| 2 | **Total Fisik Atap (m²)** | `solarPotential.wholeRoofStats.areaMeters2` | $m^2$ | Luas total fisik seluruh segmen atap gedung. |
-| 3 | **Atap Layak PLTS (m²)** | `solarPotential.maxArrayAreaMeters2` | $m^2$ | Luas atap dengan insolasi layak tanpa naungan permanen. |
-| 4 | **Tapak Bangunan (m²)** | `solarPotential.buildingStats.areaMeters2` | $m^2$ | Luas proyeksi tapak gedung di atas tanah (*footprint*). |
-| 5 | **Total Segmen** | `len(solarPotential.roofSegmentStats)` | Unit | Jumlah bidang miring atap yang teridentifikasi secara 3D. |
-| 6 | **Rentang Kemiringan (Min – Max)** | `roofSegmentStats[].pitchDegrees` | Derajat ($^\circ$) | Sudut kemiringan terendah dan tertinggi bidang atap. |
-| 7 | **Total Panel (unit)** | `solarPotential.maxArrayPanelsCount` | Modul | Batas maksimum unit panel yang muat di atap layak. |
-| 8 | **Jam Sinar (jam/thn)** | `solarPotential.maxSunshineHoursPerYear` | Jam / Tahun | Jam matahari puncak ekuivalen (*Peak Sun Hours* / PSH). |
-| 9 | **Potensi DC Google (MWh)** | `solarPanelConfigs[-1].yearlyEnergyDcKwh` | kWh DC (dikonversi ke MWh) | Estimasi listrik DC kotor model internal Google. |
-| 10 | **Faktor CO₂ (kg/MWh)** | `solarPotential.carbonOffsetFactorKgPerMwh` | kg CO₂ / MWh | Faktor emisi karbon grid regional (**808,999 kg/MWh**). |
-| 11 | **Tgl Citra Satelit** | `imageryDate` (`year`, `month`, `day`) | Tanggal (`YYYY-MM-DD`) | Waktu akuisisi perekaman citra satelit oleh Google. |
-| 12 | **Google Building ID** | `name` | String ID | Resource name unik bangunan di katalog Google Maps Platform. |
+#### Kelompok 2: Direct Return API Eksternal Non-Google Solar (3 Kolom ✅)
+Data atribut fasilitas publik yang diambil langsung dari respons API geospasial OpenStreetMap:
+1. **`Kategori`** $\rightarrow$ **OpenStreetMap Overpass API** (query tag tipologi: `amenity`, `railway`, `highway`, `shop`)
+2. **`Infrastruktur`** $\rightarrow$ **OSM Overpass & Nominatim Reverse API** (field: `tags.name` / `display_name`)
+3. **`Wilayah`** $\rightarrow$ **Nominatim Reverse Geocoding API** (field: `address.city` / `address.county`)
 
-#### Kelompok B: 19 Parameter Turunan (Derived ETL, Standar Rekayasa SNI/IEC, & Registri POI)
-Parameter pada kelompok ini dihitung secara sekunder atau diintegrasikan dari standar eksternal untuk melengkapi analisis kelayakan teknis:
+#### Kelompok 3: Kalkulasi ETL dengan Bahan Return Google Solar API (13 Kolom ✅)
+Data hasil formulasi matematis dan standar rekayasa ketenagalistrikan yang 100% menggunakan data mentah dari Google Solar API:
+1. **`Rasio Kelayakan (%)`** $\rightarrow$ `(maxArrayAreaMeters2 / wholeRoofStats.areaMeters2) * 100`
+2. **`Cakupan Atap (%)`** $\rightarrow$ `(wholeRoofStats.areaMeters2 / buildingStats.areaMeters2) * 100`
+3. **`Celah Non-Segmen (m²)`** $\rightarrow$ `buildingStats.areaMeters2 - wholeRoofStats.areaMeters2`
+4. **`Total Celah (m²)`** $\rightarrow$ `buildingStats.areaMeters2 - maxArrayAreaMeters2`
+5. **`Kondisi Celah`** $\rightarrow$ Ambang batas klasifikasi rasio atap (`Gap Sedikit`, `Gap Sedang`, `Gap Besar`)
+6. **`Segmen Terisi`** $\rightarrow$ Filter jumlah segmen aktif yang memiliki panel di `solarPanels[]`
+7. **`Bobot Kemiringan`** $\rightarrow$ Rata-rata tertimbang dari `pitchDegrees` & `areaMeters2` segmen atap
+8. **`Kapasitas (kWp)`** $\rightarrow$ `maxArrayPanelsCount * 400 Wp / 1000`
+9. **`Listrik AC Bersih (MWh)`** $\rightarrow$ `capacity_kwp * maxSunshineHoursPerYear * 0.80 (PR IEC 61724) / 1000`
+10. **`Rata² kWh/Panel`** $\rightarrow$ `annual_generation_kwh / maxArrayPanelsCount`
+11. **`Reduksi CO₂ (Ton/thn)`** $\rightarrow$ `annual_generation_mwh * carbonOffsetFactorKgPerMwh / 1000`
+12. **`Kualitas Citra`** $\rightarrow$ String resolusi `0.25 m/px` digabung dengan tier respons `imageryQuality`
+13. **`URL Verifikasi Google Maps`** $\rightarrow$ Generator URL Google Maps Search API menggunakan `center.latitude, center.longitude`
 
-| No | Nama Kolom di Dashboard | Kategori Sumber | Formula / Sumber Acuan | Alasan Metodologis / Justifikasi Ilmiah |
-| :-: | :--- | :--- | :--- | :--- |
-| 1 | **No** | UI Streamlit | Auto-increment `range(1, N+1)` | Keperluan navigasi dan keterbacaan tabel di layar. |
-| 2 | **Kategori** | Registri POI | Master data fasilitas CELIOS 2026 | Pengelompokan 13 tipologi infrastruktur publik. |
-| 3 | **Infrastruktur** | Registri POI | Data input POI (OSM / Dinas) | Identitas nama aset gedung target. |
-| 4 | **Wilayah** | Geospasial | Peta Administrasi Kemendagri/BIG | Pengelompokan spasial 5 Kota DKI & 8 Bodetabek. |
-| 5 | **Rasio Kelayakan (%)** | Pipeline ETL | `(max_roof_area / whole_roof_area) * 100` | Mengukur efisiensi pemanfaatan atap terhadap bayangan. |
-| 6 | **Cakupan Atap (%)** | Pipeline ETL | `(whole_roof_area / building_footprint) * 100` | Mengaudit kesesuaian deteksi atap vs tapak bangunan. |
-| 7 | **Celah Non-Segmen (m²)** | Pipeline ETL | `building_footprint - whole_roof_area` | Mengukur luasan atap dak datar/peron yang tak bersekat. |
-| 8 | **Total Celah (m²)** | Pipeline ETL | `building_footprint - max_roof_area` | Ruang fisik potensial untuk optimalisasi kanopi infill. |
-| 9 | **Kondisi Celah** | Standar CELIOS | Aturan berbasis SNI 8395:2017 & NFPA 1 | Segmentasi kategori atap untuk skenario penambahan infill. |
-| 10 | **Segmen Terisi** | Analisis Spasial | Filter `solarPanels[].panelsCount > 0` | Mengidentifikasi segmen bidang yang benar-benar produktif. |
-| 11 | **Bobot Kemiringan** | Pipeline ETL | Rata-rata tertimbang pitch vs area segmen | Representasi kemiringan dominan gedung untuk orientasi panel. |
-| 12 | **Kapasitas (kWp)** | Standar Industri | `max_panels * 400 Wp / 1000` | Menghitung daya terpasang dengan modul komersial 400 Wp. |
-| 13 | **Listrik AC Bersih (MWh)** | Standar IEC | $\text{kWp} \times \text{PSH} \times 0.80 / 1000$ | Koreksi ke output listrik AC riil (derating inverter & suhu tropis). |
-| 14 | **Rata² kWh/Panel** | Pipeline ETL | `annual_generation_kwh / max_panels` | Evaluasi produktivitas spesifik per keping modul. |
-| 15 | **Reduksi CO₂ (Ton/thn)** | Standar IPCC | `annual_gen_mwh * 808.999 / 1000` | Konversi output listrik bersih ke metrik ton mitigasi GRK. |
-| 16 | **Drift (m)** | Geodesi | Formula Haversine (Input vs Centroid Google) | Memvalidasi ketepatan penguncian target oleh satelit. |
-| 17 | **Status Spasial** | Audit Spasial | Ambang batas toleransi drift 30 meter | Kriteria lolos audit kualitas geospasial fotogrametri. |
-| 18 | **Kualitas Citra** | Pipeline ETL | Format `0.25 m/px (BASE)` | Penyajian tingkat ketajaman spasial satelit untuk laporan. |
-| 19 | **URL Verifikasi Google Maps**| Utilitas Web | URL Search API dari latitude & longitude | Tautan cepat pembuktian visual satelit di peta publik. |
+#### Kelompok 4: Kalkulasi ETL Berbahan Multi-API (2 Kolom ✅)
+Data audit spasial yang membandingkan data koordinat masukan dari OpenStreetMap/Nominatim dengan titik tengah atap hasil Google Solar API:
+1. **`Drift (m)`** $\rightarrow$ Jarak Haversine antara koordinat Nominatim API (`raw_lat, raw_lon`) dengan Google Solar API `center` (`latitude, longitude`)
+2. **`Status Spasial`** $\rightarrow$ Audit ambang batas toleransi drift spasial $\le 30$ meter (`VALID (< 30m)`)
+
+#### Kelompok 5: Non-API Murni (1 Kolom ➖)
+1. **`No`** $\rightarrow$ Nomor urut integer baris tabel antarmuka pengguna Streamlit (`range(1, N+1)`).
+
 
 ---
 *Dokumen ini merupakan bagian dari Master Data Governance CELIOS Solar Research 2026. Seluruh hak cipta dan merek dagang Google Solar API dimiliki oleh Google LLC.*
