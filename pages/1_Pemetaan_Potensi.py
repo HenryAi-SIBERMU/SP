@@ -280,7 +280,7 @@ with col_b3:
             <div class="bento-val" style="color: #66BB6A;">{total_gen_mwh:,.1f} <span style="font-size:1.05rem;color:#C8E6C9;">MWh/th</span></div>
             <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan Performance Ratio (PR) 80% iklim tropis perkotaan.</div>
         </div>
-        <div class="bento-src"><b>Sumber:</b> Standar IEC 61724 & NREL PVWatts<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
+        <div class="bento-src"><b>Sumber:</b> Google Solar API & Standar IEC 61724 (PR 80%)<br><b>File:</b> pow_solar_kumulatif_summary.csv</div>
     </div>
     """, unsafe_allow_html=True)
 
