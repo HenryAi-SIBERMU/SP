@@ -215,9 +215,13 @@ def load_economic_datasets(cache_version: str = "20261010_v3_zero_apbd"):
     bench_path = REF_DIR / "benchmark_plts_soetta_aktual.csv"
     df_benchmark = pd.read_csv(bench_path) if bench_path.exists() else pd.DataFrame()
 
-    return df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult, df_benchmark
+    # 9. Matriks Evaluasi Multi-Kriteria Model Pengadaan (MCDA)
+    mcda_path = REF_DIR / "matriks_skor_evaluasi_pengadaan.csv"
+    df_mcda = pd.read_csv(mcda_path) if mcda_path.exists() else pd.DataFrame()
 
-df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult, df_benchmark = load_economic_datasets("20261010_v3_zero_apbd")
+    return df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult, df_benchmark, df_mcda
+
+df_ekonomi, df_detail, df_layanan, df_capex, df_zero, df_pln, df_jobs_mult, df_benchmark, df_mcda = load_economic_datasets("20261013_v4_mcda_scoring")
 
 if df_ekonomi.empty:
     st.error("Error: Dataset ringkasan ekonomi kebijakan tidak ditemukan di `data/processed/calculations/pow_solar_ekonomi_kebijakan.csv`.")
@@ -1987,19 +1991,31 @@ with tab_cash:
 
 with tab_radar:
     # Komparasi Skor Kinerja 5 Dimensi Strategis (Skala 1 - 10)
-    criteria_labels = [
-        "Keamanan Fiskal Kas Daerah (Bebas Belanja Modal)",
-        "Kecepatan Eksekusi & Implementasi Lapangan",
-        "Proteksi Risiko Penurunan Kinerja & Kerusakan Teknis",
-        "Kepastian Pengalihan Kepemilikan Aset Jangka Panjang",
-        "Likuiditas Penghematan Kas Sejak Hari Pertama"
-    ]
+    # Sumber Data: data/processed/references/matriks_skor_evaluasi_pengadaan.csv
+    # Pipeline: tools/economic/generate_procurement_mcda_scoring.py
+    if not df_mcda.empty:
+        df_mcda_sorted = df_mcda.sort_values(by="urutan_tampil", ascending=False)
+        criteria_labels = df_mcda_sorted["nama_kriteria"].tolist()
+        scores_ppa = df_mcda_sorted["skor_ppa_sewa_atap"].tolist()
+        scores_konsesi = df_mcda_sorted["skor_konsesi_carport"].tolist()
+        scores_apbd = df_mcda_sorted["skor_apbd_murni"].tolist()
+    else:
+        criteria_labels = [
+            "Keamanan Fiskal Kas Daerah (Bebas Belanja Modal)",
+            "Kecepatan Eksekusi & Implementasi Lapangan",
+            "Proteksi Risiko Penurunan Kinerja & Kerusakan Teknis",
+            "Kepastian Pengalihan Kepemilikan Aset Jangka Panjang",
+            "Likuiditas Penghematan Kas Sejak Hari Pertama"
+        ]
+        scores_ppa = [10, 9, 10, 8, 7]
+        scores_konsesi = [10, 7, 9, 8, 8]
+        scores_apbd = [1, 3, 2, 10, 10]
 
     fig_eval = go.Figure()
 
     fig_eval.add_trace(go.Bar(
         y=criteria_labels,
-        x=[10, 9, 10, 8, 7],
+        x=scores_ppa,
         name="PPA Sewa Atap Swasta (Solar as a Service)",
         orientation="h",
         marker=dict(color="#00E676", line=dict(width=1, color="#FFFFFF"))
@@ -2007,7 +2023,7 @@ with tab_radar:
 
     fig_eval.add_trace(go.Bar(
         y=criteria_labels,
-        x=[10, 7, 9, 8, 8],
+        x=scores_konsesi,
         name="Konsesi Carport & SPKLU Charging",
         orientation="h",
         marker=dict(color="#FFD600", line=dict(width=1, color="#FFFFFF"))
@@ -2015,7 +2031,7 @@ with tab_radar:
 
     fig_eval.add_trace(go.Bar(
         y=criteria_labels,
-        x=[1, 3, 2, 10, 10],
+        x=scores_apbd,
         name="Belanja Modal APBD Murni Konvensional",
         orientation="h",
         marker=dict(color="#FF5252", line=dict(width=1, color="#FFFFFF"))
@@ -2052,6 +2068,7 @@ with tab_radar:
     )
 
     st.plotly_chart(fig_eval, use_container_width=True)
+    st.caption("<b>Metodologi Pembobotan:</b> Evaluasi Multi-Kriteria Kualitatif (*Expert Judgment* mengadopsi Kerangka Alokasi Risiko KPBU Bappenas 2020 & Perpres No. 38/2015, Skala Likert 1–10). Dihitung via pipeline <code>tools/economic/generate_procurement_mcda_scoring.py</code> dengan bobot prioritas: Keamanan Fiskal (30%), Proteksi Risiko (25%), Kecepatan Eksekusi (20%), Likuiditas Kas (15%), dan Kepastian Aset (10%). Skor Tertimbang: <b>PPA Swasta (9,15/10)</b> > <b>Konsesi Carport (8,65/10)</b> > <b>APBD Murni (3,90/10)</b>.")
 
 # ─── STUDI KASUS EMPIRIS: BENCHMARK PLTS BANDARA SOETTA ─────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
@@ -2157,7 +2174,7 @@ with st.expander("Lihat Data Mentah : Matriks Evaluasi Komparatif Skema Pengadaa
     with col_dl_z1:
         csv_zero_bytes = df_zero.to_csv(index=False).encode('utf-8')
         st.download_button(
-            label="Unduh Matriks Skema Pengadaan Zero-APBD (CSV)",
+            label="Unduh Matriks Skema Pengadaan (CSV)",
             data=csv_zero_bytes,
             file_name="matriks_skema_pengadaan_zero_apbd.csv",
             mime="text/csv",
@@ -2165,6 +2182,38 @@ with st.expander("Lihat Data Mentah : Matriks Evaluasi Komparatif Skema Pengadaa
         )
     with col_dl_z2:
         st.caption("Berkas sumber: `data/processed/references/matriks_skema_pengadaan_zero_apbd.csv` | Dilengkapi sitasi Permendagri No. 19/2016 (KSP BMD) & Perpres No. 38/2015 (KPBU).")
+
+    if not df_mcda.empty:
+        st.markdown("<br><b>Tabel Pembobotan & Evaluasi Multi-Kriteria (MCDA) Bappenas KPBU Framework:</b>", unsafe_allow_html=True)
+        st.dataframe(
+            df_mcda[[
+                "id_kriteria", "nama_kriteria", "bobot_prioritas_pct", "definisi_kriteria",
+                "skor_ppa_sewa_atap", "skor_konsesi_carport", "skor_apbd_murni", "dokumen_rujukan"
+            ]].rename(columns={
+                "id_kriteria": "ID Kriteria",
+                "nama_kriteria": "Dimensi Kriteria",
+                "bobot_prioritas_pct": "Bobot AHP (%)",
+                "definisi_kriteria": "Definisi Evaluasi",
+                "skor_ppa_sewa_atap": "Skor PPA (1-10)",
+                "skor_konsesi_carport": "Skor Konsesi (1-10)",
+                "skor_apbd_murni": "Skor APBD (1-10)",
+                "dokumen_rujukan": "Rujukan Dokumen"
+            }),
+            use_container_width=True,
+            hide_index=True
+        )
+        col_dl_m1, col_dl_m2 = st.columns(2)
+        with col_dl_m1:
+            csv_mcda_bytes = df_mcda.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="Unduh Matriks Skor Evaluasi Pengadaan (CSV)",
+                data=csv_mcda_bytes,
+                file_name="matriks_skor_evaluasi_pengadaan.csv",
+                mime="text/csv",
+                key="dl_mcda_csv"
+            )
+        with col_dl_m2:
+            st.caption("Berkas sumber: `data/processed/references/matriks_skor_evaluasi_pengadaan.csv` | Dihasilkan via `tools/economic/generate_procurement_mcda_scoring.py`.")
 
 with st.expander("Lihat Data Mentah : Benchmark Bukti Empiris PLTS Bandara Soetta Aktual (CSV)"):
     st.markdown("Rekam jejak instalasi PLTS aktual yang beroperasi komersial penuh di kawasan Bandara Internasional Soekarno-Hatta:")

@@ -187,3 +187,18 @@ Sesuai audit forensik dan kaidah metodologi `.agents/rules/anti_yesman_spatial_m
 - Klaim "Rp 0,-" **hanya berlaku untuk Belanja Modal Awal (CAPEX)**, bukan berarti Pemda bebas biaya operasional selamanya (*no free lunch*). Pemda tetap mengalokasikan kas daerah bulanan untuk pos belanja operasional/jasa listrik berdiskon.
 - Kontrak multi-tahun (15–20 tahun) memerlukan mitigasi persetujuan DPRD sesuai UU No. 23/2014 tentang Pemerintahan Daerah dan PP No. 12/2019 tentang Pengelolaan Keuangan Daerah.
 
+### 7.4 Metodologi Pembobotan Multi-Kriteria (MCDA) Model Pengadaan
+Evaluasi komparatif antara 3 skema pengadaan dihitung menggunakan pipeline [`tools/economic/generate_procurement_mcda_scoring.py`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/tools/economic/generate_procurement_mcda_scoring.py) dan disimpan dalam dataset fisik [`data/processed/references/matriks_skor_evaluasi_pengadaan.csv`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/matriks_skor_evaluasi_pengadaan.csv):
+- **Pendekatan:** *Qualitative Expert Judgment* berbasis Kerangka Alokasi Risiko KPBU Bappenas (2020) & Perpres No. 38/2015 dengan skala Likert ordinal 1 s.d. 10.
+- **Pembobotan Prioritas Fiskal (AHP-aligned Weighting):**
+  1. *Keamanan Fiskal Kas Daerah:* Bobot **30,0%** (PPA: 10, Konsesi: 10, APBD: 1)
+  2. *Proteksi Risiko Penurunan Kinerja Teknis:* Bobot **25,0%** (PPA: 10, Konsesi: 9, APBD: 2)
+  3. *Kecepatan Eksekusi & Implementasi:* Bobot **20,0%** (PPA: 9, Konsesi: 7, APBD: 3)
+  4. *Likuiditas Penghematan Kas Sejak Hari Pertama:* Bobot **15,0%** (PPA: 7, Konsesi: 8, APBD: 10)
+  5. *Kepastian Pengalihan Kepemilikan Aset:* Bobot **10,0%** (PPA: 8, Konsesi: 8, APBD: 10)
+- **Skor Tertimbang Agregat ($\sum w_i \times s_i$):**
+  - **PPA Sewa Atap Swasta:** **9,15 / 10,00** *(Peringkat 1 - Rekomendasi Utama Gedung Dak)*
+  - **Konsesi Solar Carport:** **8,65 / 10,00** *(Peringkat 2 - Rekomendasi Sektor Transit/Parkir)*
+  - **Belanja Modal APBD Murni:** **3,90 / 10,00** *(Peringkat 3 - Tekanan Likuiditas Ekstrem)*
+
+
