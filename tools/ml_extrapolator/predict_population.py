@@ -80,7 +80,7 @@ def run_full_extrapolation(save_model: bool = True) -> Tuple[pd.DataFrame, Dict[
 
     # 4. Rakit Populasi Target Riil (~20.000 Titik)
     logger.info("Mengompilasi populasi target riil dari bank data OSM dan dataset resmi...")
-    df_pop_raw = assemble_population_dataset(dedup_radius_meters=18.0)
+    df_pop_raw = assemble_population_dataset(dedup_radius_meters=15.0)
     
     logger.info("Memperkaya fitur populasi target (Spatial Sunshine & Footprint Distribution)...")
     df_pop = enrich_population_features(df_pop_raw, df_gt)

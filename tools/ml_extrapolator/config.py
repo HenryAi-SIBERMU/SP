@@ -35,6 +35,7 @@ PARKING_GPKG = OSM_RAW_DIR / "parking_jakarta.gpkg"
 STATIONS_GPKG = OSM_RAW_DIR / "stations_jakarta.gpkg"
 CANDIDATES_POI_CSV = POI_RAW_DIR / "candidates_2200_titik.csv"
 TARGET_2000_CSV = POI_RAW_DIR / "target_2000_titik.csv"
+GOVERNMENT_OSM_JSON = OSM_RAW_DIR / "government_offices_osm_overpass.json"
 
 # Bounding Box Jabodetabek (Rule Spatial Integrity)
 BBOX_JABODETABEK = {

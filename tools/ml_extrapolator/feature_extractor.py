@@ -25,6 +25,7 @@ from .config import (
     TRANSJAKARTA_CSV,
     HOSPITALS_GPKG,
     CANDIDATES_POI_CSV,
+    GOVERNMENT_OSM_JSON,
     BBOX_JABODETABEK,
     CATEGORY_MAPPING,
     ANNUAL_SUNSHINE_DEFAULT,
@@ -242,6 +243,31 @@ def assemble_population_dataset(dedup_radius_meters: float = 18.0) -> pd.DataFra
         except Exception as e:
             logger.warning(f"Failed to read hospitals_jakarta.gpkg: {e}")
 
+    # 7. Gedung & Kantor Instansi Pemerintah (Inpres No. 7/2022)
+    if GOVERNMENT_OSM_JSON.exists():
+        with open(GOVERNMENT_OSM_JSON, "r", encoding="utf-8") as f:
+            gov_elements = json.load(f)
+        added_gov = 0
+        for g in gov_elements:
+            tags = g.get("tags", {})
+            name = tags.get("name")
+            if not name or str(name).strip().isdigit() or "#" in str(name):
+                continue
+            lat = g.get("lat") or (g.get("center", {}).get("lat") if isinstance(g.get("center"), dict) else None)
+            lon = g.get("lon") or (g.get("center", {}).get("lon") if isinstance(g.get("center"), dict) else None)
+            if lat and lon:
+                records.append({
+                    "asset_id_seed": f"GOV-OSM-{g.get('id', '')}",
+                    "asset_name": str(name).strip(),
+                    "category": "government",
+                    "city_regency": tags.get("addr:city", ""),
+                    "latitude": float(lat),
+                    "longitude": float(lon),
+                    "source_origin": "osm_government_overpass"
+                })
+                added_gov += 1
+        logger.info(f"Loaded {added_gov} named government office buildings from OSM Overpass")
+
     df_raw = pd.DataFrame(records)
     logger.info(f"Total raw candidate pool before filtering: {len(df_raw)} records")
 
@@ -271,10 +297,11 @@ def assemble_population_dataset(dedup_radius_meters: float = 18.0) -> pd.DataFra
     priority_map = {
         "candidates_2200_curated": 1,
         "transjakarta_official_inventory": 2,
-        "osm_schools_overpass": 3,
-        "osm_universities_overpass": 4,
-        "osm_hospitals": 5,
-        "osm_bus_stops": 6
+        "osm_government_overpass": 3,
+        "osm_schools_overpass": 4,
+        "osm_universities_overpass": 5,
+        "osm_hospitals": 6,
+        "osm_bus_stops": 7
     }
     
     df_bbox["prio"] = df_bbox["source_origin"].map(lambda s: priority_map.get(s, 99))
@@ -374,6 +401,13 @@ def enrich_population_features(
                 "sigma": 0.5,
                 "median": 300.0
             }
+
+    # Sensus Kantor Instansi Pemerintah (Inpres 7/2022)
+    cat_footprint_stats["government"] = {
+        "mu": float(np.log(450.0)),
+        "sigma": 0.45,
+        "median": 450.0
+    }
 
     global_stats = {
         "mu": float(np.log(df_ground_truth["building_footprint_m2"].dropna().median())),
