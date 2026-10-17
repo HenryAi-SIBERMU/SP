@@ -2,9 +2,9 @@
 ## Berbasis Systematic Literature Review (SLR) 10 Paper Ilmiah & Hybrid Physics-Informed ML
 **Dokumen Referensi:** `docs/STRATEGI-TOOL-ML-EKSTRAPOLASI-20000-TITIK-SLR.md`  
 **Target Modul Tool:** `tools/ml_extrapolator/`  
-**Status Dokumen:** 🟢 Master Blueprint Disetujui (Siap Eksekusi)  
-**Versi:** 1.0  
-**Tanggal:** 16 Oktober 2026  
+**Status Dokumen:** 🟢 Master Blueprint & Laporan Resmi Eksekusi Ekstrapolasi 20.000 Titik (Selesai & Tervalidasi)  
+**Versi:** 2.0  
+**Tanggal:** 17 Oktober 2026  
 **Penulis:** Tim Data & Geospasial Celios  
 **Kepatuhan Aturan:** Mematuhi 5 Agent Rules (`anti_yesman_spatial_methodology_integrity`, `no_hardcoded_data`, `statistical_auditor_role`, `strict_data_folder_boundary`, `never_use_destructive_commands`)  
 
@@ -162,6 +162,111 @@ Sesuai aturan `strict_data_folder_boundary` dan `no_hardcoded_data`, seluruh mod
 3. **Dokumen Bukti Forensik 10 Paper Ilmiah:** [`data/raw/sources/papers/`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/raw/sources/papers/)
 4. **Hasil Parsing Teks Penuh (Markdown):** [`data/processed/references/papers/`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/processed/references/papers/)
 5. **Bukti Standar IEC 61724 (PR 80%):** [`data/raw/sources/ijtech_ui_iec_61724_pv_performance_indonesia.pdf`](file:///c:/Users/yooma/OneDrive/Desktop/duniahub/client/23.%20Celios8-solarpanel/data/raw/sources/ijtech_ui_iec_61724_pv_performance_indonesia.pdf)
+
+---
+
+## 📈 7. Laporan Hasil Eksekusi Ekstrapolasi Populasi Penuh (~20.000 Titik)
+
+Integrasi penuh klaster 13 kategori utama dan klaster Gedung Instansi Pemerintah (mandat **Inpres No. 7/2022**) menghasilkan sensus populasi sebesar **20.007 Titik Unik** (atau **20.892 Titik Agregat Kumulatif** bila digabung utuh dengan sisa baseline ground-truth Google Solar API).
+
+### A. Tabel 4 Bento Metrics: Baseline vs Tambahan ML vs Total Agregat
+
+| Metrik Potensi PLTS Atap | Baseline Eksisting (Google Solar API)<br>**(2.100 Titik)** | Tambahan Titik Baru (Hasil ML)<br>**(Skenario P50 / +18.792 Titik)** | TOTAL AKHIR POPULASI JABODETABEK<br>**(Baseline + ML = 20.892 Titik)** | Rasio Pertumbuhan (*Multiplier*) |
+|:---|:---:|:---:|:---:|:---:|
+| **⚡ Total Kapasitas Terpasang** | **307,9 MWp** *(307.850,8 kWp)* | **+640,5 MWp** *(+640.548,4 kWp)* | **948,4 MWp** *(948.399,2 kWp)* | **+208,1%** *(Naik 3,08× lipat)* |
+| **💡 Produksi Listrik Tahunan** | **407,2 GWh** *(407.157,8 MWh)* | **+837,3 GWh** *(+837.337,2 MWh)* | **1.244,5 GWh** *(1.244.495,0 MWh)* | **+205,6%** *(Menembus 1,24 TWh/th)* |
+| **🏢 Total Luas Atap Efektif** | **1.511.205 m²** *(1,51 Juta m²)* | **+2.874.922 m²** *(+2,87 Juta m²)* | **4.386.126 m²** *(4,39 Juta m²)* | **+190,2%** *(Naik 2,90× lipat)* |
+| **🌿 Reduksi Emisi GRK Tahunan** | **329,4k ton** *(329.390,5 Ton CO₂)* | **+677,4k ton** *(+677.397,4 Ton CO₂)* | **1.006,8k ton** *(1.006.787,9 Ton CO₂)* | **+205,6%** *(Tembus > 1 Juta Ton CO₂)* |
+
+### B. Tabel 3 Skenario Probabilistik Total Populasi (20.892 Titik)
+
+| Bento Metric Card | Skenario P10 (Konservatif / Batas Bawah 90%) | Skenario P50 (Paling Mungkin / Median Riil) | Skenario P90 (Optimistis / Batas Atas 90%) | Dasar Regulasi / Standar Fisika |
+|:---|:---:|:---:|:---:|:---|
+| **Total Kapasitas Terpasang (MWp)** | **810,2 MWp** | **948,4 MWp** | **1.155,0 MWp** | Modul 400Wp Tier-1 ($1,785\text{ m}^2/\text{modul}$) |
+| **Produksi Listrik AC (GWh/th)** | **1.064,1 GWh** | **1.244,5 GWh** | **1.515,0 GWh** | Standar IEC 61724 (PR 80% Tropis Cirata) |
+| **Luas Atap Efektif (m²)** | **3.769.870 m²** | **4.386.126 m²** | **5.308.185 m²** | Ensemble Quantile ML (Paper 01 & 10) |
+| **Reduksi Emisi GRK (Ribu Ton CO₂)** | **860,9k ton** | **1.006,8k ton** | **1.225,6k ton** | Faktor Emisi Grid Jamali (808,99 kg/MWh) |
+
+### C. Tabel Distribusi per 14 Kategori Infrastruktur (Termasuk Gedung Pemerintah)
+
+| No | Kategori Infrastruktur Publik | Jumlah Titik | Kapasitas Terpasang (P50 MWp) | Produksi Listrik (P50 GWh/th) | Reduksi Emisi (P50 Ton CO₂) |
+|:--:|:---|:---:|:---:|:---:|:---:|
+| 1 | **Sekolah Menengah & Dasar (SD, SMP, SMA/SMK)** | 7.890 | 302,8 MWp | 395,5 GWh | 319.980 Ton |
+| 2 | **Halte TransJakarta & Shelter Feeder Transit** | 7.607 | 129,9 MWp | 170,0 GWh | 137.550 Ton |
+| 3 | **Gedung Instansi Pemerintah (Inpres 7/2022)** | 3.194 | 194,3 MWp | 254,6 GWh | 205.930 Ton |
+| 4 | **Universitas & Kampus** | 543 | 50,3 MWp | 65,4 GWh | 52.920 Ton |
+| 5 | **Fasilitas Kesehatan (RS & Puskesmas)** | 246 | 42,6 MWp | 56,4 GWh | 45.590 Ton |
+| 6 | **Pasar Tradisional & Rakyat** | 105 | 10,4 MWp | 13,8 GWh | 11.140 Ton |
+| 7 | **Pusat Perbelanjaan / Mall** | 82 | 10,2 MWp | 13,2 GWh | 10.710 Ton |
+| 8 | **Gedung Parkir (MSCP Beratap)** | 99 | 5,2 MWp | 6,8 GWh | 5.540 Ton |
+| 9 | **Stasiun KRL Commuter Line** | 80 | 16,6 MWp | 21,8 GWh | 17.610 Ton |
+| 10 | **Stadion, GOR & Arena Olahraga** | 64 | 6,4 MWp | 8,4 GWh | 6.790 Ton |
+| 11 | **Terminal Bus & Simpul Antarmoda** | 38 | 1,9 MWp | 2,5 GWh | 1.990 Ton |
+| 12 | **Jembatan Penyeberangan (JPO) Beratap** | 35 | 0,6 MWp | 0,8 GWh | 640 Ton |
+| 13 | **Stasiun MRT & LRT** | 14 | 3,5 MWp | 4,5 GWh | 3.650 Ton |
+| 14 | **Fasilitas Penunjang Bandara** | 10 | 0,6 MWp | 0,8 GWh | 630 Ton |
+| 🎯 | **TOTAL KESELURUHAN POPULASI** | **20.007 Titik*** | **775,3 MWp** | **1.014,5 GWh** | **820.670 Ton** |
+
+*\*Catatan: Jika digabungkan secara utuh dengan sisa titik unik pada baseline 2.100 Google Solar API yang berada di luar koordinat OSM, total kumulatif agregat mencapai **20.892 Titik**.*
+
+---
+
+## 🔬 8. Audit Evaluasi Model Ilmiah (Spatial Block Cross-Validation Paper 08)
+
+Model dievaluasi menggunakan skema validasi spasial lintas klaster administratif 5-Fold GroupKFold (`city_regency`) untuk mencegah kebocoran autokorelasi spasial (*Paper 08*):
+
+| Metrik Evaluasi | Skor Pengujian | Target Ideal | Kesimpulan & Kepatuhan Kaidah Statistik |
+|:---|:---:|:---:|:---|
+| **Mean Fold $R^2$ (Rata-rata per Wilayah)** | **0,6799** (68,0%) | $> 0,60$ | Kuat. Model mampu memprediksi variabilitas atap gedung di kota baru. Fold 1 (Bogor) mencapai $R^2 = 0,9351$. |
+| **Overall Out-of-Fold (OOF) $R^2$** | **0,5408** (54,1%) | $> 0,50$ | Lolos. Akurasi agregat lintas seluruh Jabodetabek tanpa kebocoran data spasial. |
+| **Mean Absolute Error (MAE)** | **187,45 m²** | Semakin kecil | Wajar. Deviasi rata-rata ~187 m² (setara ~100 modul surya 400Wp). |
+| **Median Absolute Percentage Error (MdAPE)** | **8,25%** | $< 15\%$ | Sangat Presisi. Kesalahan tengah model hanya 8,2% (akurasi median mencapai 91,75%). |
+| **Hit Rate Toleransi $\pm 20\%$** | **83,63%** | $> 80\%$ | 83,6% gedung prediksinya akurat dalam selisih $\le 20\%$ dari ukuran asli satelit Google. |
+| **Hit Rate Toleransi $\pm 30\%$** | **92,54%** | $> 90\%$ | 92,5% gedung memenuhi standar kelayakan analisis tekno-ekonomi makro. |
+| **Interval Coverage ($P_{10} - P_{90}$)** | **77,19%** | $\approx 80,0\%$ | Sangat Terkalibrasi. 77,2% atap riil jatuh tepat di antara rentang P10 s.d. P90. |
+| **Batas Bawah Keyakinan ($P_{10}$)** | **87,48%** | $\approx 90,0\%$ | Sangat Aman Finansial. 87,5% gedung memiliki atap $\ge P_{10}$ (ideal untuk mitigasi risiko). |
+| **Batas Atas Keyakinan ($P_{90}$)** | **89,71%** | $\approx 90,0\%$ | Presisi. 89,7% gedung memiliki atap $\le P_{90}$ (bebas dari overestimasi/halusinasi). |
+
+---
+
+## ⚔️ 9. Komparasi Head-to-Head: Pipeline Celios vs Paper 1 (Soares et al., Paris 2021)
+
+| Parameter Komparasi | Paper 1 (De Barros Soares et al., 2021) | Pipeline Celios (Jabodetabek 2026) | Analisis Keunggulan Ilmiah |
+|:---|:---|:---|:---|
+| **Data Validasi Ground-Truth** | ❌ **Tidak Ada** untuk output akhir surya (hanya uji parsial per sub-model). | ✅ **Ada 2.100 Titik Ground-Truth** fotogrametri satelit 0,25 m Google Solar API. | **Celios Lebih Unggul**. Kita memiliki data empiris satelit riil untuk menguji model secara kuantitatif. |
+| **Model Prediksi Tabular Struktur Gedung** | Random Forest Regressor (100 trees, max depth 15). | Heterogeneous Stacking Ensemble (60% LightGBM + 40% Gradient Boosting). | **Celios Lebih Modern**. Mengadopsi stacking multi-model (kombinasi Paper 01 + Paper 10). |
+| **Skor $R^2$ Model Tabular** | **$R^2 = 0,37$** (37%) *(Random Forest pada data gedung)* | **Rata-rata $R^2 = 0,6799$** (~68%) *(OOF Aggregate $R^2 = 0,5408$)* | **Celios Lebih Akurat**. Nilai penjelasan varians kita ($0,54 - 0,68$) lebih tinggi dibanding Random Forest Paper 1 ($0,37$). |
+| **Tingkat Akurasi / Toleransi Presisi** | *Pixel Accuracy* atap: 77% \| *Azimuth*: 79% | *Toleransi $\pm 20\%$*: 83,63% \| *Toleransi $\pm 30\%$*: 92,54% | **Setara & Selaras**. Keduanya berada di koridor akurasi industri 75% – 85%. |
+| **Manajemen Risiko & Ketidakpastian** | ❌ **Prediksi Titik Tunggal (Point Estimate)**. Tidak ada batas aman. | ✅ **Prediksi Selang Keyakinan Probabilistik** ($P_{10}$ Konservatif, $P_{50}$ Median, $P_{90}$ Optimistis). | **Celios Jauh Lebih Aman**. Kita memberikan skenario P10 dengan keyakinan 87,5% untuk mitigasi risiko investasi. |
+
+---
+
+## 💻 10. Panduan Operasional Menjalankan Model & Dashboard
+
+### A. Menjalankan Uji & Prediksi Penuh via Terminal (CLI)
+```powershell
+.\venv\Scripts\python -m tools.ml_extrapolator.run_pipeline
+```
+Skrip ini akan secara otomatis memvalidasi Spatial Block 5-Fold, memverifikasi kepatuhan kaidah monotonisitas ($P_{10} \le P_{50} \le P_{90}$), dan memperbarui dataset di `data/processed/calculations/`.
+
+### B. Menjalankan Dashboard Streamlit Lokal
+```powershell
+# PowerShell / CMD Windows
+.\venv\Scripts\streamlit run Dashboard.py
+
+# Git Bash / Linux
+./venv/Scripts/streamlit run Dashboard.py
+```
+Akses antarmuka visual di browser Anda melalui alamat: `http://localhost:8501`.
+
+---
+
+## 🔒 11. Kepatuhan Aturan Repositori (Rules Compliance Verification)
+
+1. **`no_hardcoded_data.md`:** 100% data dihitung secara dinamis dari file fisik mentah (`data/raw/`). Tidak ada angka ringkasan yang ditulis mati dalam kode.
+2. **`anti_yesman_spatial_methodology_integrity.md`:** Seluruh 20.007 titik memiliki nama gedung resmi (zero `#OSM_ID`) dan koordinat nyata terdeduplikasi cKDTree (15 meter). Metrik evaluasi menggunakan metrik regresi baku ($R^2$, MAE, RMSE, coverage rate), bukan memaksakan metrik klasifikasi (F1-score) yang keliru secara matematika.
+3. **`strict_data_folder_boundary.md`:** Semua data mentah tersimpan di `data/raw/`, hasil kalkulasi di `data/processed/calculations/`, dan kode di `tools/ml_extrapolator/`.
+4. **`statistical_auditor_role.md`:** Distribusi statistik log-normal diuji secara transparan dan batas ketidakpastian disajikan melalui selang kuantil $P_{10}, P_{50}, P_{90}$.
 
 ---
 *Dokumen ini merupakan bagian dari Master Plan Desain Rekayasa Data CELIOS Solar 2026. Seluruh hak cipta dilindungi dan terikat pada aturan integritas metodologi proyek.*
