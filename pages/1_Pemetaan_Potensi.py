@@ -323,62 +323,8 @@ with col_b4:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─── MACHINE LEARNING EXTRAPOLATION BENTO METRIC CARDS ────────────────────────
-st.markdown("""
-<style>
-.bento-card-ml {
-    background: linear-gradient(135deg, #0e1c26, #142838);
-    border: 1px solid #1c4556;
-    border-top: 3px solid #00BCD4;
-    border-radius: 10px;
-    padding: 18px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 185px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-.bento-card-ml:hover {
-    border-color: #00E5FF;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 188, 212, 0.15);
-}
-.bento-badge-ml {
-    display: inline-block;
-    background: rgba(0, 188, 212, 0.15);
-    color: #00E5FF;
-    border: 1px solid rgba(0, 188, 212, 0.35);
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-}
-.bento-ci-box {
-    font-size: 0.70rem;
-    color: #80DEEA;
-    background: rgba(0, 77, 64, 0.35);
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-top: 6px;
-    text-align: left;
-    border: 1px solid rgba(0, 188, 212, 0.25);
-    line-height: 1.3;
-}
-</style>
-""", unsafe_allow_html=True)
-
 if df_extrapolated is not None and not df_extrapolated.empty:
-    st.markdown("""
-    <div class="section-header" style="border-bottom-color: #00BCD4; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <span>⚡ Proyeksi Ekstrapolasi Machine Learning: Tambahan Prediksi Titik Se-Jabodetabek</span>
-        <span style="font-size: 0.78rem; font-weight: 600; color: #80DEEA; background: rgba(0,188,212,0.12); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0,188,212,0.3);">
-            Heterogeneous Stacking Ensemble • SLR 10 Paper Ilmiah
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+    df_ml_only = df_extrapolated[~df_extrapolated["is_ground_truth"]].copy() if "is_ground_truth" in df_extrapolated.columns else df_extrapolated.copy()
 
     c_ml_ctrl1, c_ml_ctrl2 = st.columns([1.3, 1.7])
     with c_ml_ctrl1:
@@ -416,9 +362,6 @@ if df_extrapolated is not None and not df_extrapolated.empty:
         q_sel = "p50"
         q_label = "P50 (Median Riil)"
 
-    # Saring data murni ekstrapolasi ML
-    df_ml_only = df_extrapolated[~df_extrapolated["is_ground_truth"]].copy() if "is_ground_truth" in df_extrapolated.columns else df_extrapolated.copy()
-
     if "Hanya Tambahan" in ml_scope_choice:
         count_ml = len(df_ml_only)
         disp_cap_kwp = df_ml_only[f"{q_sel}_installed_capacity_kwp"].sum()
@@ -428,19 +371,7 @@ if df_extrapolated is not None and not df_extrapolated.empty:
         disp_gwh = disp_mwh / 1000.0
         disp_ghg = df_ml_only[f"{q_sel}_ghg_reduction_tons_co2"].sum()
         disp_panels = int(df_ml_only[f"{q_sel}_panels_count"].sum())
-
-        p10_mwp = df_ml_only["p10_installed_capacity_kwp"].sum() / 1000.0
-        p90_mwp = df_ml_only["p90_installed_capacity_kwp"].sum() / 1000.0
-        p10_area = df_ml_only["p10_roof_area_m2"].sum()
-        p90_area = df_ml_only["p90_roof_area_m2"].sum()
-        p10_gwh = df_ml_only["p10_annual_generation_mwh"].sum() / 1000.0
-        p90_gwh = df_ml_only["p90_annual_generation_mwh"].sum() / 1000.0
-        p10_ghg = df_ml_only["p10_ghg_reduction_tons_co2"].sum()
-        p90_ghg = df_ml_only["p90_ghg_reduction_tons_co2"].sum()
-
-        growth_pct = (disp_cap_kwp / total_capacity_kwp * 100.0) if total_capacity_kwp > 0 else 0.0
-        growth_note = f"+{growth_pct:.1f}% kapasitas vs baseline"
-        card_scope_title = f"+{count_ml:,} Titik Baru"
+        scope_title_text = f"+{count_ml:,} Titik Baru"
     else:
         count_ml = total_assets + len(df_ml_only)
         disp_cap_kwp = total_capacity_kwp + df_ml_only[f"{q_sel}_installed_capacity_kwp"].sum()
@@ -450,81 +381,63 @@ if df_extrapolated is not None and not df_extrapolated.empty:
         disp_gwh = disp_mwh / 1000.0
         disp_ghg = total_ghg_tons + df_ml_only[f"{q_sel}_ghg_reduction_tons_co2"].sum()
         disp_panels = total_panels + int(df_ml_only[f"{q_sel}_panels_count"].sum())
+        scope_title_text = f"{count_ml:,} Titik Total Populasi"
 
-        p10_mwp = (total_capacity_kwp + df_ml_only["p10_installed_capacity_kwp"].sum()) / 1000.0
-        p90_mwp = (total_capacity_kwp + df_ml_only["p90_installed_capacity_kwp"].sum()) / 1000.0
-        p10_area = total_roof_area + df_ml_only["p10_roof_area_m2"].sum()
-        p90_area = total_roof_area + df_ml_only["p90_roof_area_m2"].sum()
-        p10_gwh = (total_gen_mwh + df_ml_only["p10_annual_generation_mwh"].sum()) / 1000.0
-        p90_gwh = (total_gen_mwh + df_ml_only["p90_annual_generation_mwh"].sum()) / 1000.0
-        p10_ghg = total_ghg_tons + df_ml_only["p10_ghg_reduction_tons_co2"].sum()
-        p90_ghg = total_ghg_tons + df_ml_only["p90_ghg_reduction_tons_co2"].sum()
+    st.markdown(f'<div class="section-header">Proyeksi Ekstrapolasi Machine Learning {count_ml:,} Titik ({scope_title_text})</div>', unsafe_allow_html=True)
 
-        multiplier = disp_cap_kwp / total_capacity_kwp if total_capacity_kwp > 0 else 1.0
-        growth_note = f"Skala {multiplier:.2f}× lipat dari baseline sampel"
-        card_scope_title = f"{count_ml:,} Titik Total Populasi"
-
-    # Render 4 Kolom Bento ML Terpisah
+    # Render 4 Kolom Bento Card (Style Sama Persis dengan Card di Atasnya)
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
 
     with col_m1:
         st.markdown(f"""
-        <div class="bento-card-ml">
+        <div class="bento-card">
             <div>
-                <span class="bento-badge-ml">PREDIKSI ML • {q_label.split(' ')[0]}</span>
-                <div class="bento-lbl">Kapasitas Terpasang ({card_scope_title})</div>
-                <div class="bento-val" style="color: #00E5FF;">{disp_cap_kwp:,.1f} <span style="font-size:1.05rem;color:#80DEEA;">kWp</span></div>
-                <div class="bento-desc">Setara <b>{disp_cap_mwp:,.2f} MWp</b> ({disp_panels:,} panel @ 400Wp). <span style="color:#00E676;font-weight:600;">{growth_note}</span>.</div>
-                <div class="bento-ci-box"><b>Rentang 90%:</b> {p10_mwp:,.1f} MWp (P10) ↔ {p90_mwp:,.1f} MWp (P90)</div>
+                <div class="bento-lbl">TOTAL KAPASITAS TERPASANG</div>
+                <div class="bento-val" style="color: #4CAF50;">{disp_cap_kwp:,.1f} <span style="font-size:1.05rem;color:#A5D6A7;">kWp</span></div>
+                <div class="bento-desc">Setara <b>{disp_cap_mwp:,.2f} MWp</b> ({disp_panels:,} panel @ 400Wp) pada aset publik & simpul transit.</div>
             </div>
-            <div class="bento-src"><b>Sumber:</b> Stacking ML (60% LightGBM + 40% GBDT) • Paper 01 & 10<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
+            <div class="bento-src"><b>Sumber:</b> Machine Learning Extrapolator ({q_label.split(' ')[0]})<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col_m2:
         st.markdown(f"""
-        <div class="bento-card-ml">
+        <div class="bento-card">
             <div>
-                <span class="bento-badge-ml">PREDIKSI ML • {q_label.split(' ')[0]}</span>
-                <div class="bento-lbl">Luas Atap Efektif ({card_scope_title})</div>
-                <div class="bento-val" style="color: #FFB74D;">{disp_area:,.0f} <span style="font-size:1.05rem;color:#FFE082;">m²</span></div>
-                <div class="bento-desc">Prediksi luas bidang atap bersih layak PLTS via ensemble tree regressor berbasis tapak bangunan & tipologi.</div>
-                <div class="bento-ci-box"><b>Rentang 90%:</b> {p10_area:,.0f} m² (P10) ↔ {p90_area:,.0f} m² (P90)</div>
+                <div class="bento-lbl">TOTAL LUAS ATAP EFEKTIF</div>
+                <div class="bento-val" style="color: #FFA726;">{disp_area:,.0f} <span style="font-size:1.05rem;color:#FFE0B2;">m²</span></div>
+                <div class="bento-desc">Permukaan bidang atap layak panel surya bebas bayangan via regresi kuantil tapak bangunan (OSM Footprint).</div>
             </div>
-            <div class="bento-src"><b>Metode:</b> Quantile Regression non-crossing bounds<br><b>Ref:</b> Soares et al. (Paris 2021) & Paper 10 Stacking</div>
+            <div class="bento-src"><b>Sumber:</b> Stacking ML Ensemble (Paper 01 & 10)<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col_m3:
         st.markdown(f"""
-        <div class="bento-card-ml">
+        <div class="bento-card">
             <div>
-                <span class="bento-badge-ml">PREDIKSI ML • {q_label.split(' ')[0]}</span>
-                <div class="bento-lbl">Estimasi Listrik AC ({card_scope_title})</div>
-                <div class="bento-val" style="color: #69F0AE;">{disp_mwh:,.1f} <span style="font-size:1.05rem;color:#B9F6CA;">MWh/th</span></div>
-                <div class="bento-desc">Estimasi suplai listrik AC tahunan bersih setara <b>{disp_gwh:,.2f} GWh/th</b> dengan Performance Ratio 80%.</div>
-                <div class="bento-ci-box"><b>Rentang 90%:</b> {p10_gwh:,.1f} GWh (P10) ↔ {p90_gwh:,.1f} GWh (P90)</div>
+                <div class="bento-lbl">ESTIMASI PRODUKSI LISTRIK</div>
+                <div class="bento-val" style="color: #66BB6A;">{disp_mwh:,.1f} <span style="font-size:1.05rem;color:#C8E6C9;">MWh/th</span></div>
+                <div class="bento-desc">Estimasi produksi listrik AC tahunan bersih dengan Performance Ratio (PR) 80% iklim tropis perkotaan.</div>
             </div>
-            <div class="bento-src"><b>Standar:</b> IEC 61724-1 PR 80% (Tropis Cirata UI IJTech 2019)<br><b>Engine:</b> Physics-Informed ML Generator</div>
+            <div class="bento-src"><b>Sumber:</b> Standar IEC 61724 (PR 80% Tropis Cirata)<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col_m4:
         st.markdown(f"""
-        <div class="bento-card-ml">
+        <div class="bento-card">
             <div>
-                <span class="bento-badge-ml">PREDIKSI ML • {q_label.split(' ')[0]}</span>
-                <div class="bento-lbl">Reduksi Emisi GRK ({card_scope_title})</div>
-                <div class="bento-val" style="color: #40C4FF;">{disp_ghg:,.1f} <span style="font-size:1.05rem;color:#B3E5FC;">Ton/th</span></div>
-                <div class="bento-desc">Potensi dekarbonisasi tahunan setara <b>{disp_ghg/1000:,.2f} Ribu Ton CO₂/th</b> pada jaringan transmisi Jamali.</div>
-                <div class="bento-ci-box"><b>Rentang 90%:</b> {p10_ghg/1000:,.1f}k Ton (P10) ↔ {p90_ghg/1000:,.1f}k Ton (P90)</div>
+                <div class="bento-lbl">REDUKSI EMISI GRK</div>
+                <div class="bento-val" style="color: #42A5F5;">{disp_ghg:,.1f} <span style="font-size:1.05rem;color:#BBDEFB;">Ton/th</span></div>
+                <div class="bento-desc">Dekarbonisasi setara penghentian pembakaran batu bara di PLTU pesisir Jawa-Banten (Grid Jamali).</div>
             </div>
-            <div class="bento-src"><b>Faktor Emisi:</b> 808,99 kg CO₂/MWh (Grid Jamali ESDM)<br><b>Kepatuhan:</b> Surat Dirjen Gatrik No. B-2838/2023</div>
+            <div class="bento-src"><b>Sumber:</b> Faktor Emisi Grid Jamali (808,99 kg/MWh)<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
         </div>
         """, unsafe_allow_html=True)
 
     # Expander detail audit ilmiah
-    with st.expander("🔬 Audit Evaluasi & Metrik Akurasi Model Ekstrapolasi ML (Spatial Block CV 5-Fold & SLR 10 Paper)", expanded=False):
+    with st.expander("Audit Evaluasi & Metrik Akurasi Model Ekstrapolasi ML (Spatial Block CV 5-Fold & SLR 10 Paper)", expanded=False):
         c_eval1, c_eval2 = st.columns([1.1, 0.9])
         with c_eval1:
             st.markdown("##### Metrik Validasi Spasial Silang (Spatial Block GroupKFold - Paper 08)")
