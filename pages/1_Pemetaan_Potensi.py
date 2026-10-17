@@ -326,41 +326,20 @@ st.markdown("<br>", unsafe_allow_html=True)
 if df_extrapolated is not None and not df_extrapolated.empty:
     df_ml_only = df_extrapolated[~df_extrapolated["is_ground_truth"]].copy() if "is_ground_truth" in df_extrapolated.columns else df_extrapolated.copy()
 
-    c_ml_ctrl1, c_ml_ctrl2 = st.columns([1.3, 1.7])
-    with c_ml_ctrl1:
-        ml_scope_choice = st.radio(
-            "Pilih Lingkup Data Prediksi ML:",
-            options=[
-                "Hanya Tambahan Titik Baru ML (+18.792 Titik)",
-                "Total Akumulatif Jabodetabek (20.892 Titik = Baseline + ML)"
-            ],
-            index=0,
-            horizontal=False,
-            key="ml_card_scope_selector"
-        )
-    with c_ml_ctrl2:
-        ml_quantile_choice = st.radio(
-            "Pilih Skenario Probabilitas Keyakinan:",
-            options=[
-                "P50 (Median Riil / Paling Mungkin)",
-                "P10 (Konservatif / Batas Bawah 90%)",
-                "P90 (Optimistis / Batas Atas 90%)"
-            ],
-            index=0,
-            horizontal=True,
-            key="ml_card_quantile_selector"
-        )
+    ml_scope_choice = st.radio(
+        "Pilih Lingkup Data Prediksi Machine Learning:",
+        options=[
+            "Hanya Tambahan Titik Baru ML (+18.792 Titik)",
+            "Total Akumulatif Jabodetabek (20.892 Titik = Baseline + ML)"
+        ],
+        index=0,
+        horizontal=True,
+        key="ml_card_scope_selector"
+    )
 
-    # Tentukan kuantil aktif
-    if "P10" in ml_quantile_choice:
-        q_sel = "p10"
-        q_label = "P10 (Konservatif)"
-    elif "P90" in ml_quantile_choice:
-        q_sel = "p90"
-        q_label = "P90 (Optimistis)"
-    else:
-        q_sel = "p50"
-        q_label = "P50 (Median Riil)"
+    # Kuantil dikunci langsung ke Median (P50) sebagai proyeksi riil paling objektif
+    q_sel = "p50"
+    q_label = "P50 (Median Riil)"
 
     if "Hanya Tambahan" in ml_scope_choice:
         count_ml = len(df_ml_only)
@@ -396,7 +375,7 @@ if df_extrapolated is not None and not df_extrapolated.empty:
                 <div class="bento-val" style="color: #4CAF50;">{disp_cap_kwp:,.1f} <span style="font-size:1.05rem;color:#A5D6A7;">kWp</span></div>
                 <div class="bento-desc">Setara <b>{disp_cap_mwp:,.2f} MWp</b> ({disp_panels:,} panel @ 400Wp) pada aset publik & simpul transit.</div>
             </div>
-            <div class="bento-src"><b>Sumber:</b> Machine Learning Extrapolator ({q_label.split(' ')[0]})<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
+            <div class="bento-src"><b>Sumber:</b> Machine Learning Extrapolator (P50 Median)<br><b>File:</b> pow_solar_extrapolasi_20000_summary.parquet</div>
         </div>
         """, unsafe_allow_html=True)
 
